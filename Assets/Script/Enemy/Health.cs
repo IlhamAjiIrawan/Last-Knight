@@ -24,14 +24,24 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (isDead) return;
         currentHealth -= damage;
     
         // Jika Player, simpan perubahan nyawa ke PlayerStats
         if (gameObject.CompareTag("Player"))
         {
             PlayerStats.instance.currentHealth = currentHealth;
+            anim.SetTrigger("getHit"); // Player tetap putar animasi hit
         }
-
+        else if (gameObject.CompareTag("Enemy"))
+        {
+            // Panggil fungsi TakeHit di EnemyAI agar dia diam
+            EnemyAI ai = GetComponent<EnemyAI>();
+            if (ai != null)
+            {
+                ai.TakeHit();
+            }
+        }
         if (currentHealth <= 0) Die();
     }
 

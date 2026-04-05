@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI; // Wajib untuk NavMesh
+using System.Collections; // Wajib untuk IEnumerator
 
 public class EnemyAI : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class EnemyAI : MonoBehaviour
     public float damage = 10f;
     private float attackCooldown = 1.5f;
     private float lastAttackTime;
+    private bool isDead = false;
+    private bool isStunned = false; // Variabel baru untuk status diam
+    public float stunDuration = 0.5f; // Durasi diam saat dipukul
 
     private NavMeshAgent agent;
     private Animator anim;
@@ -29,7 +33,9 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        
+        // Jika mati atau sedang tertegun (stun), jangan lakukan apapun
+        if (isDead || isStunned) return;
+
         distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
         if (distanceToPlayer <= attackRange)
@@ -86,5 +92,47 @@ public class EnemyAI : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, attackRange);
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, chaseRange);
+    }
+
+    // Fungsi baru untuk dipanggil saat kena pukul
+    public void TakeHit()
+    {
+        if (isDead) return;
+        
+        // Hentikan coroutine lama jika ada, lalu mulai yang baru
+        StopCoroutine("StunRoutine");
+        StartCoroutine("StunRoutine");
+    }
+
+    IEnumerator StunRoutine()
+    {
+        isStunned = true;
+        
+        // Hentikan navigasi agar tidak meluncur saat getHit
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+        }
+
+        anim.SetBool("isMoving", false);
+        anim.SetTrigger("getHit");
+
+        // Tunggu selama durasi stun
+        yield return new WaitForSeconds(stunDuration);
+
+        isStunned = false;
+        
+        // Kembalikan navigasi jika masih hidup
+        if (!isDead && agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = false;
+        }
+    }
+
+    public void OnDeath()
+    {
+        isDead = true;
+        StopAllCoroutines(); // Hentikan stun jika mati
+        if (agent != null) agent.enabled = false;
     }
 }
