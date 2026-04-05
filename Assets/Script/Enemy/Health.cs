@@ -40,26 +40,30 @@ public class Health : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        // 1. Jalankan Trigger Animasi
         anim.SetTrigger("die"); 
 
-        // 2. Matikan Komponen Kontrol
+        // 1. Matikan script AI agar Update() berhenti berjalan
+        if (GetComponent<EnemyAI>())
+            GetComponent<EnemyAI>().enabled = false;
+
+        // 2. Matikan pergerakan player (jika ini player)
         if (GetComponent<PlayerMovement>())
             GetComponent<PlayerMovement>().enabled = false;
 
-        // 3. Matikan Fisika & Navigasi
-        // Agar karakter tidak didorong-dorong musuh saat sudah jadi mayat
-        if (GetComponent<Rigidbody>())
-            GetComponent<Rigidbody>().isKinematic = true;
-
+        // 3. Matikan NavMeshAgent secara total
         if (GetComponent<UnityEngine.AI.NavMeshAgent>())
             GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
 
-        // 4. Matikan Collider (Sangat Penting!)
-        // Supaya musuh tidak tersangkut di mayat karakter kamu
+        // 4. Matikan Collider agar tidak menghalangi jalan
         if (GetComponent<Collider>())
             GetComponent<Collider>().enabled = false;
 
-        Debug.Log(gameObject.name + " telah mencapai Dead Pose.");
+        if (GetComponent<Rigidbody>())
+            GetComponent<Rigidbody>().isKinematic = true;
+
+        Debug.Log(gameObject.name + " telah mati.");
+
+        if (gameObject.CompareTag("Enemy"))
+            Destroy(gameObject, 5f);
     }
 }

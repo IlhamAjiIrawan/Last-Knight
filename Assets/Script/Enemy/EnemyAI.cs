@@ -48,31 +48,33 @@ public class EnemyAI : MonoBehaviour
 
     void ChasePlayer()
     {
+        // Cek apakah agent aktif dan sedang menempel di NavMesh
+        if (!agent.isActiveAndEnabled || !agent.isOnNavMesh) return;
+
         agent.isStopped = false;
         agent.SetDestination(player.position);
-        
-        // Atur parameter animasi jalan musuh (sesuaikan nama parameternya)
         anim.SetBool("isMoving", true);
     }
 
     void AttackPlayer()
     {
+        if (!agent.isActiveAndEnabled || !agent.isOnNavMesh) return;
+
         agent.isStopped = true;
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
 
         if (Time.time >= lastAttackTime + attackCooldown)
         {
             anim.SetTrigger("attack");
-            
-            // Memberikan damage ke player
             player.GetComponent<Health>().TakeDamage(damage);
-            
             lastAttackTime = Time.time;
         }
     }
 
     void StopMoving()
     {
+        if (!agent.isActiveAndEnabled || !agent.isOnNavMesh) return;
+
         agent.isStopped = true;
         anim.SetBool("isMoving", false);
     }
