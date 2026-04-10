@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -8,6 +9,21 @@ public class PlayerMovement : MonoBehaviour
     private Animator anim; // Tambahkan ini
     public float attackDamage = 20f;
     public float attackRange = 1.5f;
+
+    [Header("Attack Settings")]
+    public float swingRange = 2f;
+    public float heavyRange = 1.5f;
+    [Range(0, 180)] public float swingAngle = 120f; // Area setengah lingkaran
+
+    [Header("Dash Settings")]
+    public float dashSpeed = 20f;
+    public float dashDuration = 0.2f;
+    public float dashCooldown = 3f;
+    public float invincibilityDuration = 0.5f; // Durasi immune yang bisa kamu atur
+    public bool isImmune { get; private set; } // Variabel baru untuk status immune
+    public bool isDashing { get; private set; }
+    private float lastDashTime;
+
     public Transform attackPoint; // Titik di depan pedang
     public LayerMask enemyLayers; // Pilih layer "Enemy" di Inspector
 
@@ -17,6 +33,9 @@ public class PlayerMovement : MonoBehaviour
         anim = GetComponent<Animator>(); // Ambil komponen Animator
         mainCamera = Camera.main;
 
+        // TAMBAHKAN INI: Mengunci rotasi X dan Z agar karakter tidak terguling
+        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+
         // Ambil speed dan damage dari stats
         speed = PlayerStats.instance.speed;
         attackDamage = PlayerStats.instance.damage;
@@ -24,17 +43,23 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (isDashing) return; //KUNCI TOTAL: Jika sedang dash, jangan baca input apapun
         LookAtMouse();
-        UpdateAnimation(); // Panggil fungsi animasi setiap frame
-        if (Input.GetMouseButtonDown(0)) // 0 adalah Klik Kiri
+        UpdateAnimation();
+
+        // Input Dash (Shift atau Spasi)
+        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Space)) && Time.time >= lastDashTime + dashCooldown)
         {
-            Attack();
+            StartCoroutine(DashRoutine());
         }
+        
+        if (Input.GetMouseButtonDown(0)) Attack(false);
+        if (Input.GetMouseButtonDown(1)) Attack(true);
     }
 
     void UpdateAnimation()
     {
-        bool isAttacking = anim.GetCurrentAnimatorStateInfo(0).IsName("Melee_1H_Attack_Slice_Diagonal");
+        bool isAttacking = anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
 
         if (isAttacking)
         {
@@ -73,12 +98,12 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        bool isAttacking = anim.GetCurrentAnimatorStateInfo(0).IsName("Melee_1H_Attack_Slice_Diagonal");
+        bool isAttacking = anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
 
-        if (isAttacking)
+        if (isAttacking || isDashing)
         {
             // Hentikan semua kecepatan gerak saat menyerang
-            rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+            //rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
             return;
         }
         
@@ -98,21 +123,52 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void Attack()
+    void Attack(bool isHeavy)
     {
-        // Memicu animasi serangan
-        anim.SetTrigger("attack");
+        // Tentukan range berdasarkan tipe serangan
+        float range = isHeavy ? heavyRange : swingRange;
+        
+        // LOGIKA DAMAGE: Jika heavy, maka damage dikali 2
+        float finalDamage = isHeavy ? (attackDamage * 2f) : attackDamage;
+        
+        string triggerName = isHeavy ? "heavyAttack" : "attack";
 
-        // Deteksi musuh dalam jangkauan serangan
-        Collider[] hitEnemies = Physics.OverlapSphere(transform.position + transform.forward, attackRange, enemyLayers);
+        // Memicu animasi
+        anim.SetTrigger(triggerName);
 
-        // Berikan damage ke setiap musuh yang terkena
+        // Cari musuh menggunakan attackPoint agar lebih akurat
+        Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, range, enemyLayers);
+
         foreach (Collider enemy in hitEnemies)
         {
-            if (enemy.GetComponent<Health>())
+            Vector3 directionToEnemy = (enemy.transform.position - transform.position).normalized;
+            float angleToEnemy = Vector3.Angle(transform.forward, directionToEnemy);
+
+            if (isHeavy)
             {
-                enemy.GetComponent<Health>().TakeDamage(attackDamage);
+                // Heavy Attack (Sudut Sempit)
+                if (angleToEnemy < 60f) 
+                {
+                    ApplyDamage(enemy, finalDamage);
+                }
             }
+            else
+            {
+                // Swing Attack (Sudut Lebar)
+                if (angleToEnemy < swingAngle / 2) 
+                {
+                    ApplyDamage(enemy, finalDamage);
+                }
+            }
+        }
+    }
+
+    void ApplyDamage(Collider enemy, float damage)
+    {
+        Health enemyHealth = enemy.GetComponent<Health>();
+        if (enemyHealth != null)
+        {
+            enemyHealth.TakeDamage(damage);
         }
     }
 
@@ -121,5 +177,44 @@ public class PlayerMovement : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position + transform.forward, attackRange);
+    }
+
+    IEnumerator DashRoutine()
+    {
+        isDashing = true;
+        isImmune = true; // Mulai masa immune
+        lastDashTime = Time.time;
+
+        // RESET ANIMASI: Paksa kaki diam sebelum mulai dash
+        anim.SetFloat("moveX", 0);
+        anim.SetFloat("moveZ", 0);
+        anim.SetBool("isWalking", false); // Jika kamu punya parameter ini
+
+        // 1. Arahkan karakter ke kursor tepat saat dash dimulai
+        // Logika LookAtMouse() sudah ada, jadi karakter akan otomatis menghadap kursor.
+        Vector3 dashDirection = transform.forward; 
+
+        anim.SetTrigger("dash");
+
+        // 2. Eksekusi Dash
+        float startTime = Time.time;
+        while (Time.time < startTime + dashDuration)
+        {
+            rb.linearVelocity = dashDirection * dashSpeed;
+            yield return null;
+        }
+
+        isDashing = false;
+        rb.linearVelocity = Vector3.zero;
+
+        // 3. Masa Immune bisa lebih lama dari durasi gerak dash itu sendiri
+        float extraImmuneTime = invincibilityDuration - dashDuration;
+        if (extraImmuneTime > 0)
+        {
+            yield return new WaitForSeconds(extraImmuneTime);
+        }
+
+        isImmune = false; // Masa immune selesai
+        Debug.Log("Immune Berakhir");
     }
 }

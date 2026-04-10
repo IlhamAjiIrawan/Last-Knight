@@ -25,6 +25,18 @@ public class Health : MonoBehaviour
     public void TakeDamage(float damage)
     {
         if (isDead) return;
+
+        // Cek status immune dari PlayerMovement
+        if (gameObject.CompareTag("Player"))
+        {
+            PlayerMovement pm = GetComponent<PlayerMovement>();
+            if (pm != null && pm.isImmune) // Menggunakan isImmune, bukan isDashing
+            {
+                Debug.Log("Serangan Terhindar! (Immune)");
+                return; 
+            }
+        }
+
         currentHealth -= damage;
     
         // Jika Player, simpan perubahan nyawa ke PlayerStats
