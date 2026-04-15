@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private Camera mainCamera;
     private Animator anim; // Tambahkan ini
-    public float attackDamage = 20f;
+    public float attackDamage = 1f;
     public float attackRange = 1.5f;
 
     [Header("Attack Settings")]
@@ -23,6 +23,10 @@ public class PlayerMovement : MonoBehaviour
     public bool isImmune { get; private set; } // Variabel baru untuk status immune
     public bool isDashing { get; private set; }
     private float lastDashTime;
+
+    [Header("Skill Costs")]
+    public float dashMPCost = 10f;
+    public float heavyAttackMPCost = 15f;
 
     public Transform attackPoint; // Titik di depan pedang
     public LayerMask enemyLayers; // Pilih layer "Enemy" di Inspector

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    public float maxHealth = 100f;
+    public float maxHealth = 10f;
     private float currentHealth;
     private Animator anim;
     private bool isDead = false;
@@ -62,6 +62,7 @@ public class Health : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
+        anim.ResetTrigger("getHit");
         anim.SetTrigger("die"); 
 
         // 1. Matikan script AI agar Update() berhenti berjalan

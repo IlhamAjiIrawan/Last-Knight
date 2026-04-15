@@ -10,6 +10,11 @@ public class EnemyAI : MonoBehaviour
     public float moveSpeed = 3.5f;
     public float damage = 10f;
     private float attackCooldown = 1.5f;
+
+    [Header("New Attack Delay Settings")]
+    public float attackDelay = 0.5f; // Jeda sebelum serangan benar-benar kena (Ancang-ancang)
+    private bool isPreparingAttack = false; // Status apakah sedang ancang-ancang
+
     private float lastAttackTime;
     private bool isDead = false;
     private bool isStunned = false; // Variabel baru untuk status diam
@@ -34,13 +39,21 @@ public class EnemyAI : MonoBehaviour
     void Update()
     {
         // Jika mati atau sedang tertegun (stun), jangan lakukan apapun
-        if (isDead || isStunned) return;
+        if (isDead || isStunned || isPreparingAttack) return;
 
         distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
         if (distanceToPlayer <= attackRange)
         {
-            AttackPlayer();
+            // Cek cooldown sebelum memulai rangkaian serangan
+            if (Time.time >= lastAttackTime + attackCooldown)
+            {
+                StartCoroutine(AttackRoutine());
+            }
+            else
+            {
+                StopMoving(); // Diam di tempat sambil menunggu cooldown
+            }
         }
         else if (distanceToPlayer <= chaseRange)
         {
@@ -99,8 +112,11 @@ public class EnemyAI : MonoBehaviour
     {
         if (isDead) return;
         
-        // Hentikan coroutine lama jika ada, lalu mulai yang baru
+        // Jika sedang ancang-ancang menyerang lalu dipukul, batalkan serangannya!
+        isPreparingAttack = false; 
+        
         StopCoroutine("StunRoutine");
+        StopCoroutine("AttackRoutine"); // Batalkan serangan jika kena pukul
         StartCoroutine("StunRoutine");
     }
 
@@ -129,9 +145,37 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    // Logic serangan baru dengan Coroutine untuk Delay
+    IEnumerator AttackRoutine()
+    {
+        isPreparingAttack = true;
+        agent.isStopped = true;
+        anim.SetBool("isMoving", false);
+
+        // Menghadap ke player
+        transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
+
+        // 1. Trigger animasi Attack (Ancang-ancang dimulai)
+        anim.SetTrigger("attack");
+
+        // 2. Jeda waktu sebelum damage dikirim (Pemain punya waktu buat Dash menjauh!)
+        yield return new WaitForSeconds(attackDelay);
+
+        // 3. Cek lagi, apakah setelah delay pemain masih di dalam jangkauan?
+        float currentDistance = Vector3.Distance(transform.position, player.position);
+        if (currentDistance <= attackRange + 0.5f && !isDead && !isStunned)
+        {
+            player.GetComponent<Health>().TakeDamage(damage);
+        }
+
+        lastAttackTime = Time.time;
+        isPreparingAttack = false;
+    }
+
     public void OnDeath()
     {
         isDead = true;
+        isPreparingAttack = false;
         StopAllCoroutines(); // Hentikan stun jika mati
         if (agent != null) agent.enabled = false;
     }

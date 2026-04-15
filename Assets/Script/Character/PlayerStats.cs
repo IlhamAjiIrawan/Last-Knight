@@ -6,22 +6,40 @@ public class PlayerStats : MonoBehaviour
     public static PlayerStats instance;
 
     [Header("Status yang Disimpan")]
-    public float currentHealth = 100f;
-    public float maxHealth = 100f;
-    public float damage = 20f;
+    public float currentHealth;
+    public float maxHealth = 10f;
+    public float maxMP = 10f;      // Tambahkan ini
+    public float currentMP;        // Tambahkan ini
+    public float mpRegenRate = 1f; // MP pulih 2 poin per detik
+    public float damage = 1f;
     public float speed = 5.0f;
 
     void Awake()
     {
-        // Logika Singleton: Pastikan hanya ada SATU objek ini di seluruh game
         if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject); // JANGAN hapus saat pindah Scene
+
+            // Inisialisasi status saat pertama kali load
+            currentHealth = maxHealth;
+            currentMP = maxMP; // Set MP penuh di awal game
         }
         else
         {
             Destroy(gameObject); // Hapus jika ada duplikat di Scene baru
+        }
+    }
+
+    void Update()
+    {
+        // Regenerasi MP otomatis setiap detik
+        if (currentMP < maxMP)
+        {
+            currentMP += mpRegenRate * Time.deltaTime;
+            
+            // Memastikan MP tidak meluap melebihi maxMP
+            currentMP = Mathf.Clamp(currentMP, 0, maxMP);
         }
     }
 }
