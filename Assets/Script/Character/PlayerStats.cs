@@ -11,6 +11,9 @@ public class PlayerStats : MonoBehaviour
     public float maxMP = 10f;      // Tambahkan ini
     public float currentMP;        // Tambahkan ini
     public float mpRegenRate = 1f; // MP pulih 2 poin per detik
+    public float maxEnergy = 5f;
+    public float currentEnergy;
+    public float energyRegenRate = 1f; // Energy pulih lebih cepat
     public float damage = 1f;
     public float speed = 5.0f;
 
@@ -24,6 +27,7 @@ public class PlayerStats : MonoBehaviour
             // Inisialisasi status saat pertama kali load
             currentHealth = maxHealth;
             currentMP = maxMP; // Set MP penuh di awal game
+            currentEnergy = maxEnergy;
         }
         else
         {
@@ -40,6 +44,13 @@ public class PlayerStats : MonoBehaviour
             
             // Memastikan MP tidak meluap melebihi maxMP
             currentMP = Mathf.Clamp(currentMP, 0, maxMP);
+        }
+
+        // Regenerasi Energy otomatis
+        if (currentEnergy < maxEnergy)
+        {
+            currentEnergy += energyRegenRate * Time.deltaTime;
+            currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
         }
     }
 }

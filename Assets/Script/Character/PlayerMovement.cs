@@ -28,6 +28,9 @@ public class PlayerMovement : MonoBehaviour
     public float dashMPCost = 10f;
     public float heavyAttackMPCost = 15f;
 
+    [Header("Energy Costs")]
+    public float dashEnergyCost = 5f;
+
     public Transform attackPoint; // Titik di depan pedang
     public LayerMask enemyLayers; // Pilih layer "Enemy" di Inspector
 
@@ -54,7 +57,16 @@ public class PlayerMovement : MonoBehaviour
         // Input Dash (Shift atau Spasi)
         if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Space)) && Time.time >= lastDashTime + dashCooldown)
         {
-            StartCoroutine(DashRoutine());
+            // CEK APAKAH ENERGY CUKUP
+            if (PlayerStats.instance.currentEnergy >= dashEnergyCost)
+            {
+                PlayerStats.instance.currentEnergy -= dashEnergyCost; // Kurangi Energy
+                StartCoroutine(DashRoutine());
+            }
+            else
+            {
+                Debug.Log("Energy tidak cukup untuk Dash!");
+            }
         }
         
         if (Input.GetMouseButtonDown(0)) Attack(false);
@@ -189,6 +201,9 @@ public class PlayerMovement : MonoBehaviour
         isImmune = true; // Mulai masa immune
         lastDashTime = Time.time;
 
+        Collider myCollider = GetComponent<Collider>();
+        if (myCollider != null) myCollider.isTrigger = true;
+
         // RESET ANIMASI: Paksa kaki diam sebelum mulai dash
         anim.SetFloat("moveX", 0);
         anim.SetFloat("moveZ", 0);
@@ -197,7 +212,6 @@ public class PlayerMovement : MonoBehaviour
         // 1. Arahkan karakter ke kursor tepat saat dash dimulai
         // Logika LookAtMouse() sudah ada, jadi karakter akan otomatis menghadap kursor.
         Vector3 dashDirection = transform.forward; 
-
         anim.SetTrigger("dash");
 
         // 2. Eksekusi Dash
@@ -210,6 +224,9 @@ public class PlayerMovement : MonoBehaviour
 
         isDashing = false;
         rb.linearVelocity = Vector3.zero;
+
+        //TAMBAHKAN INI: Aktifkan kembali tabrakan setelah meluncur
+        if (myCollider != null) myCollider.isTrigger = false;
 
         // 3. Masa Immune bisa lebih lama dari durasi gerak dash itu sendiri
         float extraImmuneTime = invincibilityDuration - dashDuration;
