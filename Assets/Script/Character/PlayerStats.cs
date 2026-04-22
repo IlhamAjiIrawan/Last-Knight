@@ -5,6 +5,9 @@ public class PlayerStats : MonoBehaviour
     // Singleton instance
     public static PlayerStats instance;
 
+    // Variabel baru untuk menyimpan referensi posisi fisik player
+    [HideInInspector] public Transform playerBody;
+    
     [Header("Status yang Disimpan")]
     public float currentHealth;
     public float maxHealth = 10f;
@@ -16,6 +19,7 @@ public class PlayerStats : MonoBehaviour
     public float energyRegenRate = 1f; // Energy pulih lebih cepat
     public float damage = 1f;
     public float speed = 5.0f;
+    public int gold = 0;
 
     void Awake()
     {

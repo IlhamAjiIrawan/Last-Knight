@@ -46,6 +46,12 @@ public class PlayerMovement : MonoBehaviour
         // Ambil speed dan damage dari stats
         speed = PlayerStats.instance.speed;
         attackDamage = PlayerStats.instance.damage;
+
+        // Daftarkan transform ksatria ini ke PlayerStats
+        if (PlayerStats.instance != null)
+        {
+            PlayerStats.instance.playerBody = this.transform;
+        }
     }
 
     void Update()

@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI mpText;
     public TextMeshProUGUI energyText;
+    public TextMeshProUGUI goldText;
 
     void Start()
     {
@@ -38,5 +39,11 @@ public class UIManager : MonoBehaviour
         healthText.text = Mathf.FloorToInt(PlayerStats.instance.currentHealth) + " / " + PlayerStats.instance.maxHealth;
         mpText.text = Mathf.FloorToInt(PlayerStats.instance.currentMP) + " / " + PlayerStats.instance.maxMP;
         energyText.text = Mathf.FloorToInt(PlayerStats.instance.currentEnergy) + " / " + PlayerStats.instance.maxEnergy;
+
+        // 3. Update Gold Text
+        if (goldText != null)
+        {
+            goldText.text = " " + PlayerStats.instance.gold.ToString();
+        }
     }
 }

@@ -7,6 +7,11 @@ public class Health : MonoBehaviour
     private Animator anim;
     private bool isDead = false;
 
+    [Header("Drop Settings")]
+    public GameObject itemToDrop; // Prefab mata uang
+    public int amountToDrop = 1;  // Jumlah item yang dijatuhkan
+    public float dropSpread = 0.5f; // Jarak pencaran antar koin agar tidak menumpuk di satu titik
+
     void Start()
     {
         if (gameObject.CompareTag("Player"))
@@ -64,6 +69,21 @@ public class Health : MonoBehaviour
 
         anim.ResetTrigger("getHit");
         anim.SetTrigger("die"); 
+
+        // LOGIKA DROP ITEM
+        if (itemToDrop != null)
+        {
+            for (int i = 0; i < amountToDrop; i++)
+            {
+                Vector3 randomPosition = new Vector3(
+                    Random.Range(-dropSpread, dropSpread),
+                    0,
+                    Random.Range(-dropSpread, dropSpread)
+                );
+                
+                Instantiate(itemToDrop, transform.position + Vector3.up + randomPosition, Quaternion.identity);
+            }
+        }
 
         // 1. Matikan script AI agar Update() berhenti berjalan
         if (GetComponent<EnemyAI>())
