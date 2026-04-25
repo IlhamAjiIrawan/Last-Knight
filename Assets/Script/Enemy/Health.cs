@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
+    public Slider healthSlider; // Tarik slider musuh ke sini
     public float maxHealth = 10f;
     private float currentHealth;
     private Animator anim;
@@ -25,12 +27,18 @@ public class Health : MonoBehaviour
             currentHealth = maxHealth; // Musuh tetap pakai nilai sendiri
         }
         anim = GetComponent<Animator>();
+
+        // Inisialisasi Slider
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = currentHealth;
+        }
     }
 
     public void TakeDamage(float damage)
     {
         if (isDead) return;
-
         // Cek status immune dari PlayerMovement
         if (gameObject.CompareTag("Player"))
         {
@@ -41,8 +49,15 @@ public class Health : MonoBehaviour
                 return; 
             }
         }
-
         currentHealth -= damage;
+
+        //Update Silder Enemy
+        if (gameObject.CompareTag("Enemy") && healthSlider != null)
+        {
+            // Munculkan health bar jika sebelumnya disembunyikan
+            healthSlider.gameObject.SetActive(true); 
+            healthSlider.value = currentHealth;
+        }
     
         // Jika Player, simpan perubahan nyawa ke PlayerStats
         if (gameObject.CompareTag("Player"))
@@ -66,6 +81,8 @@ public class Health : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+        // Sembunyikan health bar saat mati agar tidak melayang di mayat
+        if (healthSlider != null) healthSlider.gameObject.SetActive(false);
 
         anim.ResetTrigger("getHit");
         anim.SetTrigger("die"); 

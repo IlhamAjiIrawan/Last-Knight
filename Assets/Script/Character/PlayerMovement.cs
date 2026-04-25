@@ -75,6 +75,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         
+        if (anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack")) return;
         if (Input.GetMouseButtonDown(0)) Attack(false);
         if (Input.GetMouseButtonDown(1)) Attack(true);
     }
@@ -147,18 +148,21 @@ public class PlayerMovement : MonoBehaviour
 
     void Attack(bool isHeavy)
     {
-        // Tentukan range berdasarkan tipe serangan
-        float range = isHeavy ? heavyRange : swingRange;
-        
-        // LOGIKA DAMAGE: Jika heavy, maka damage dikali 2
-        float finalDamage = isHeavy ? (attackDamage * 2f) : attackDamage;
-        
         string triggerName = isHeavy ? "heavyAttack" : "attack";
-
-        // Memicu animasi
         anim.SetTrigger(triggerName);
+    }
 
-        // Cari musuh menggunakan attackPoint agar lebih akurat
+    public void Hit()
+    {
+        // 1. Cek apakah animasi yang sedang jalan adalah Heavy Attack atau Attack biasa
+        // Pastikan nama "HeavyAttack" dan "Attack" sesuai dengan nama STATE di Animator
+        bool isHeavy = anim.GetCurrentAnimatorStateInfo(0).IsName("HeavyAttack");
+
+        // 2. Tentukan range dan damage berdasarkan jenis animasi yang sedang aktif
+        float range = isHeavy ? heavyRange : swingRange;
+        float finalDamage = isHeavy ? (attackDamage * 2f) : attackDamage;
+
+        // 3. Deteksi musuh dalam radius attackPoint
         Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, range, enemyLayers);
 
         foreach (Collider enemy in hitEnemies)
@@ -168,19 +172,13 @@ public class PlayerMovement : MonoBehaviour
 
             if (isHeavy)
             {
-                // Heavy Attack (Sudut Sempit)
-                if (angleToEnemy < 60f) 
-                {
-                    ApplyDamage(enemy, finalDamage);
-                }
+                // Heavy Attack biasanya lebih sempit tapi jauh
+                if (angleToEnemy < 60f) ApplyDamage(enemy, finalDamage);
             }
             else
             {
-                // Swing Attack (Sudut Lebar)
-                if (angleToEnemy < swingAngle / 2) 
-                {
-                    ApplyDamage(enemy, finalDamage);
-                }
+                // Normal Attack (Swing) biasanya lebih lebar
+                if (angleToEnemy < swingAngle / 2) ApplyDamage(enemy, finalDamage);
             }
         }
     }
@@ -198,7 +196,11 @@ public class PlayerMovement : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position + transform.forward, attackRange);
+        // Gunakan attackPoint.position agar gizmo muncul di depan karakter, bukan di kaki
+        if (attackPoint != null)
+        {
+            Gizmos.DrawWireSphere(attackPoint.position, swingRange);
+        }
     }
 
     IEnumerator DashRoutine()
