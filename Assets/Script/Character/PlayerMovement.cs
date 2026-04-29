@@ -56,14 +56,12 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (isDashing) return; //KUNCI TOTAL: Jika sedang dash, jangan baca input apapun
+        if (isDashing) return;
         LookAtMouse();
         UpdateAnimation();
 
-        // Input Dash (Shift atau Spasi)
-        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Space)) && Time.time >= lastDashTime + dashCooldown)
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Space))
         {
-            // CEK APAKAH ENERGY CUKUP
             if (PlayerStats.instance.currentEnergy >= dashEnergyCost)
             {
                 PlayerStats.instance.currentEnergy -= dashEnergyCost; // Kurangi Energy
@@ -86,7 +84,6 @@ public class PlayerMovement : MonoBehaviour
 
         if (isAttacking)
         {
-            // Jika sedang menyerang, paksa parameter Move ke 0 agar animasi kaki diam
             anim.SetFloat("moveX", 0);
             anim.SetFloat("moveZ", 0);
             return; 
@@ -155,7 +152,6 @@ public class PlayerMovement : MonoBehaviour
     public void Hit()
     {
         // 1. Cek apakah animasi yang sedang jalan adalah Heavy Attack atau Attack biasa
-        // Pastikan nama "HeavyAttack" dan "Attack" sesuai dengan nama STATE di Animator
         bool isHeavy = anim.GetCurrentAnimatorStateInfo(0).IsName("HeavyAttack");
 
         // 2. Tentukan range dan damage berdasarkan jenis animasi yang sedang aktif
@@ -172,12 +168,10 @@ public class PlayerMovement : MonoBehaviour
 
             if (isHeavy)
             {
-                // Heavy Attack biasanya lebih sempit tapi jauh
-                if (angleToEnemy < 60f) ApplyDamage(enemy, finalDamage);
+                if (angleToEnemy < 90f) ApplyDamage(enemy, finalDamage);
             }
             else
             {
-                // Normal Attack (Swing) biasanya lebih lebar
                 if (angleToEnemy < swingAngle / 2) ApplyDamage(enemy, finalDamage);
             }
         }
@@ -196,7 +190,6 @@ public class PlayerMovement : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        // Gunakan attackPoint.position agar gizmo muncul di depan karakter, bukan di kaki
         if (attackPoint != null)
         {
             Gizmos.DrawWireSphere(attackPoint.position, swingRange);
@@ -209,8 +202,10 @@ public class PlayerMovement : MonoBehaviour
         isImmune = true; // Mulai masa immune
         lastDashTime = Time.time;
 
+        /*
         Collider myCollider = GetComponent<Collider>();
         if (myCollider != null) myCollider.isTrigger = true;
+        */
 
         // RESET ANIMASI: Paksa kaki diam sebelum mulai dash
         anim.SetFloat("moveX", 0);
@@ -234,7 +229,7 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
 
         //TAMBAHKAN INI: Aktifkan kembali tabrakan setelah meluncur
-        if (myCollider != null) myCollider.isTrigger = false;
+        //if (myCollider != null) myCollider.isTrigger = false;
 
         // 3. Masa Immune bisa lebih lama dari durasi gerak dash itu sendiri
         float extraImmuneTime = invincibilityDuration - dashDuration;
@@ -243,7 +238,6 @@ public class PlayerMovement : MonoBehaviour
             yield return new WaitForSeconds(extraImmuneTime);
         }
 
-        isImmune = false; // Masa immune selesai
-        Debug.Log("Immune Berakhir");
+        isImmune = false;
     }
 }
