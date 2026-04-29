@@ -2,10 +2,8 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
-    // Singleton instance
     public static PlayerStats instance;
 
-    // Variabel baru untuk menyimpan referensi posisi fisik player
     [HideInInspector] public Transform playerBody;
     
     [Header("Status yang Disimpan")]
@@ -20,6 +18,13 @@ public class PlayerStats : MonoBehaviour
     public float damage = 1f;
     public float speed = 5.0f;
     public int gold = 0;
+
+    [Header("Upgrade Costs")]
+    public int healthUpgradeCost = 1;
+    public int mpUpgradeCost = 1;
+    public int energyUpgradeCost = 50;
+    public int damageUpgradeCost = 1;
+    public int speedUpgradeCost = 20;
 
     void Awake()
     {

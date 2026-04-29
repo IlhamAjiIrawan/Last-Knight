@@ -56,6 +56,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (PlayerStats.instance != null && PlayerStats.instance.currentHealth <= 0) return;
         if (isDashing) return;
         LookAtMouse();
         UpdateAnimation();

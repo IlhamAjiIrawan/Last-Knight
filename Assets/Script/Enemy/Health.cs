@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class Health : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class Health : MonoBehaviour
     private float currentHealth;
     private Animator anim;
     private bool isDead = false;
+    public Action onDeath;
 
     [Header("Drop Settings")]
     public GameObject itemToDrop; // Prefab mata uang
@@ -81,6 +83,7 @@ public class Health : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+        if (onDeath != null) onDeath.Invoke();
         // Sembunyikan health bar saat mati agar tidak melayang di mayat
         if (healthSlider != null) healthSlider.gameObject.SetActive(false);
 
@@ -93,9 +96,9 @@ public class Health : MonoBehaviour
             for (int i = 0; i < amountToDrop; i++)
             {
                 Vector3 randomPosition = new Vector3(
-                    Random.Range(-dropSpread, dropSpread),
+                    UnityEngine.Random.Range(-dropSpread, dropSpread),
                     0,
-                    Random.Range(-dropSpread, dropSpread)
+                    UnityEngine.Random.Range(-dropSpread, dropSpread)
                 );
                 
                 Instantiate(itemToDrop, transform.position + Vector3.up + randomPosition, Quaternion.identity);
