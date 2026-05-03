@@ -42,12 +42,21 @@ public class WaveManager : MonoBehaviour {
     void OnEnemyDefeated() {
         enemiesRemaining--;
         if (enemiesRemaining <= 0) {
-            EndWave();
+            StartCoroutine(WaitBeforeOpeningShop());
         }
     }
 
+    IEnumerator WaitBeforeOpeningShop() {
+        Debug.Log("Wave Clear! Memberi waktu 5 detik untuk memungut item...");
+        
+        // Tunggu selama 5 detik (gameplay masih berjalan)
+        yield return new WaitForSeconds(5f);
+
+        // Setelah 5 detik, baru jalankan fungsi EndWave untuk buka shop
+        EndWave();
+    }
+
     void EndWave() {
-        Debug.Log("Wave Selesai!");
         shopPanel.SetActive(true); // Munculkan toko
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;

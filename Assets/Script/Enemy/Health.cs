@@ -44,6 +44,7 @@ public class Health : MonoBehaviour
         // Cek status immune dari PlayerMovement
         if (gameObject.CompareTag("Player"))
         {
+            currentHealth = PlayerStats.instance.currentHealth;
             PlayerMovement pm = GetComponent<PlayerMovement>();
             if (pm != null && pm.isImmune) // Menggunakan isImmune, bukan isDashing
             {

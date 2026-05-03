@@ -57,6 +57,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         if (PlayerStats.instance != null && PlayerStats.instance.currentHealth <= 0) return;
+        speed = PlayerStats.instance.speed;
         if (isDashing) return;
         LookAtMouse();
         UpdateAnimation();
@@ -152,6 +153,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Hit()
     {
+        attackDamage = PlayerStats.instance.damage;
         // 1. Cek apakah animasi yang sedang jalan adalah Heavy Attack atau Attack biasa
         bool isHeavy = anim.GetCurrentAnimatorStateInfo(0).IsName("HeavyAttack");
 
