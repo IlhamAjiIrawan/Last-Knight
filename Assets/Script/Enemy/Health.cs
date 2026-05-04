@@ -38,12 +38,34 @@ public class Health : MonoBehaviour
         }
     }
 
+    // Tambahkan ini di Health.cs
+    void Update()
+    {
+        if (gameObject.CompareTag("Player"))
+        {
+            // Selalu sinkronkan variabel lokal dengan data di PlayerStats
+            currentHealth = PlayerStats.instance.currentHealth;
+
+            // Jika player punya slider di atas kepalanya, update juga di sini
+            if (healthSlider != null) 
+            {
+                healthSlider.value = currentHealth;
+            }
+        }
+    }
+
     public void TakeDamage(float damage)
     {
         if (isDead) return;
         // Cek status immune dari PlayerMovement
         if (gameObject.CompareTag("Player"))
         {
+            if (PlayerStats.instance.isRageMode && UnityEngine.Random.value < 0.5f)
+            {
+                Debug.Log("Rage Evasion! Serangan meleset.");
+                return; 
+            }
+            
             currentHealth = PlayerStats.instance.currentHealth;
             PlayerMovement pm = GetComponent<PlayerMovement>();
             if (pm != null && pm.isImmune) // Menggunakan isImmune, bukan isDashing
@@ -66,7 +88,10 @@ public class Health : MonoBehaviour
         if (gameObject.CompareTag("Player"))
         {
             PlayerStats.instance.currentHealth = currentHealth;
-            anim.SetTrigger("getHit"); // Player tetap putar animasi hit
+            if (!PlayerStats.instance.isRageMode)
+            {
+                anim.SetTrigger("getHit");
+            }
         }
         else if (gameObject.CompareTag("Enemy"))
         {
@@ -85,8 +110,13 @@ public class Health : MonoBehaviour
         if (isDead) return;
         isDead = true;
         if (onDeath != null) onDeath.Invoke();
-        // Sembunyikan health bar saat mati agar tidak melayang di mayat
         if (healthSlider != null) healthSlider.gameObject.SetActive(false);
+        if (gameObject.CompareTag("Enemy"))
+        {
+            PlayerStats.instance.currentRage += 1f; // Tambah 1 poin
+            // Pastikan tidak melebihi 100
+            PlayerStats.instance.currentRage = Mathf.Clamp(PlayerStats.instance.currentRage, 0, 100);
+        }
 
         anim.ResetTrigger("getHit");
         anim.SetTrigger("die"); 

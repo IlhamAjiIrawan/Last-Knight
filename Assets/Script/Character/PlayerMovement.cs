@@ -34,6 +34,10 @@ public class PlayerMovement : MonoBehaviour
     public Transform attackPoint; // Titik di depan pedang
     public LayerMask enemyLayers; // Pilih layer "Enemy" di Inspector
 
+    [Header("Rage Mode Settings")]
+    public float rageDuration = 100f;
+    public float rageAnimSpeed = 1.5f; // Mempercepat animasi 1.5x
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -75,6 +79,11 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         
+        if (Input.GetKeyDown(KeyCode.Q) && PlayerStats.instance.currentRage >= PlayerStats.instance.maxRage && !PlayerStats.instance.isRageMode)
+            {
+                StartCoroutine(ActivateRageMode());
+            }
+
         if (anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack")) return;
         if (Input.GetMouseButtonDown(0)) Attack(false);
         if (Input.GetMouseButtonDown(1)) Attack(true);
@@ -186,6 +195,11 @@ public class PlayerMovement : MonoBehaviour
         if (enemyHealth != null)
         {
             enemyHealth.TakeDamage(damage);
+            if (PlayerStats.instance.isRageMode)
+            {
+                float healAmount = damage; // 10% lifesteal
+                PlayerStats.instance.currentHealth = Mathf.Clamp(PlayerStats.instance.currentHealth + healAmount, 0, PlayerStats.instance.maxHealth);
+            }
         }
     }
 
@@ -242,5 +256,38 @@ public class PlayerMovement : MonoBehaviour
         }
 
         isImmune = false;
+    }
+
+    IEnumerator ActivateRageMode()
+    {
+        PlayerStats.instance.isRageMode = true;
+        PlayerStats.instance.currentRage = 0; // Reset bar
+
+        // 1. Bonus Atribut: Speed & Animasi
+        float originalSpeed = speed;
+        speed *= 1.5f; // Lari lebih cepat
+        anim.speed = rageAnimSpeed; // Animasi serangan & jalan lebih cepat
+
+        Debug.Log("RAGE MODE AKTIF!");
+
+        // 2. Durasi Rage (100 detik)
+        float timer = rageDuration;
+        while (timer > 0)
+        {
+            timer -= Time.deltaTime;
+            // Opsional: Kamu bisa membuat bar rage berkurang pelan-pelan sebagai timer visual
+            PlayerStats.instance.currentRage = timer; 
+            yield return null;
+        }
+
+        // 3. Rage Selesai: Pinalti Kelelahan
+        PlayerStats.instance.isRageMode = false;
+        speed = originalSpeed;
+        anim.speed = 1f;
+
+        PlayerStats.instance.currentMP = 0;
+        PlayerStats.instance.currentEnergy = 0;
+        
+        Debug.Log("Rage berakhir. Player kelelahan!");
     }
 }

@@ -19,6 +19,11 @@ public class PlayerStats : MonoBehaviour
     public float speed = 5.0f;
     public int gold = 0;
 
+    [Header("Rage Settings")]
+    public float currentRage = 0f;
+    public float maxRage = 100f;
+    public bool isRageMode = false;
+
     [Header("Upgrade Costs")]
     public int healthUpgradeCost = 1;
     public int mpUpgradeCost = 1;
