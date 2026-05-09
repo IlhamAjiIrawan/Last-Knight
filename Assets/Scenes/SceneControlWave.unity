@@ -2671,6 +2671,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 159480925353948759, guid: fd017a916891f5f459b79eaa19703929, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a3ff3122fbd7c944fb0a297d41df0c8d, type: 2}
+    - target: {fileID: 1262950328858332847, guid: fd017a916891f5f459b79eaa19703929, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 62b226b5f997c1a4fb445aba9ed2276d, type: 2}
+    - target: {fileID: 4229410291684475638, guid: fd017a916891f5f459b79eaa19703929, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a3ff3122fbd7c944fb0a297d41df0c8d, type: 2}
     - target: {fileID: 5796791229361235780, guid: fd017a916891f5f459b79eaa19703929, type: 3}
       propertyPath: m_Name
       value: Ranger
@@ -2714,6 +2726,18 @@ PrefabInstance:
     - target: {fileID: 6573432764544941566, guid: fd017a916891f5f459b79eaa19703929, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790933821398388903, guid: fd017a916891f5f459b79eaa19703929, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a3ff3122fbd7c944fb0a297d41df0c8d, type: 2}
+    - target: {fileID: 7282387646836972795, guid: fd017a916891f5f459b79eaa19703929, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 62b226b5f997c1a4fb445aba9ed2276d, type: 2}
+    - target: {fileID: 7748193752388050398, guid: fd017a916891f5f459b79eaa19703929, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
