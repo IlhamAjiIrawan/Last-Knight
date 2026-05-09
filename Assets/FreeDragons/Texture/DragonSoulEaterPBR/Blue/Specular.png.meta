@@ -3,7 +3,7 @@ guid: b4dc54372ed4bf3498a8438d8abcbd27
 TextureImporter:
   fileIDToRecycleName: {}
   externalObjects: {}
-  serializedVersion: 7
+  serializedVersion: 9
   mipmaps:
     mipMapMode: 0
     enableMipMap: 1
@@ -99,8 +99,8 @@ TextureImporter:
   assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
-  productId: 77121
-  packageName: Dragon the Terror Bringer and Dragon Boar
-  packageVersion: 1.1
+  productId: 78923
+  packageName: Four Evil Dragons Pack PBR
+  packageVersion: 1.3
   assetPath: Assets/FreeDragons/Texture/DragonSoulEaterPBR/Blue/Specular.png
-  uploadId: 345602
+  uploadId: 422264

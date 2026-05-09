@@ -3,7 +3,7 @@ guid: 9f60d4f108b182844b24440a1ca4af5b
 TextureImporter:
   fileIDToRecycleName: {}
   externalObjects: {}
-  serializedVersion: 7
+  serializedVersion: 9
   mipmaps:
     mipMapMode: 0
     enableMipMap: 1
@@ -99,8 +99,8 @@ TextureImporter:
   assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
-  productId: 77121
-  packageName: Dragon the Terror Bringer and Dragon Boar
-  packageVersion: 1.1
+  productId: 78923
+  packageName: Four Evil Dragons Pack PBR
+  packageVersion: 1.3
   assetPath: Assets/FreeDragons/Texture/DragonSoulEaterPBR/purple/Normal.png
-  uploadId: 345602
+  uploadId: 422264

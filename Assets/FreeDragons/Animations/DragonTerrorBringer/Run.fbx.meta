@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 9700edab3a23d7d408e78a7cb99cf41d
+guid: 1bd6660a3bd1c5342942bcb54ed1d65a
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
@@ -294,8 +294,8 @@ ModelImporter:
   assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
-  productId: 79398
-  packageName: Evil Dragon Pack HP
-  packageVersion: 1.2
+  productId: 78923
+  packageName: Four Evil Dragons Pack PBR
+  packageVersion: 1.3
   assetPath: Assets/FreeDragons/Animations/DragonTerrorBringer/Run.fbx
-  uploadId: 422271
+  uploadId: 422264
