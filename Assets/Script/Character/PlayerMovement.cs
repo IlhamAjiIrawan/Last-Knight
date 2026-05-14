@@ -38,6 +38,13 @@ public class PlayerMovement : MonoBehaviour
     public float rageDuration = 100f;
     public float rageAnimSpeed = 1.5f; // Mempercepat animasi 1.5x
 
+    [Header("VFX Settings")]
+    public GameObject normalSlashPrefab;
+    public GameObject heavySlashPrefab;
+    public Transform normalSpawnPoint;
+    public Transform heavySpawnPoint;
+    public GameObject impactVFXPrefab;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -192,6 +199,27 @@ public class PlayerMovement : MonoBehaviour
     void ApplyDamage(Collider enemy, float damage)
     {
         Health enemyHealth = enemy.GetComponent<Health>();
+
+        if (impactVFXPrefab != null)
+        {
+            Vector3 spawnPos = enemy.transform.position + new Vector3(0, 1f, 0);
+            GameObject impact = Instantiate(impactVFXPrefab, spawnPos, Quaternion.identity);
+            
+            if (PlayerStats.instance != null && PlayerStats.instance.isRageMode)
+            {
+                // Mencari Particle System di objek impact atau anak-anaknya
+                ParticleSystem[] allParticles = impact.GetComponentsInChildren<ParticleSystem>();
+                
+                foreach (ParticleSystem ps in allParticles)
+                {
+                    var main = ps.main;
+                    main.startColor = Color.red; 
+                }
+            }
+            
+            Destroy(impact, 0.8f);
+        }
+
         if (enemyHealth != null)
         {
             enemyHealth.TakeDamage(damage);
@@ -210,6 +238,38 @@ public class PlayerMovement : MonoBehaviour
         if (attackPoint != null)
         {
             Gizmos.DrawWireSphere(attackPoint.position, swingRange);
+        }
+    }
+
+    public void TriggerNormalSlash()
+    {
+        SpawnVFX(normalSlashPrefab, normalSpawnPoint);
+    }
+
+    public void TriggerHeavySlash()
+    {
+        SpawnVFX(heavySlashPrefab, heavySpawnPoint);
+    }
+
+    // Fungsi internal agar kode tidak duplikat
+    private void SpawnVFX(GameObject prefab, Transform spawnPoint)
+    {
+        if (prefab != null && spawnPoint != null)
+        {
+            GameObject vfx = Instantiate(prefab, spawnPoint.position, spawnPoint.rotation);
+            
+            // Tambahkan logika warna merah di sini
+            if (PlayerStats.instance != null && PlayerStats.instance.isRageMode)
+            {
+                var ps = vfx.GetComponentInChildren<ParticleSystem>();
+                if (ps != null)
+                {
+                    var main = ps.main;
+                    main.startColor = Color.red;
+                }
+            }
+
+            Destroy(vfx, 1.0f);
         }
     }
 
