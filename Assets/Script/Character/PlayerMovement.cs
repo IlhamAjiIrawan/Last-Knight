@@ -31,12 +31,12 @@ public class PlayerMovement : MonoBehaviour
     [Header("Energy Costs")]
     public float dashEnergyCost = 5f;
 
-    public Transform attackPoint; // Titik di depan pedang
-    public LayerMask enemyLayers; // Pilih layer "Enemy" di Inspector
+    public Transform attackPoint;
+    public LayerMask enemyLayers;
 
     [Header("Rage Mode Settings")]
     public float rageDuration = 100f;
-    public float rageAnimSpeed = 1.5f; // Mempercepat animasi 1.5x
+    public float rageAnimSpeed = 1.5f;
 
     [Header("VFX Settings")]
     public GameObject normalSlashPrefab;
@@ -45,10 +45,14 @@ public class PlayerMovement : MonoBehaviour
     public Transform heavySpawnPoint;
     public GameObject impactVFXPrefab;
 
+    [Header("Rage VFX Settings")]
+    public GameObject rageAuraPrefab;
+    private GameObject activeAura;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        anim = GetComponent<Animator>(); // Ambil komponen Animator
+        anim = GetComponent<Animator>();
         mainCamera = Camera.main;
 
         // TAMBAHKAN INI: Mengunci rotasi X dan Z agar karakter tidak terguling
@@ -156,7 +160,6 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            // Pastikan kecepatan linear di-reset saat tidak ada input agar tidak "meluncur"
             rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
         }
     }
@@ -321,12 +324,21 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator ActivateRageMode()
     {
         PlayerStats.instance.isRageMode = true;
-        PlayerStats.instance.currentRage = 0; // Reset bar
+        PlayerStats.instance.currentRage = 0;
 
         // 1. Bonus Atribut: Speed & Animasi
         float originalSpeed = speed;
-        speed *= 1.5f; // Lari lebih cepat
-        anim.speed = rageAnimSpeed; // Animasi serangan & jalan lebih cepat
+        speed *= 1.5f;
+        anim.speed = rageAnimSpeed;
+
+        if (rageAuraPrefab != null && activeAura == null)
+        {
+            // Munculkan sebagai child dari Player (transform) agar aura mengikuti gerakan player
+            activeAura = Instantiate(rageAuraPrefab, transform.position, transform.rotation, transform);
+            
+            // Sedikit offset ke atas agar posisi aura pas di badan, bukan terkubur di lantai
+            activeAura.transform.localPosition = new Vector3(0, 0.2f, 0);
+        }
 
         Debug.Log("RAGE MODE AKTIF!");
 
@@ -335,9 +347,22 @@ public class PlayerMovement : MonoBehaviour
         while (timer > 0)
         {
             timer -= Time.deltaTime;
-            // Opsional: Kamu bisa membuat bar rage berkurang pelan-pelan sebagai timer visual
             PlayerStats.instance.currentRage = timer; 
             yield return null;
+        }
+
+        if (activeAura != null)
+        {
+            ParticleSystem[] particles = activeAura.GetComponentsInChildren<ParticleSystem>();
+            foreach (ParticleSystem ps in particles)
+            {
+                var emission = ps.emission;
+                emission.enabled = false; // Hentikan partikel baru agar memudar halus
+            }
+            
+            // Hancurkan objek aura sepenuhnya setelah 1 detik (menunggu sisa partikel hilang)
+            Destroy(activeAura, 1f);
+            activeAura = null; // Kosongkan referensi
         }
 
         // 3. Rage Selesai: Pinalti Kelelahan
