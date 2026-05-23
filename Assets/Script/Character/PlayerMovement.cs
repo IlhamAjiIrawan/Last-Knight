@@ -48,6 +48,12 @@ public class PlayerMovement : MonoBehaviour
     [Header("Rage VFX Settings")]
     public GameObject rageAuraPrefab;
     private GameObject activeAura;
+    
+    [Header("Queue Combo Settings")]
+    public int comboStep = 0;          // Mencatat tahapan animasi yang sedang aktif (0-3)
+    public int clickQueueCount = 0;    // Mencatat jumlah klik yang berhasil ditampung (Maksimal 3)
+    public float knockbackForce = 12f;
+    private float lastAttackInputTime;
 
     void Start()
     {
@@ -74,6 +80,7 @@ public class PlayerMovement : MonoBehaviour
         if (PlayerStats.instance != null && PlayerStats.instance.currentHealth <= 0) return;
         speed = PlayerStats.instance.speed;
         if (isDashing) return;
+        
         LookAtMouse();
         UpdateAnimation();
 
@@ -81,23 +88,40 @@ public class PlayerMovement : MonoBehaviour
         {
             if (PlayerStats.instance.currentEnergy >= dashEnergyCost)
             {
-                PlayerStats.instance.currentEnergy -= dashEnergyCost; // Kurangi Energy
+                PlayerStats.instance.currentEnergy -= dashEnergyCost;
                 StartCoroutine(DashRoutine());
-            }
-            else
-            {
-                Debug.Log("Energy tidak cukup untuk Dash!");
             }
         }
         
         if (Input.GetKeyDown(KeyCode.Q) && PlayerStats.instance.currentRage >= PlayerStats.instance.maxRage && !PlayerStats.instance.isRageMode)
+        {
+            StartCoroutine(ActivateRageMode());
+        }
+
+        // --- SISTEM ANTREAN KOMBO BARU ---
+        if (Input.GetMouseButtonDown(0))
+        {
+            bool isCurrentlyAttacking = anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
+
+            // 1. Simpan klik ke dalam antrean (Maksimal 3 klik)
+            if (clickQueueCount < 3)
             {
-                StartCoroutine(ActivateRageMode());
+                clickQueueCount++;
+                Debug.Log("Klik masuk antrean! Total saat ini: " + clickQueueCount);
             }
 
-        if (anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack")) return;
-        if (Input.GetMouseButtonDown(0)) Attack(false);
-        if (Input.GetMouseButtonDown(1)) Attack(true);
+            // 2. Jika karakter sedang diam (tidak menyerang), langsung jalankan hit pertama
+            if (!isCurrentlyAttacking && comboStep == 0)
+            {
+                comboStep = 1;
+                PlayComboAnimation(comboStep);
+            }
+        }
+
+        if (Input.GetMouseButtonDown(1) && !anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack")) 
+        {
+            HeavyAttack();
+        }
     }
 
     void UpdateAnimation()
@@ -115,12 +139,8 @@ public class PlayerMovement : MonoBehaviour
         float z = Input.GetAxisRaw("Vertical");
 
         Vector3 moveInput = new Vector3(x, 0f, z).normalized;
-
-        // Sangat Penting: Ubah arah gerak dunia menjadi arah lokal karakter
-        // Agar jika kita jalan mundur sambil melihat mouse, animasinya pun mundur
         Vector3 localMove = transform.InverseTransformDirection(moveInput);
 
-        // Kirim nilai ke Parameter Animator (moveX dan moveZ harus sama persis namanya)
         anim.SetFloat("moveX", localMove.x, 0.1f, Time.deltaTime);
         anim.SetFloat("moveZ", localMove.z, 0.1f, Time.deltaTime);
     }
@@ -144,8 +164,6 @@ public class PlayerMovement : MonoBehaviour
 
         if (isAttacking || isDashing)
         {
-            // Hentikan semua kecepatan gerak saat menyerang
-            //rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
             return;
         }
         
@@ -155,7 +173,15 @@ public class PlayerMovement : MonoBehaviour
 
         if (moveInput.magnitude >= 0.1f)
         {
-            Vector3 targetPosition = rb.position + moveInput * speed * Time.fixedDeltaTime;
+            Vector3 localMove = transform.InverseTransformDirection(moveInput);
+            float currentSpeed = speed;
+
+            if (localMove.z <= 0.1f)
+            {
+                currentSpeed *= 0.7f;
+            }
+
+            Vector3 targetPosition = rb.position + moveInput * currentSpeed * Time.fixedDeltaTime;
             rb.MovePosition(targetPosition);
         }
         else
@@ -164,10 +190,92 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void PlayComboAnimation(int step)
+    {
+        anim.ResetTrigger("attack1");
+        anim.ResetTrigger("attack2");
+        anim.ResetTrigger("attack3");
+
+        anim.SetTrigger("attack" + step);
+        lastAttackInputTime = Time.time;
+    }
+
+    public void CheckComboQueue()
+    {
+        if (clickQueueCount > comboStep)
+        {
+            comboStep++; 
+            PlayComboAnimation(comboStep); 
+        }
+        else
+        {
+            ResetCombo();
+        }
+    }
+
+    /*
     void Attack(bool isHeavy)
     {
-        string triggerName = isHeavy ? "heavyAttack" : "attack";
-        anim.SetTrigger(triggerName);
+        attackPressedDuringAnimation = false;
+        canClick = true;
+        
+        if (isHeavy)
+        {
+            anim.SetTrigger("heavyAttack");
+        }
+        else
+        {
+            comboStep = 1;
+
+            anim.ResetTrigger("attack1");
+            anim.ResetTrigger("attack2");
+            anim.ResetTrigger("attack3");
+
+            anim.SetTrigger("attack1"); 
+            lastAttackInputTime = Time.time;
+        }
+    }
+    */
+
+    void HeavyAttack()
+    {
+        // 1. Picu animasi Heavy Attack
+        anim.SetTrigger("heavyAttack");
+
+        // 2. Reset antrean klik kiri agar kombo tidak kacau setelah klik kanan
+        ResetCombo(); 
+
+        // 3. (Opsional) Tempat menaruh logika MP kamu nanti:
+        // if (PlayerStats.instance != null) {
+        //     PlayerStats.instance.currentMP -= heavyAttackMPCost;
+        // }
+        
+        Debug.Log("Heavy Attack Dieksekusi!");
+    }
+
+    /*
+    void ExecuteCombo()
+    {
+        comboStep++;
+        if (comboStep > 3) comboStep = 1;
+
+        canClick = false;
+
+        anim.ResetTrigger("attack1");
+        anim.ResetTrigger("attack2");
+        anim.ResetTrigger("attack3");
+
+        // Tembakkan trigger kombo lanjutan
+        anim.SetTrigger("attack" + comboStep);
+        lastAttackInputTime = Time.time;
+    }
+    */
+
+    public void ResetCombo()
+    {
+        clickQueueCount = 0;
+        comboStep = 0;
+        Debug.Log("Antrean kombo dibersihkan. Kembali ke kondisi normal.");
     }
 
     public void Hit()
@@ -183,6 +291,8 @@ public class PlayerMovement : MonoBehaviour
         // 3. Deteksi musuh dalam radius attackPoint
         Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, range, enemyLayers);
 
+        bool isAttack3 = (comboStep == 3);
+
         foreach (Collider enemy in hitEnemies)
         {
             Vector3 directionToEnemy = (enemy.transform.position - transform.position).normalized;
@@ -190,16 +300,16 @@ public class PlayerMovement : MonoBehaviour
 
             if (isHeavy)
             {
-                if (angleToEnemy < 90f) ApplyDamage(enemy, finalDamage);
+                if (angleToEnemy < 120f) ApplyDamage(enemy, finalDamage, false);
             }
             else
             {
-                if (angleToEnemy < swingAngle / 2) ApplyDamage(enemy, finalDamage);
+                if (angleToEnemy < swingAngle / 2) ApplyDamage(enemy, finalDamage, isAttack3);
             }
         }
     }
 
-    void ApplyDamage(Collider enemy, float damage)
+    void ApplyDamage(Collider enemy, float damage, bool causeKnockback)
     {
         Health enemyHealth = enemy.GetComponent<Health>();
 
@@ -230,6 +340,19 @@ public class PlayerMovement : MonoBehaviour
             {
                 float healAmount = damage; // 10% lifesteal
                 PlayerStats.instance.currentHealth = Mathf.Clamp(PlayerStats.instance.currentHealth + healAmount, 0, PlayerStats.instance.maxHealth);
+            }
+        }
+
+        if (causeKnockback)
+        {
+            EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+            if (enemyAI != null)
+            {
+                // Hitung arah dorongan (dari posisi player ke posisi musuh)
+                Vector3 knockbackDirection = (enemy.transform.position - transform.position).normalized;
+                knockbackDirection.y = 0; // Kunci sumbu Y agar musuh tidak melayang ke langit
+
+                enemyAI.TakeKnockback(knockbackDirection, knockbackForce);
             }
         }
     }
@@ -281,6 +404,7 @@ public class PlayerMovement : MonoBehaviour
         isDashing = true;
         isImmune = true; // Mulai masa immune
         lastDashTime = Time.time;
+        ResetCombo();
 
         /*
         Collider myCollider = GetComponent<Collider>();

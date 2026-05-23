@@ -24,6 +24,14 @@ public class EnemyAI : MonoBehaviour
     private Animator anim;
     private float distanceToPlayer;
 
+    [Header("Patrol Settings")]
+    public float patrolRadius = 8f;     // Seberapa jauh musuh bisa memilih titik tujuan baru
+    public float patrolWaitTime = 1f;    // Waktu tunggu di titik tujuan sebelum mencari titik baru
+    private float patrolTimer;
+    private Vector3 patrolTarget;
+    private bool hasPatrolTarget = false;
+    private bool isKnockedBack = false;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -39,7 +47,7 @@ public class EnemyAI : MonoBehaviour
     void Update()
     {
         // Jika mati atau sedang tertegun (stun), jangan lakukan apapun
-        if (isDead || isStunned || isPreparingAttack) return;
+        if (isDead || isStunned || isPreparingAttack || isKnockedBack) return;
 
         distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
@@ -52,17 +60,72 @@ public class EnemyAI : MonoBehaviour
             }
             else
             {
-                StopMoving(); // Diam di tempat sambil menunggu cooldown
+                StopMoving();
             }
         }
         else if (distanceToPlayer <= chaseRange)
         {
+            hasPatrolTarget = false;
             ChasePlayer();
         }
         else
         {
-            StopMoving();
+            Patrol();
         }
+    }
+
+    void Patrol()
+    {
+        if (!agent.isActiveAndEnabled || !agent.isOnNavMesh) return;
+
+        // 1. Jika belum punya titik tujuan, cari titik acak baru
+        if (!hasPatrolTarget)
+        {
+            patrolTarget = GetRandomPoint(transform.position, patrolRadius);
+            agent.SetDestination(patrolTarget);
+            agent.isStopped = false;
+            anim.SetBool("isMoving", true);
+            hasPatrolTarget = true;
+            patrolTimer = 0f;
+            return; // KELUAR DULU dari fungsi agar NavMesh punya waktu menghitung jalur di frame berikutnya
+        }
+
+        // 2. Tambahan Cek: Pastikan NavMesh tidak sedang menghitung jalur (Path Pending)
+        if (agent.pathPending) return;
+
+        // 3. Cek apakah sudah mendekati titik tujuan
+        if (agent.remainingDistance <= agent.stoppingDistance + 0.3f)
+        {
+            // Pastikan animasi bergerak mati saat sampai
+            if (anim.GetBool("isMoving"))
+            {
+                anim.SetBool("isMoving", false);
+                agent.isStopped = true;
+            }
+
+            // Jalankan timer tunggu di tempat
+            patrolTimer += Time.deltaTime;
+            if (patrolTimer >= patrolWaitTime)
+            {
+                hasPatrolTarget = false; // Reset ke false agar frame berikutnya mencari titik baru!
+            }
+        }
+    }
+
+    Vector3 GetRandomPoint(Vector3 center, float radius)
+    {
+        // Cari posisi acak di dalam lingkaran khayal
+        Vector3 randomDirection = Random.insideUnitSphere * radius;
+        randomDirection += center;
+
+        NavMeshHit navHit;
+        // Cari titik terdekat yang valid di dalam NavMesh berdasarkan posisi acak tadi
+        if (NavMesh.SamplePosition(randomDirection, out navHit, radius, NavMesh.AllAreas))
+        {
+            return navHit.position;
+        }
+
+        return center; // Kembalikan ke posisi awal jika gagal menemukan titik valid
     }
 
     void ChasePlayer()
@@ -111,9 +174,8 @@ public class EnemyAI : MonoBehaviour
     public void TakeHit()
     {
         if (isDead) return;
-        
-        // Jika sedang ancang-ancang menyerang lalu dipukul, batalkan serangannya!
         isPreparingAttack = false; 
+        hasPatrolTarget = false;
         
         StopCoroutine("StunRoutine");
         StopCoroutine("AttackRoutine"); // Batalkan serangan jika kena pukul
@@ -143,6 +205,48 @@ public class EnemyAI : MonoBehaviour
         {
             agent.isStopped = false;
         }
+    }
+
+    public void TakeKnockback(Vector3 direction, float force)
+    {
+        if (isDead) return;
+
+        isPreparingAttack = false;
+        hasPatrolTarget = false;
+
+        StopAllCoroutines(); // Hentikan patroli, stun lama, atau serangan yang sedang bersiap
+        StartCoroutine(KnockbackRoutine(direction, force));
+    }
+
+    IEnumerator KnockbackRoutine(Vector3 direction, float force)
+    {
+        isKnockedBack = true;
+
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true; // Hentikan perintah gerak AI
+        }
+
+        anim.SetTrigger("getHit"); // Putar animasi terkejut/terluka
+
+        float duration = 0.2f; // Durasi pentalan (singkat saja agar terasa responsif)
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+            {
+                // Dorong posisi musuh menggunakan agent.Move secara halus
+                agent.Move(direction * force * Time.deltaTime);
+            }
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        isKnockedBack = false;
+
+        // Setelah selesai terpental, berikan efek Stun/diam sejenak agar player bisa mengejar
+        StartCoroutine("StunRoutine");
     }
 
     // Logic serangan baru dengan Coroutine untuk Delay
