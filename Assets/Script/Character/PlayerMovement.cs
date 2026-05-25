@@ -15,6 +15,14 @@ public class PlayerMovement : MonoBehaviour
     public float heavyRange = 1.5f;
     [Range(0, 180)] public float swingAngle = 120f; // Area setengah lingkaran
 
+    [Header("Block Settings")]
+    public float maxBlockGauge = 5f;          // Batas maksimum pertahanan
+    public float currentBlockGauge;             // Nilai pertahanan saat ini
+    public float blockRegenRate = 1f;          // Kecepatan pulih pertahanan per detik
+    public float blockSpeedMultiplier = 0.5f;   // Kecepatan gerak saat blok (40% dari speed normal)
+    public bool isBlocking { get; private set; }
+    private bool isBlockBroken = false;
+    
     [Header("Dash Settings")]
     public float dashSpeed = 20f;
     public float dashDuration = 0.2f;
@@ -39,9 +47,13 @@ public class PlayerMovement : MonoBehaviour
     public float rageAnimSpeed = 1.5f;
 
     [Header("VFX Settings")]
-    public GameObject normalSlashPrefab;
+    public GameObject slashPrefabCombo1;
+    public GameObject slashPrefabCombo2;
+    public GameObject slashPrefabCombo3;
     public GameObject heavySlashPrefab;
-    public Transform normalSpawnPoint;
+    public Transform spawnPointCombo1;
+    public Transform spawnPointCombo2;
+    public Transform spawnPointCombo3;
     public Transform heavySpawnPoint;
     public GameObject impactVFXPrefab;
 
@@ -67,6 +79,7 @@ public class PlayerMovement : MonoBehaviour
         // Ambil speed dan damage dari stats
         speed = PlayerStats.instance.speed;
         attackDamage = PlayerStats.instance.damage;
+        currentBlockGauge = maxBlockGauge;
 
         // Daftarkan transform ksatria ini ke PlayerStats
         if (PlayerStats.instance != null)
@@ -84,6 +97,37 @@ public class PlayerMovement : MonoBehaviour
         LookAtMouse();
         UpdateAnimation();
 
+        // --- INPUT BLOCK (KLIK TENGAH MOUSE / BUTTON 2) ---
+        bool isCurrentlyAttacking = anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
+        
+        // Player bisa blok jika menekan klik tengah, tidak sedang dash/attack, dan tameng tidak sedang hancur
+        if (Input.GetMouseButton(2) && !isDashing && !isCurrentlyAttacking && !isBlockBroken)
+        {
+            isBlocking = true;
+            ResetCombo(); // Batalkan antrean kombo saat mendadak bertahan
+        }
+        else
+        {
+            isBlocking = false;
+        }
+
+        // --- LOGIKA PEMULIHAN BLOCK GAUGE ---
+        if (!isBlocking)
+        {
+            currentBlockGauge += blockRegenRate * Time.deltaTime;
+            currentBlockGauge = Mathf.Clamp(currentBlockGauge, 0f, maxBlockGauge);
+
+            // Jika block sempat hancur, beri syarat harus pulih minimal 20% baru bisa dipake lagi
+            if (isBlockBroken && currentBlockGauge >= (maxBlockGauge * 0.2f))
+            {
+                isBlockBroken = false;
+                Debug.Log("Pertahanan siap digunakan kembali.");
+            }
+        }
+
+        // Sinkronisasi parameter ke Animator (Buat parameter Bool bernama "isBlocking" di Unity Animator)
+        anim.SetBool("isBlocking", isBlocking);
+
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Space))
         {
             if (PlayerStats.instance.currentEnergy >= dashEnergyCost)
@@ -98,19 +142,15 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(ActivateRageMode());
         }
 
-        // --- SISTEM ANTREAN KOMBO BARU ---
-        if (Input.GetMouseButtonDown(0))
+        // --- MODIFIKASI: Hanya bisa menyerang jika TIDAK sedang memblokir ---
+        if (Input.GetMouseButtonDown(0) && !isBlocking)
         {
-            bool isCurrentlyAttacking = anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
-
-            // 1. Simpan klik ke dalam antrean (Maksimal 3 klik)
             if (clickQueueCount < 3)
             {
                 clickQueueCount++;
                 Debug.Log("Klik masuk antrean! Total saat ini: " + clickQueueCount);
             }
 
-            // 2. Jika karakter sedang diam (tidak menyerang), langsung jalankan hit pertama
             if (!isCurrentlyAttacking && comboStep == 0)
             {
                 comboStep = 1;
@@ -118,7 +158,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(1) && !anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack")) 
+        if (Input.GetMouseButtonDown(1) && !isBlocking && !isCurrentlyAttacking) 
         {
             HeavyAttack();
         }
@@ -176,6 +216,11 @@ public class PlayerMovement : MonoBehaviour
             Vector3 localMove = transform.InverseTransformDirection(moveInput);
             float currentSpeed = speed;
 
+            if (isBlocking)
+            {
+                currentSpeed *= blockSpeedMultiplier;
+            }
+
             if (localMove.z <= 0.1f)
             {
                 currentSpeed *= 0.7f;
@@ -213,63 +258,12 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    /*
-    void Attack(bool isHeavy)
-    {
-        attackPressedDuringAnimation = false;
-        canClick = true;
-        
-        if (isHeavy)
-        {
-            anim.SetTrigger("heavyAttack");
-        }
-        else
-        {
-            comboStep = 1;
-
-            anim.ResetTrigger("attack1");
-            anim.ResetTrigger("attack2");
-            anim.ResetTrigger("attack3");
-
-            anim.SetTrigger("attack1"); 
-            lastAttackInputTime = Time.time;
-        }
-    }
-    */
-
     void HeavyAttack()
     {
-        // 1. Picu animasi Heavy Attack
         anim.SetTrigger("heavyAttack");
-
-        // 2. Reset antrean klik kiri agar kombo tidak kacau setelah klik kanan
         ResetCombo(); 
-
-        // 3. (Opsional) Tempat menaruh logika MP kamu nanti:
-        // if (PlayerStats.instance != null) {
-        //     PlayerStats.instance.currentMP -= heavyAttackMPCost;
-        // }
-        
         Debug.Log("Heavy Attack Dieksekusi!");
     }
-
-    /*
-    void ExecuteCombo()
-    {
-        comboStep++;
-        if (comboStep > 3) comboStep = 1;
-
-        canClick = false;
-
-        anim.ResetTrigger("attack1");
-        anim.ResetTrigger("attack2");
-        anim.ResetTrigger("attack3");
-
-        // Tembakkan trigger kombo lanjutan
-        anim.SetTrigger("attack" + comboStep);
-        lastAttackInputTime = Time.time;
-    }
-    */
 
     public void ResetCombo()
     {
@@ -282,7 +276,8 @@ public class PlayerMovement : MonoBehaviour
     {
         attackDamage = PlayerStats.instance.damage;
         // 1. Cek apakah animasi yang sedang jalan adalah Heavy Attack atau Attack biasa
-        bool isHeavy = anim.GetCurrentAnimatorStateInfo(0).IsName("HeavyAttack");
+        //bool isHeavy = anim.GetCurrentAnimatorStateInfo(0).IsName("HeavyAttack");
+        bool isHeavy = (comboStep == 0);
 
         // 2. Tentukan range dan damage berdasarkan jenis animasi yang sedang aktif
         float range = isHeavy ? heavyRange : swingRange;
@@ -300,7 +295,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (isHeavy)
             {
-                if (angleToEnemy < 120f) ApplyDamage(enemy, finalDamage, false);
+                if (angleToEnemy < 120f) ApplyDamage(enemy, finalDamage, true);
             }
             else
             {
@@ -320,7 +315,6 @@ public class PlayerMovement : MonoBehaviour
             
             if (PlayerStats.instance != null && PlayerStats.instance.isRageMode)
             {
-                // Mencari Particle System di objek impact atau anak-anaknya
                 ParticleSystem[] allParticles = impact.GetComponentsInChildren<ParticleSystem>();
                 
                 foreach (ParticleSystem ps in allParticles)
@@ -369,7 +363,33 @@ public class PlayerMovement : MonoBehaviour
 
     public void TriggerNormalSlash()
     {
-        SpawnVFX(normalSlashPrefab, normalSpawnPoint);
+        GameObject selectedPrefab = null;
+        Transform selectedSpawnPoint = null;
+
+        switch (comboStep)
+        {
+            case 1:
+                selectedPrefab = slashPrefabCombo1;
+                selectedSpawnPoint = spawnPointCombo1;
+                break;
+            case 2:
+                selectedPrefab = slashPrefabCombo2;
+                selectedSpawnPoint = spawnPointCombo2;
+                break;
+            case 3:
+                selectedPrefab = slashPrefabCombo3;
+                selectedSpawnPoint = spawnPointCombo3;
+                break;
+            default:
+                selectedPrefab = slashPrefabCombo1;
+                selectedSpawnPoint = spawnPointCombo1;
+                break;
+        }
+
+        if (selectedPrefab != null && selectedSpawnPoint != null)
+        {
+            SpawnVFX(selectedPrefab, selectedSpawnPoint);
+        }
     }
 
     public void TriggerHeavySlash()
@@ -399,6 +419,25 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public bool AbsorbDamageWithBlock(float amount)
+    {
+        if (!isBlocking || isBlockBroken) return false; // Gagal memblokir jika sedang tidak pasang kuda-kuda
+
+        currentBlockGauge -= amount;
+        Debug.Log("Serangan ditahan! Sisa kekuatan block: " + currentBlockGauge);
+
+        if (currentBlockGauge <= 0)
+        {
+            currentBlockGauge = 0;
+            isBlocking = false;
+            isBlockBroken = true;
+            anim.SetTrigger("blockBreak"); // Jalankan trigger animasi pertahanan jebol jika ada
+            Debug.Log("BLOCK BREAK! Pertahanan hancur total.");
+        }
+
+        return true; // Sukses memblokir damage sepenuhnya
+    }
+
     IEnumerator DashRoutine()
     {
         isDashing = true;
@@ -406,18 +445,10 @@ public class PlayerMovement : MonoBehaviour
         lastDashTime = Time.time;
         ResetCombo();
 
-        /*
-        Collider myCollider = GetComponent<Collider>();
-        if (myCollider != null) myCollider.isTrigger = true;
-        */
-
-        // RESET ANIMASI: Paksa kaki diam sebelum mulai dash
         anim.SetFloat("moveX", 0);
         anim.SetFloat("moveZ", 0);
-        anim.SetBool("isWalking", false); // Jika kamu punya parameter ini
+        anim.SetBool("isWalking", false);
 
-        // 1. Arahkan karakter ke kursor tepat saat dash dimulai
-        // Logika LookAtMouse() sudah ada, jadi karakter akan otomatis menghadap kursor.
         Vector3 dashDirection = transform.forward; 
         anim.SetTrigger("dash");
 
@@ -467,13 +498,16 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("RAGE MODE AKTIF!");
 
         // 2. Durasi Rage (100 detik)
-        float timer = rageDuration;
+        float duration = 10f;
+        float timer = duration;
         while (timer > 0)
         {
             timer -= Time.deltaTime;
-            PlayerStats.instance.currentRage = timer; 
+            PlayerStats.instance.currentRage = timer * 10f; 
             yield return null;
         }
+
+        PlayerStats.instance.currentRage = 0;
 
         if (activeAura != null)
         {
