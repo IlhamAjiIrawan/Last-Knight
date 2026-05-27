@@ -9,15 +9,22 @@ public class PlayerStats : MonoBehaviour
     [Header("Status yang Disimpan")]
     public float currentHealth;
     public float maxHealth = 10f;
-    public float maxMP = 10f;      // Tambahkan ini
-    public float currentMP;        // Tambahkan ini
-    public float mpRegenRate = 1f; // MP pulih 2 poin per detik
+    public float maxMP = 10f;      
+    public float currentMP;        
+    public float mpRegenRate = 1f; 
     public float maxEnergy = 5f;
     public float currentEnergy;
-    public float energyRegenRate = 1f; // Energy pulih lebih cepat
+    public float energyRegenRate = 1f; 
     public float damage = 1f;
     public float speed = 5.0f;
     public int gold = 0;
+
+    // --- TAMBAHAN FITUR: INVENTORY POTION ---
+    [Header("Inventory Potion")]
+    public int smallPotionCount = 0;
+    public int largePotionCount = 0;
+    [Tooltip("Jumlah HP yang dipulihkan Potion Kecil")] public float smallHealAmount = 3f;  // Sembuh 3 darah
+    [Tooltip("Jumlah HP yang dipulihkan Potion Besar")] public float largeHealAmount = 7f;  // Sembuh 7 darah
 
     [Header("Rage Settings")]
     public float currentRage = 0f;
@@ -36,31 +43,26 @@ public class PlayerStats : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject); // JANGAN hapus saat pindah Scene
+            DontDestroyOnLoad(gameObject); 
 
-            // Inisialisasi status saat pertama kali load
             currentHealth = maxHealth;
-            currentMP = maxMP; // Set MP penuh di awal game
+            currentMP = maxMP; 
             currentEnergy = maxEnergy;
         }
         else
         {
-            Destroy(gameObject); // Hapus jika ada duplikat di Scene baru
+            Destroy(gameObject); 
         }
     }
 
     void Update()
     {
-        // Regenerasi MP otomatis setiap detik
         if (currentMP < maxMP)
         {
             currentMP += mpRegenRate * Time.deltaTime;
-            
-            // Memastikan MP tidak meluap melebihi maxMP
             currentMP = Mathf.Clamp(currentMP, 0, maxMP);
         }
 
-        // Regenerasi Energy otomatis
         if (currentEnergy < maxEnergy)
         {
             currentEnergy += energyRegenRate * Time.deltaTime;

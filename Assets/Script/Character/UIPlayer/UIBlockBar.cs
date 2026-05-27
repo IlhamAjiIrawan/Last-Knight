@@ -4,10 +4,13 @@ using UnityEngine.UI;
 public class UIBlockBar : MonoBehaviour
 {
     public Slider blockSlider;
-    public PlayerMovement playerMovement; // Referensi ke script PlayerMovement
-    public GameObject fillArea;           // Referensi ke visual utama slider (opsional, untuk menyembunyikan bar)
+    public PlayerMovement playerMovement;
+    public Image fillArea;
 
-    private CanvasGroup canvasGroup;       // Digunakan untuk menghilangkan/memunculkan UI dengan halus
+    [Header("Color Settings")]
+    public Color normalColor = Color.cyan;
+    public Color brokenColor = Color.red;
+    private CanvasGroup canvasGroup;
 
     void Start()
     {
@@ -34,8 +37,19 @@ public class UIBlockBar : MonoBehaviour
         // 1. Selalu update nilai slider mengikuti sisa pertahanan player
         blockSlider.value = playerMovement.currentBlockGauge;
 
+        if (fillArea != null)
+        {
+            if (playerMovement.isBlockBroken)
+            {
+                fillArea.color = brokenColor; // Berubah jadi merah jika tameng hancur
+            }
+            else
+            {
+                fillArea.color = normalColor; // Kembali ke warna normal jika sudah aman
+            }
+        }
+
         // 2. Logika Muncul/Hilang otomatis
-        // Bar akan MUNCUL jika player sedang blocking ATAU stamina tamengnya belum pulih penuh (< 100%)
         if (playerMovement.isBlocking || playerMovement.currentBlockGauge < playerMovement.maxBlockGauge)
         {
             canvasGroup.alpha = 1f; // Memunculkan bar

@@ -19,9 +19,9 @@ public class PlayerMovement : MonoBehaviour
     public float maxBlockGauge = 5f;          // Batas maksimum pertahanan
     public float currentBlockGauge;             // Nilai pertahanan saat ini
     public float blockRegenRate = 1f;          // Kecepatan pulih pertahanan per detik
-    public float blockSpeedMultiplier = 0.5f;   // Kecepatan gerak saat blok (40% dari speed normal)
+    public float blockSpeedMultiplier = 0f;   // Kecepatan gerak saat blok (40% dari speed normal)
     public bool isBlocking { get; private set; }
-    private bool isBlockBroken = false;
+    public bool isBlockBroken { get; private set; } = false;
     
     [Header("Dash Settings")]
     public float dashSpeed = 20f;
@@ -118,7 +118,7 @@ public class PlayerMovement : MonoBehaviour
             currentBlockGauge = Mathf.Clamp(currentBlockGauge, 0f, maxBlockGauge);
 
             // Jika block sempat hancur, beri syarat harus pulih minimal 20% baru bisa dipake lagi
-            if (isBlockBroken && currentBlockGauge >= (maxBlockGauge * 0.2f))
+            if (isBlockBroken && currentBlockGauge >= maxBlockGauge)
             {
                 isBlockBroken = false;
                 Debug.Log("Pertahanan siap digunakan kembali.");

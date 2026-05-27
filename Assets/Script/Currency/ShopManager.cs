@@ -3,6 +3,10 @@ using TMPro; // Jika kamu menggunakan TextMeshPro untuk menampilkan harga
 
 public class ShopManager : MonoBehaviour
 {
+    [Header("Panel Toko")]
+    public GameObject itemShopPanel;  // Tarik objek UI kontener Item Shop di sini
+    public GameObject statsShopPanel;
+    
     // Hubungkan teks harga di Inspector jika ingin menampilkan harga yang berubah
     public TextMeshProUGUI healthPriceText;
     public TextMeshProUGUI mpPriceText;
@@ -15,6 +19,26 @@ public class ShopManager : MonoBehaviour
         UpdateUI(); // Update teks harga saat shop dibuka
     }
 
+    public void SwitchToStatsShop()
+    {
+        if (itemShopPanel != null && statsShopPanel != null)
+        {
+            itemShopPanel.SetActive(false);  // Sembunyikan Item Shop
+            statsShopPanel.SetActive(true);  // Munculkan Stats Shop
+            Debug.Log("Berpindah ke Stats Shop.");
+        }
+    }
+
+    public void SwitchToItemShop()
+    {
+        if (itemShopPanel != null && statsShopPanel != null)
+        {
+            itemShopPanel.SetActive(true);   // Munculkan Item Shop
+            statsShopPanel.SetActive(false);  // Sembunyikan Stats Shop
+            Debug.Log("Berpindah ke Item Shop.");
+        }
+    }
+    
     public void UpgradeHealth()
     {
         if (PlayerStats.instance.gold >= PlayerStats.instance.healthUpgradeCost)
