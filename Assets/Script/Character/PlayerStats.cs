@@ -22,9 +22,20 @@ public class PlayerStats : MonoBehaviour
     // --- TAMBAHAN FITUR: INVENTORY POTION ---
     [Header("Inventory Potion")]
     public int smallPotionCount = 0;
+    public int mediumPotionCount= 0;
     public int largePotionCount = 0;
-    [Tooltip("Jumlah HP yang dipulihkan Potion Kecil")] public float smallHealAmount = 3f;  // Sembuh 3 darah
-    [Tooltip("Jumlah HP yang dipulihkan Potion Besar")] public float largeHealAmount = 7f;  // Sembuh 7 darah
+    public int smallMPCount = 0;
+    public int energyPotionCount = 0;
+    public int strengthPotionCount = 0;
+    public int speedPotionCount = 0;
+    
+    [Tooltip("Jumlah HP yang dipulihkan Potion Heal")] 
+    public float smallHealAmount = 10f;  // Sembuh 3 darah
+    public float mediumHealAmount = 100f;
+    public float largeHealAmount = 1000f;  // Sembuh 7 darah
+
+    [Tooltip("Jumlah MP yang dipulihkan Potion Mana")] 
+    public float smallMPAmount = 10f;
 
     [Header("Rage Settings")]
     public float currentRage = 0f;

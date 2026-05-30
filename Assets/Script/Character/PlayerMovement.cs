@@ -39,8 +39,14 @@ public class PlayerMovement : MonoBehaviour
     [Header("Energy Costs")]
     public float dashEnergyCost = 5f;
 
+    [Header("Potion Buff Status")]
+    private bool isUnlimitedEnergy = false;
+    private float potionDamageMultiplier = 1f;
+    private float potionSpeedMultiplier = 1f;
+
     public Transform attackPoint;
     public LayerMask enemyLayers;
+    private bool isUsingPotion = false;
 
     [Header("Rage Mode Settings")]
     public float rageDuration = 100f;
@@ -93,6 +99,39 @@ public class PlayerMovement : MonoBehaviour
         if (PlayerStats.instance != null && PlayerStats.instance.currentHealth <= 0) return;
         speed = PlayerStats.instance.speed;
         if (isDashing) return;
+
+        // 1. INPUT DASH (Ditaruh di paling atas agar bisa membatalkan animasi potion)
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Space))
+        {
+            float effectiveEnergyCost = isUnlimitedEnergy ? 0f : dashEnergyCost;
+
+            if (PlayerStats.instance.currentEnergy >= dashEnergyCost)
+            {
+                // JIKA SEDANG MINUM POTION, BATALKAN TERLEBIH DAHULU
+                if (isUsingPotion)
+                {
+                    CancelPotionAnimation();
+                }
+
+                if (!isUnlimitedEnergy)
+                {
+                    PlayerStats.instance.currentEnergy -= dashEnergyCost;
+                }
+
+                //PlayerStats.instance.currentEnergy -= dashEnergyCost;
+                StartCoroutine(DashRoutine());
+                return; // Keluar dari update karena sudah masuk state dash
+            }
+        }
+
+        // 2. LOCK INPUT JIKA SEDANG MINUM POTION
+        // Semua input di bawah baris ini (jalan, menyerang, block) akan diabaikan
+        if (isUsingPotion)
+        {
+            anim.SetFloat("moveX", 0);
+            anim.SetFloat("moveZ", 0);
+            return; 
+        }
         
         LookAtMouse();
         UpdateAnimation();
@@ -202,8 +241,13 @@ public class PlayerMovement : MonoBehaviour
     {
         bool isAttacking = anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
 
-        if (isAttacking || isDashing)
+        if (isAttacking || isDashing || isUsingPotion)
         {
+            if (isUsingPotion)
+            {
+                // Hentikan kecepatan sumbu X dan Z agar tidak bergeser saat minum
+                rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+            }
             return;
         }
         
@@ -214,7 +258,7 @@ public class PlayerMovement : MonoBehaviour
         if (moveInput.magnitude >= 0.1f)
         {
             Vector3 localMove = transform.InverseTransformDirection(moveInput);
-            float currentSpeed = speed;
+            float currentSpeed = speed * potionSpeedMultiplier;;
 
             if (isBlocking)
             {
@@ -282,6 +326,7 @@ public class PlayerMovement : MonoBehaviour
         // 2. Tentukan range dan damage berdasarkan jenis animasi yang sedang aktif
         float range = isHeavy ? heavyRange : swingRange;
         float finalDamage = isHeavy ? (attackDamage * 2f) : attackDamage;
+        finalDamage *= potionDamageMultiplier;
 
         // 3. Deteksi musuh dalam radius attackPoint
         Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, range, enemyLayers);
@@ -438,6 +483,92 @@ public class PlayerMovement : MonoBehaviour
         return true; // Sukses memblokir damage sepenuhnya
     }
 
+    public void TriggerPotionAnimation(int type)
+    {
+        if (PlayerStats.instance.currentHealth <= 0 || isDashing || isUsingPotion) 
+            return;
+
+        // Validasi ketersediaan barang & kondisi penuh
+        if (type == 1 && (PlayerStats.instance.smallPotionCount <= 0 || PlayerStats.instance.currentHealth >= PlayerStats.instance.maxHealth)) return;
+        if (type == 2 && (PlayerStats.instance.mediumPotionCount <= 0 || PlayerStats.instance.currentHealth >= PlayerStats.instance.maxHealth)) return;
+        if (type == 3 && (PlayerStats.instance.largePotionCount <= 0 || PlayerStats.instance.currentHealth >= PlayerStats.instance.maxHealth)) return;
+        if (type == 4 && (PlayerStats.instance.smallMPCount <= 0 || PlayerStats.instance.currentMP >= PlayerStats.instance.maxMP)) return;
+        if (type == 5 && PlayerStats.instance.energyPotionCount <= 0) return;
+        if (type == 6 && PlayerStats.instance.strengthPotionCount <= 0) return;
+        if (type == 7 && PlayerStats.instance.speedPotionCount <= 0) return;
+
+        isUsingPotion = true;
+        ResetCombo(); 
+
+        anim.SetInteger("potionType", type);
+        anim.SetTrigger("usePotion");
+    }
+    
+    public void ExecutePotionEffect()
+    {
+        if (!isUsingPotion) return; 
+
+        int type = anim.GetInteger("potionType");
+
+        switch (type)
+        {
+            case 1: // Small HP
+                PlayerStats.instance.smallPotionCount--;
+                PlayerStats.instance.currentHealth += PlayerStats.instance.smallHealAmount;
+                break;
+            case 2: // Medium HP
+                PlayerStats.instance.mediumPotionCount--;
+                PlayerStats.instance.currentHealth += PlayerStats.instance.mediumHealAmount;
+                break;
+            case 3: // Large HP
+                PlayerStats.instance.largePotionCount--;
+                PlayerStats.instance.currentHealth += PlayerStats.instance.largeHealAmount;
+                break;
+            case 4: // MP Potion
+                PlayerStats.instance.smallMPCount--;
+                PlayerStats.instance.currentMP += PlayerStats.instance.smallMPAmount;
+                PlayerStats.instance.currentMP = Mathf.Clamp(PlayerStats.instance.currentMP, 0f, PlayerStats.instance.maxMP);
+                Debug.Log("MP Berhasil Dipulihkan!");
+                break;
+            case 5: // Energy Potion (Unlimited 10s)
+                PlayerStats.instance.energyPotionCount--;
+                StartCoroutine(EnergyBuffRoutine());
+                break;
+            case 6: // Strength Potion (Damage x2 10s)
+                PlayerStats.instance.strengthPotionCount--;
+                StartCoroutine(StrengthBuffRoutine());
+                break;
+            case 7: // Speed Potion (Speed x2 10s)
+                PlayerStats.instance.speedPotionCount--;
+                StartCoroutine(SpeedBuffRoutine());
+                break;
+        }
+
+        PlayerStats.instance.currentHealth = Mathf.Clamp(PlayerStats.instance.currentHealth, 0f, PlayerStats.instance.maxHealth);
+    }
+
+    private void CancelPotionAnimation()
+    {
+        isUsingPotion = false;
+        anim.SetInteger("potionType", 0);
+        
+        // Paksa animator memotong animasi minum dan kembali ke Blend Tree bergerak/idle
+        // Sesuaikan "Movement" dengan nama State dasar pergerakan di Animator kamu
+        anim.Play("Movement"); 
+
+        Debug.Log("Animasi minum potion DIBATALKAN karena Player melakukan Dash!");
+    }
+
+    public void FinishPotionAnimation()
+    {
+        if (!isUsingPotion) return;
+
+        // Kunci baru dibuka di sini setelah seluruh gerakan selesai
+        isUsingPotion = false;
+        anim.SetInteger("potionType", 0);
+        Debug.Log("Animasi Potion Selesai Penuh. Karakter bebas bergerak kembali.");
+    }
+
     IEnumerator DashRoutine()
     {
         isDashing = true;
@@ -532,5 +663,32 @@ public class PlayerMovement : MonoBehaviour
         PlayerStats.instance.currentEnergy = 0;
         
         Debug.Log("Rage berakhir. Player kelelahan!");
+    }
+
+    IEnumerator EnergyBuffRoutine()
+    {
+        isUnlimitedEnergy = true;
+        Debug.Log("Buff Terpasang: Unlimited Energy selama 10 Detik!");
+        yield return new WaitForSeconds(10f);
+        isUnlimitedEnergy = false;
+        Debug.Log("Buff Berakhir: Unlimited Energy Selesai.");
+    }
+
+    IEnumerator StrengthBuffRoutine()
+    {
+        potionDamageMultiplier = 2f;
+        Debug.Log("Buff Terpasang: Damage x2 selama 10 Detik!");
+        yield return new WaitForSeconds(10f);
+        potionDamageMultiplier = 1f;
+        Debug.Log("Buff Berakhir: Kekuatan kembali normal.");
+    }
+
+    IEnumerator SpeedBuffRoutine()
+    {
+        potionSpeedMultiplier = 2f;
+        Debug.Log("Buff Terpasang: Kecepatan x2 selama 10 Detik!");
+        yield return new WaitForSeconds(10f);
+        potionSpeedMultiplier = 1f;
+        Debug.Log("Buff Berakhir: Kecepatan kembali normal.");
     }
 }
