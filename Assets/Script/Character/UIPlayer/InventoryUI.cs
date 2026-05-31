@@ -76,7 +76,6 @@ public class InventoryUI : MonoBehaviour
         if (strengthPotionText != null) strengthPotionText.text = "x" + PlayerStats.instance.strengthPotionCount;
         if (speedPotionText != null) speedPotionText.text = "x" + PlayerStats.instance.speedPotionCount;
 
-        // Skill (Menampilkan LV.X atau "LOCK" jika belum dibeli)
         if (skill1LevelText != null) 
             skill1LevelText.text = PlayerStats.instance.skill1Level > 0 ? "Lv. " + PlayerStats.instance.skill1Level : "LOCK";
         

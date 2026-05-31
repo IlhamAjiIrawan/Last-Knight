@@ -68,9 +68,9 @@ public class SkillShop : MonoBehaviour
             PlayerStats.instance.gold -= PlayerStats.instance.skill1UpgradeCost;
             PlayerStats.instance.skill1Level++;
             
-            // Menaikkan harga upgrade berikutnya (skala x1.5)
-            PlayerStats.instance.skill1UpgradeCost = Mathf.RoundToInt(PlayerStats.instance.skill1UpgradeCost * 1.5f);
-            Debug.Log("Skill 1 naik ke Level: " + PlayerStats.instance.skill1Level);
+            PlayerStats.instance.skill1UpgradeCost *= 2;
+            
+            Debug.Log("Skill 1 berhasil di-unlock/upgrade! Level: " + PlayerStats.instance.skill1Level);
         }
     }
 

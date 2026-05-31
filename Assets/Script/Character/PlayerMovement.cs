@@ -6,7 +6,7 @@ public class PlayerMovement : MonoBehaviour
     public float speed = 5.0f;
     private Rigidbody rb;
     private Camera mainCamera;
-    private Animator anim; // Tambahkan ini
+    private Animator anim;
     public float attackDamage = 1f;
     public float attackRange = 1.5f;
 
@@ -19,7 +19,7 @@ public class PlayerMovement : MonoBehaviour
     public float maxBlockGauge = 5f;          // Batas maksimum pertahanan
     public float currentBlockGauge;             // Nilai pertahanan saat ini
     public float blockRegenRate = 1f;          // Kecepatan pulih pertahanan per detik
-    public float blockSpeedMultiplier = 0f;   // Kecepatan gerak saat blok (40% dari speed normal)
+    public float blockSpeedMultiplier = 0f;   // Kecepatan gerak saat blok (0% dari speed normal)
     public bool isBlocking { get; private set; }
     public bool isBlockBroken { get; private set; } = false;
     
@@ -28,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
     public float dashDuration = 0.2f;
     public float dashCooldown = 3f;
     public float invincibilityDuration = 0.5f; // Durasi immune yang bisa kamu atur
-    public bool isImmune { get; private set; } // Variabel baru untuk status immune
+    public bool isImmune { get; private set; }
     public bool isDashing { get; private set; }
     private float lastDashTime;
 
@@ -68,10 +68,28 @@ public class PlayerMovement : MonoBehaviour
     private GameObject activeAura;
     
     [Header("Queue Combo Settings")]
-    public int comboStep = 0;          // Mencatat tahapan animasi yang sedang aktif (0-3)
-    public int clickQueueCount = 0;    // Mencatat jumlah klik yang berhasil ditampung (Maksimal 3)
+    public int comboStep = 0;
+    public int clickQueueCount = 0;
     public float knockbackForce = 12f;
     private float lastAttackInputTime;
+
+    [Header("Skill 1: Mode Panah Settings")]
+    public bool isBowMode = false;       // Status pakah sedang mode panah
+    public GameObject arrowPrefab;       // Prefab anak panah (buat di project)
+    public Transform bowFirePoint;       // Objek kosong di ujung busur panah untuk memunculkan peluru
+    public float baseMpCostPerArrow = 1f; // Konsumsi MP dasar
+    public LineRenderer aimLine;  
+    public float aimDistance = 25f;
+
+    public GameObject meleeSword;        // Tarik objek Pedang di tangan kanan ke sini
+    public GameObject meleeShield;       // Tarik objek Perisai di tangan kiri ke sini
+    public GameObject rangeBow;
+    public GameObject rangeArrow;
+
+    private float chargeTimer = 0f;      // Menghitung durasi tahan klik kanan
+    private bool isCharging = false;     // Status sedang menahan panah
+
+
 
     void Start()
     {
@@ -96,110 +114,184 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (PlayerStats.instance != null && PlayerStats.instance.currentHealth <= 0) return;
-        speed = PlayerStats.instance.speed;
-        if (isDashing) return;
+        if (PlayerStats.instance != null && PlayerStats.instance.currentHealth <= 0) return; //
+        speed = PlayerStats.instance.speed; //
+        if (isDashing) return; //
 
-        // 1. INPUT DASH (Ditaruh di paling atas agar bisa membatalkan animasi potion)
-        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Space))
+        // --- 1. DETEKSI DASH (Sudah Diperbaiki Menggunakan effectiveEnergyCost) ---
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Space)) //
         {
-            float effectiveEnergyCost = isUnlimitedEnergy ? 0f : dashEnergyCost;
+            float effectiveEnergyCost = isUnlimitedEnergy ? 0f : dashEnergyCost; //
 
-            if (PlayerStats.instance.currentEnergy >= dashEnergyCost)
+            // PERBAIKAN: Menggunakan effectiveEnergyCost agar buff Ramuan Energi berfungsi penuh
+            if (PlayerStats.instance.currentEnergy >= effectiveEnergyCost) 
             {
-                // JIKA SEDANG MINUM POTION, BATALKAN TERLEBIH DAHULU
-                if (isUsingPotion)
+                if (isUsingPotion) //
                 {
-                    CancelPotionAnimation();
+                    CancelPotionAnimation(); //
                 }
 
-                if (!isUnlimitedEnergy)
+                if (!isUnlimitedEnergy) //
                 {
-                    PlayerStats.instance.currentEnergy -= dashEnergyCost;
+                    PlayerStats.instance.currentEnergy -= dashEnergyCost; //
                 }
 
-                //PlayerStats.instance.currentEnergy -= dashEnergyCost;
-                StartCoroutine(DashRoutine());
-                return; // Keluar dari update karena sudah masuk state dash
+                StartCoroutine(DashRoutine()); //
+                return; //
             }
         }
 
-        // 2. LOCK INPUT JIKA SEDANG MINUM POTION
-        // Semua input di bawah baris ini (jalan, menyerang, block) akan diabaikan
-        if (isUsingPotion)
+        if (isUsingPotion) //
         {
-            anim.SetFloat("moveX", 0);
-            anim.SetFloat("moveZ", 0);
-            return; 
+            anim.SetFloat("moveX", 0); //
+            anim.SetFloat("moveZ", 0); //
+            return;  //
         }
         
-        LookAtMouse();
-        UpdateAnimation();
+        LookAtMouse(); //
+        UpdateAnimation(); //
 
-        // --- INPUT BLOCK (KLIK TENGAH MOUSE / BUTTON 2) ---
-        bool isCurrentlyAttacking = anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
-        
-        // Player bisa blok jika menekan klik tengah, tidak sedang dash/attack, dan tameng tidak sedang hancur
-        if (Input.GetMouseButton(2) && !isDashing && !isCurrentlyAttacking && !isBlockBroken)
+        // --- 2. TOGGLE AKTIF/NONAKTIFKAN SKILL 1 (Pindahkan ke Atas) ---
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            isBlocking = true;
-            ResetCombo(); // Batalkan antrean kombo saat mendadak bertahan
+            if (PlayerStats.instance.skill1Level > 0)  //
+            {
+                isBowMode = !isBowMode; //
+                
+                if (anim != null) anim.SetBool("isBowMode", isBowMode);  //
+
+                SwitchWeaponModels();
+                
+                // Bersihkan sisa antrian kombo pedang saat berpindah ke panah
+                ResetCombo(); 
+                if (!isBowMode && aimLine != null) aimLine.enabled = false;
+                Debug.Log("Mode Panah Jarak Jauh: " + isBowMode); //
+            }
+            else
+            {
+                Debug.Log("Skill 1 Jarak Jauh Belum Terbuka! Beli di Shop seharga 10 Gold."); //
+            }
+        }
+
+        // --- 3. LOGIKA UTAMA SAAT MODE PANAH AKTIF (Diproses Lebih Awal agar Melee Terkunci) ---
+        if (isBowMode) //
+        {
+            float currentMpCost = baseMpCostPerArrow * Mathf.Pow(2, PlayerStats.instance.skill1Level - 1); //
+
+            // A. KLIK KANAN: TAHAN SERANGAN (CHARGE ATTACK / AIMING)
+            if (Input.GetMouseButton(1)) //
+            {
+                isCharging = true; //
+                chargeTimer += Time.deltaTime; //
+                if (chargeTimer > 2f) chargeTimer = 2f; //
+                
+                if (anim != null) anim.SetBool("isChargingBow", true); //
+
+                if (aimLine != null)
+                {
+                    aimLine.gameObject.SetActive(true);
+                    aimLine.enabled = true;
+                    aimLine.SetPosition(0, Vector3.zero); 
+                    RaycastHit hit;
+                    int layerMaskKecualiPlayer = ~LayerMask.GetMask("Player"); 
+
+                    if (Physics.Raycast(transform.position + Vector3.up * 1f, transform.forward, out hit, 30f, layerMaskKecualiPlayer))
+                    {
+                        aimLine.SetPosition(1, new Vector3(0f, 0f, hit.distance));
+                    }
+                    else 
+                    {
+                        aimLine.SetPosition(1, new Vector3(0f, 0f, 30f));
+                    }
+                }
+            }
+
+            // LEPAS KLIK KANAN: TEMBAK PANAH CHARGE (RELEASE)
+            if (Input.GetMouseButtonUp(1) && isCharging) //
+            {
+                isCharging = false; //
+                
+                if (anim != null) 
+                {
+                    anim.SetBool("isChargingBow", false); //
+                    anim.SetTrigger("releaseShoot");      // Memicu animasi melepas panah
+                }
+
+                if (aimLine != null) aimLine.enabled = false;
+            }
+
+            // B. KLIK KIRI: TEMBAK CEPAT (QUICK ATTACK)
+            if (Input.GetMouseButtonDown(0) && !isCharging)
+            {
+                if (PlayerStats.instance.currentMP >= currentMpCost)
+                {
+                    // Hanya memicu animasi. Spawn panah & pengurangan MP diurus oleh Event
+                    if (anim != null) anim.SetTrigger("quickShoot"); 
+                }
+                else
+                {
+                    Debug.Log("MP Tidak Cukup untuk Quick Attack!");
+                }
+            }
+
+            return; 
+        }
+
+        // --- 4. LOGIKA MELEE PEDANG & PERTAHANAN (Hanya berjalan jika isBowMode == false) ---
+        bool isCurrentlyAttacking = anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack"); //
+        
+        // Blok Input
+        if (Input.GetMouseButton(2) && !isDashing && !isCurrentlyAttacking && !isBlockBroken) //
+        {
+            isBlocking = true; //
+            ResetCombo(); //
         }
         else
         {
-            isBlocking = false;
+            isBlocking = false; //
         }
 
-        // --- LOGIKA PEMULIHAN BLOCK GAUGE ---
-        if (!isBlocking)
+        if (!isBlocking) //
         {
-            currentBlockGauge += blockRegenRate * Time.deltaTime;
-            currentBlockGauge = Mathf.Clamp(currentBlockGauge, 0f, maxBlockGauge);
+            currentBlockGauge += blockRegenRate * Time.deltaTime; //
+            currentBlockGauge = Mathf.Clamp(currentBlockGauge, 0f, maxBlockGauge); //
 
-            // Jika block sempat hancur, beri syarat harus pulih minimal 20% baru bisa dipake lagi
-            if (isBlockBroken && currentBlockGauge >= maxBlockGauge)
+            if (isBlockBroken && currentBlockGauge >= maxBlockGauge) //
             {
-                isBlockBroken = false;
-                Debug.Log("Pertahanan siap digunakan kembali.");
+                isBlockBroken = false; //
+                Debug.Log("Pertahanan siap digunakan kembali."); //
             }
         }
 
-        // Sinkronisasi parameter ke Animator (Buat parameter Bool bernama "isBlocking" di Unity Animator)
-        anim.SetBool("isBlocking", isBlocking);
-
-        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Space))
-        {
-            if (PlayerStats.instance.currentEnergy >= dashEnergyCost)
-            {
-                PlayerStats.instance.currentEnergy -= dashEnergyCost;
-                StartCoroutine(DashRoutine());
-            }
-        }
+        anim.SetBool("isBlocking", isBlocking); //
         
-        if (Input.GetKeyDown(KeyCode.Q) && PlayerStats.instance.currentRage >= PlayerStats.instance.maxRage && !PlayerStats.instance.isRageMode)
+        // KODE DUPLIKAT DASH DI SINI SUDAH DIHAPUS UTK MENGHINDARI BUG
+
+        if (Input.GetKeyDown(KeyCode.Q) && PlayerStats.instance.currentRage >= PlayerStats.instance.maxRage && !PlayerStats.instance.isRageMode) //
         {
-            StartCoroutine(ActivateRageMode());
+            StartCoroutine(ActivateRageMode()); //
         }
 
-        // --- MODIFIKASI: Hanya bisa menyerang jika TIDAK sedang memblokir ---
-        if (Input.GetMouseButtonDown(0) && !isBlocking)
+        // Klik Kiri: Kombo Melee
+        if (Input.GetMouseButtonDown(0) && !isBlocking) //
         {
-            if (clickQueueCount < 3)
+            if (clickQueueCount < 3) //
             {
-                clickQueueCount++;
-                Debug.Log("Klik masuk antrean! Total saat ini: " + clickQueueCount);
+                clickQueueCount++; //
+                Debug.Log("Klik masuk antrean! Total saat ini: " + clickQueueCount); //
             }
 
-            if (!isCurrentlyAttacking && comboStep == 0)
+            if (!isCurrentlyAttacking && comboStep == 0) //
             {
-                comboStep = 1;
-                PlayComboAnimation(comboStep);
+                comboStep = 1; //
+                PlayComboAnimation(comboStep); //
             }
         }
 
-        if (Input.GetMouseButtonDown(1) && !isBlocking && !isCurrentlyAttacking) 
+        // Klik Kanan: Heavy Attack Melee
+        if (Input.GetMouseButtonDown(1) && !isBlocking && !isCurrentlyAttacking)  //
         {
-            HeavyAttack();
+            HeavyAttack(); //
         }
     }
 
@@ -235,6 +327,19 @@ public class PlayerMovement : MonoBehaviour
             Vector3 pointToLook = cameraRay.GetPoint(rayLength);
             transform.LookAt(new Vector3(pointToLook.x, transform.position.y, pointToLook.z));
         }
+    }
+
+    Vector3 GetMouseWorldPosition()
+    {
+        Ray cameraRay = mainCamera.ScreenPointToRay(Input.mousePosition);
+        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+        float rayLength;
+
+        if (groundPlane.Raycast(cameraRay, out rayLength))
+        {
+            return cameraRay.GetPoint(rayLength);
+        }
+        return transform.position + transform.forward * aimDistance;
     }
 
     void FixedUpdate()
@@ -496,10 +601,15 @@ public class PlayerMovement : MonoBehaviour
 
     public void TriggerPotionAnimation(int type)
     {
+        if (isBowMode)
+        {
+            Debug.Log("Tidak bisa menggunakan item ramuan saat sedang dalam Mode Panah!");
+            return; 
+        }
+        
         if (PlayerStats.instance.currentHealth <= 0 || isDashing || isUsingPotion) 
             return;
 
-        // Validasi ketersediaan barang & kondisi penuh
         if (type == 1 && (PlayerStats.instance.smallPotionCount <= 0 || PlayerStats.instance.currentHealth >= PlayerStats.instance.maxHealth)) return;
         if (type == 2 && (PlayerStats.instance.mediumPotionCount <= 0 || PlayerStats.instance.currentHealth >= PlayerStats.instance.maxHealth)) return;
         if (type == 3 && (PlayerStats.instance.largePotionCount <= 0 || PlayerStats.instance.currentHealth >= PlayerStats.instance.maxHealth)) return;
@@ -620,6 +730,92 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 Debug.Log("Skill 2 terkunci atau MP tidak cukup!");
+            }
+        }
+    }
+
+    // --- FUNGSI BARU: Mengatur visibilitas senjata berdasarkan mode ---
+    private void SwitchWeaponModels()
+    {
+        if (isBowMode)
+        {
+            // Jika masuk mode panah: Sembunyikan Pedang & Perisai, Munculkan Busur
+            if (meleeSword != null) meleeSword.SetActive(false);
+            if (meleeShield != null) meleeShield.SetActive(false);
+            if (rangeBow != null) rangeBow.SetActive(true);
+        }
+        else
+        {
+            // Jika kembali ke mode normal: Munculkan Pedang & Perisai, Sembunyikan Busur
+            if (meleeSword != null) meleeSword.SetActive(true);
+            if (meleeShield != null) meleeShield.SetActive(true);
+            if (rangeBow != null) rangeBow.SetActive(false);
+        }
+    }
+
+    public void TriggerQuickShootEvent()
+    {
+        float currentMpCost = baseMpCostPerArrow * Mathf.Pow(2, PlayerStats.instance.skill1Level - 1);
+        float currentDamage = PlayerStats.instance.damage * PlayerStats.instance.skill1Level;
+
+        if (PlayerStats.instance.currentMP >= currentMpCost)
+        {
+            ShootArrow(currentDamage, false);
+            PlayerStats.instance.currentMP -= currentMpCost;
+        }
+    }
+
+    // Pasang event ini di awal klip "Ranged_Bow_Release"
+    public void TriggerChargeShootEvent()
+    {
+        float currentMpCost = baseMpCostPerArrow * Mathf.Pow(2, PlayerStats.instance.skill1Level - 1);
+        float currentDamage = PlayerStats.instance.damage * PlayerStats.instance.skill1Level;
+
+        if (PlayerStats.instance.currentMP >= currentMpCost)
+        {
+            // Menghitung multiplier berdasarkan durasi chargeTimer yang dikirim dari Update
+            float damageMultiplier = 1f + (chargeTimer / 2f) * 2f; 
+            float finalDamage = currentDamage * damageMultiplier;
+
+            ShootArrow(finalDamage, true);
+            PlayerStats.instance.currentMP -= currentMpCost;
+        }
+        else
+        {
+            Debug.Log("MP Tidak Cukup untuk Charge Attack!");
+        }
+
+        // Reset timer ke 0 BARU dilakukan di sini setelah panah tercipta
+        chargeTimer = 0f; 
+    }
+
+    void ShootArrow(float damageAmount, bool isChargedAttack)
+    {
+        if (arrowPrefab != null && bowFirePoint != null)
+        {
+            // --- PERBAIKAN: Hitung arah terbang panah dari busur menuju Kursor Mouse ---
+            Ray cameraRay = mainCamera.ScreenPointToRay(Input.mousePosition);
+            Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+            float rayLength;
+            Quaternion rotasiPanah = bowFirePoint.rotation; // Cadangan default
+
+            if (groundPlane.Raycast(cameraRay, out rayLength))
+            {
+                Vector3 titikMouse = cameraRay.GetPoint(rayLength);
+                Vector3 targetSejajar = new Vector3(titikMouse.x, bowFirePoint.position.y, titikMouse.z);
+                Vector3 arahTerbang = (targetSejajar - bowFirePoint.position).normalized;
+                
+                // Paksa rotasi prefab panah menghadap lurus ke titik mouse
+                rotasiPanah = Quaternion.LookRotation(arahTerbang);
+            }
+
+            // Munculkan panah dengan rotasi presisi yang sudah dikunci
+            GameObject arrowObj = Instantiate(arrowPrefab, bowFirePoint.position, rotasiPanah);
+            ArrowProjectile arrowScript = arrowObj.GetComponent<ArrowProjectile>();
+            
+            if (arrowScript != null)
+            {
+                arrowScript.SetupProjectile(damageAmount, isChargedAttack);
             }
         }
     }

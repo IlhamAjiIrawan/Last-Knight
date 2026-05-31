@@ -59,7 +59,7 @@ public class PlayerStats : MonoBehaviour
     public float skill2MpCost = 4f;
 
     [Header("Skill Upgrade Costs")]
-    public int skill1UpgradeCost = 100;
+    public int skill1UpgradeCost = 10;
     public int skill2UpgradeCost = 150;
 
     void Awake()
