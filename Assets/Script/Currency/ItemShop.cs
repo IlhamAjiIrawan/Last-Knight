@@ -3,8 +3,9 @@ using UnityEngine;
 public class ItemShop : MonoBehaviour
 {
     [Header("Panel Toko")]
-    public GameObject itemShopPanel;  // Tarik objek UI kontener Item Shop di sini
+    public GameObject itemShopPanel;  
     public GameObject statsShopPanel;
+    public GameObject skillShopPanel;
     
     [Header("Harga Potion")]
     public int smallPotionPrice = 10;
@@ -15,23 +16,37 @@ public class ItemShop : MonoBehaviour
     public int strengthPotionPrice = 75;
     public int speedPotionPrice = 60;
 
+    // Perbaikan Navigasi Mandiri di SkillShop.cs
     public void SwitchToStatsShop()
     {
-        if (itemShopPanel != null && statsShopPanel != null)
+        if (itemShopPanel != null && statsShopPanel != null && skillShopPanel != null)
         {
-            itemShopPanel.SetActive(false);  // Sembunyikan Item Shop
-            statsShopPanel.SetActive(true);  // Munculkan Stats Shop
+            itemShopPanel.SetActive(false);
+            statsShopPanel.SetActive(true);
+            skillShopPanel.SetActive(false); // Pastikan skill shop milik sendiri mati
             Debug.Log("Berpindah ke Stats Shop.");
         }
     }
 
     public void SwitchToItemShop()
     {
-        if (itemShopPanel != null && statsShopPanel != null)
+        if (itemShopPanel != null && statsShopPanel != null && skillShopPanel != null)
         {
-            itemShopPanel.SetActive(true);   // Munculkan Item Shop
-            statsShopPanel.SetActive(false);  // Sembunyikan Stats Shop
+            itemShopPanel.SetActive(true);
+            statsShopPanel.SetActive(false);
+            skillShopPanel.SetActive(false); // Pastikan skill shop milik sendiri mati
             Debug.Log("Berpindah ke Item Shop.");
+        }
+    }
+
+    public void SwitchToSkillShop()
+    {
+        if (itemShopPanel != null && statsShopPanel != null && skillShopPanel != null)
+        {
+            itemShopPanel.SetActive(false);
+            statsShopPanel.SetActive(false);
+            skillShopPanel.SetActive(true);  // Aktifkan panel skill shop
+            Debug.Log("Berpindah ke Skill Shop.");
         }
     }
     
@@ -43,10 +58,6 @@ public class ItemShop : MonoBehaviour
             PlayerStats.instance.smallPotionCount++;
             Debug.Log("Membeli Small Potion. Sisa Gold: " + PlayerStats.instance.gold);
         }
-        else
-        {
-            Debug.Log("Gold tidak cukup untuk Small Potion!");
-        }
     }
 
     public void BuyMediumPotion()
@@ -56,10 +67,6 @@ public class ItemShop : MonoBehaviour
             PlayerStats.instance.gold -= mediumPotionPrice;
             PlayerStats.instance.mediumPotionCount++;
             Debug.Log("Membeli Medium Potion. Sisa Gold: " + PlayerStats.instance.gold);
-        }
-        else
-        {
-            Debug.Log("Gold tidak cukup untuk Small Potion!");
         }
     }
 
@@ -71,10 +78,6 @@ public class ItemShop : MonoBehaviour
             PlayerStats.instance.largePotionCount++;
             Debug.Log("Membeli Large Potion. Sisa Gold: " + PlayerStats.instance.gold);
         }
-        else
-        {
-            Debug.Log("Gold tidak cukup untuk Large Potion!");
-        }
     }
 
     public void BuysmallMPPotion()
@@ -82,7 +85,7 @@ public class ItemShop : MonoBehaviour
         if (PlayerStats.instance.gold >= smallMPPotionPrice)
         {
             PlayerStats.instance.gold -= smallMPPotionPrice;
-            PlayerStats.instance.smallMPCount++;
+            PlayerStats.instance.smallMPCount++; // Sinkron dengan variabel PlayerStats
             Debug.Log("Membeli MP Potion.");
         }
     }

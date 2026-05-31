@@ -49,6 +49,19 @@ public class PlayerStats : MonoBehaviour
     public int damageUpgradeCost = 1;
     public int speedUpgradeCost = 20;
 
+    [Header("Skills Level & Data")]
+    public int skill1Level = 0;
+    public int skill2Level = 0;
+    public int maxSkillLevel = 5;
+
+    [Header("Skill MP Costs")]
+    public float skill1MpCost = 3f;
+    public float skill2MpCost = 4f;
+
+    [Header("Skill Upgrade Costs")]
+    public int skill1UpgradeCost = 100;
+    public int skill2UpgradeCost = 150;
+
     void Awake()
     {
         if (instance == null)

@@ -77,7 +77,6 @@ public class Health : MonoBehaviour
                     return; 
                 }
 
-                // --- TAMBAHKAN KODE BARU DI SINI ---
                 // 3. Menahan serangan menggunakan Block Perisai
                 if (pm.AbsorbDamageWithBlock(damage))
                 {
@@ -85,6 +84,7 @@ public class Health : MonoBehaviour
                     Debug.Log("Damage diserap sepenuhnya oleh perisai!");
                     return; // Keluar fungsi awal agar darah & animasi getHit tidak jalan
                 }
+                pm.OnPlayerHit();
             }
         }
         currentHealth -= damage;

@@ -46,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
 
     public Transform attackPoint;
     public LayerMask enemyLayers;
-    private bool isUsingPotion = false;
+    public bool isUsingPotion = false;
 
     [Header("Rage Mode Settings")]
     public float rageDuration = 100f;
@@ -396,6 +396,17 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void OnPlayerHit()
+    {
+        isUsingPotion = false; // 1. Reset status minum ramuan agar kontrol tidak membeku
+        ResetCombo();          // 2. Bersihkan antrian kombo yang menumpuk
+        
+        // Opsional: Matikan status dash jika tidak ingin player lanjut meluncur saat terpukul
+        // isDashing = false; 
+        
+        Debug.Log("Player terluka: Status Minum & Antrian Kombo berhasil di-reset!");
+    }
+
     // Untuk melihat jangkauan serangan di Scene
     void OnDrawGizmosSelected()
     {
@@ -567,6 +578,50 @@ public class PlayerMovement : MonoBehaviour
         isUsingPotion = false;
         anim.SetInteger("potionType", 0);
         Debug.Log("Animasi Potion Selesai Penuh. Karakter bebas bergerak kembali.");
+    }
+
+    // --- FITUR BARU: EKSEKUSI SKILL ---
+    public void CastSkill(int skillID)
+    {
+        // Pengecekan dasar: jika player mati atau sedang dash, gagalkan skill
+        if (PlayerStats.instance.currentHealth <= 0 || isDashing || isUsingPotion) return;
+
+        if (skillID == 1)
+        {
+            // Cek apakah skill sudah dibuka dan MP cukup
+            if (PlayerStats.instance.skill1Level > 0 && PlayerStats.instance.currentMP >= PlayerStats.instance.skill1MpCost)
+            {
+                PlayerStats.instance.currentMP -= PlayerStats.instance.skill1MpCost;
+                
+                // LOGIKA SKILL 1: Serangan Fireball (Contoh efek)
+                Debug.Log("MENGGUNAKAN SKILL 1 (FIREBALL)! Damage: " + (PlayerStats.instance.damage * 2f * PlayerStats.instance.skill1Level));
+                
+                // Kamu bisa memicu trigger animasi skill di sini jika ada, contoh:
+                // anim.SetTrigger("skill1");
+            }
+            else
+            {
+                Debug.Log("Skill 1 terkunci atau MP tidak cukup!");
+            }
+        }
+        else if (skillID == 2)
+        {
+            if (PlayerStats.instance.skill2Level > 0 && PlayerStats.instance.currentMP >= PlayerStats.instance.skill2MpCost)
+            {
+                PlayerStats.instance.currentMP -= PlayerStats.instance.skill2MpCost;
+
+                // LOGIKA SKILL 2: Heal Kecil instan memanfaatkan Level Skill
+                float healAmount = 2f * PlayerStats.instance.skill2Level;
+                PlayerStats.instance.currentHealth += healAmount;
+                PlayerStats.instance.currentHealth = Mathf.Clamp(PlayerStats.instance.currentHealth, 0f, PlayerStats.instance.maxHealth);
+
+                Debug.Log("MENGGUNAKAN SKILL 2 (HEAL BUFF)!");
+            }
+            else
+            {
+                Debug.Log("Skill 2 terkunci atau MP tidak cukup!");
+            }
+        }
     }
 
     IEnumerator DashRoutine()
