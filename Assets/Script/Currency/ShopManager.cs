@@ -73,7 +73,18 @@ public class ShopManager : MonoBehaviour
         {
             PlayerStats.instance.gold -= PlayerStats.instance.mpUpgradeCost;
             PlayerStats.instance.maxMP += 10;
-            PlayerStats.instance.mpRegenRate += 1;
+            PlayerStats.instance.mpUpgradeCount++;
+
+            if (PlayerStats.instance.mpUpgradeCount % 3 == 0)
+            {
+                PlayerStats.instance.mpRegenRate += 1;
+                Debug.Log("Upgrade ke-" + PlayerStats.instance.mpUpgradeCount + "! MP Regen Rate bertambah +1. Sekarang: " + PlayerStats.instance.mpRegenRate);
+            }
+            else
+            {
+                Debug.Log("Upgrade MP Berhasil. But " + (3 - (PlayerStats.instance.mpUpgradeCount % 3)) + " upgrade lagi untuk menambah MP Regen.");
+            }
+
             PlayerStats.instance.mpUpgradeCost *= 2;
             UpdateUI();
         }

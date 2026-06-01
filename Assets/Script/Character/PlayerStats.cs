@@ -19,7 +19,6 @@ public class PlayerStats : MonoBehaviour
     public float speed = 5.0f;
     public int gold = 0;
 
-    // --- TAMBAHAN FITUR: INVENTORY POTION ---
     [Header("Inventory Potion")]
     public int smallPotionCount = 0;
     public int mediumPotionCount= 0;
@@ -30,9 +29,9 @@ public class PlayerStats : MonoBehaviour
     public int speedPotionCount = 0;
     
     [Tooltip("Jumlah HP yang dipulihkan Potion Heal")] 
-    public float smallHealAmount = 10f;  // Sembuh 3 darah
+    public float smallHealAmount = 10f;
     public float mediumHealAmount = 100f;
-    public float largeHealAmount = 1000f;  // Sembuh 7 darah
+    public float largeHealAmount = 1000f; 
 
     [Tooltip("Jumlah MP yang dipulihkan Potion Mana")] 
     public float smallMPAmount = 10f;
@@ -48,6 +47,8 @@ public class PlayerStats : MonoBehaviour
     public int energyUpgradeCost = 50;
     public int damageUpgradeCost = 1;
     public int speedUpgradeCost = 20;
+
+    [HideInInspector] public int mpUpgradeCount = 0;
 
     [Header("Skills Level & Data")]
     public int skill1Level = 0;

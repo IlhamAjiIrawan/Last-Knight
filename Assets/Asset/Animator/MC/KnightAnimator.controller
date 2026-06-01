@@ -32,8 +32,8 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Ranged_Bow_Release 1
-  m_Speed: 1
+  m_Name: Ranged_Bow_Release1
+  m_Speed: 2
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -1420858377574236828}
@@ -516,7 +516,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Ranged_Bow_Quick
-  m_Speed: 1
+  m_Speed: 2
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -2419087242665307334}
