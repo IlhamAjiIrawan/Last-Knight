@@ -1,9 +1,14 @@
 using UnityEngine;
-using TMPro; // Jika kamu menggunakan TextMeshPro untuk menampilkan harga
+using TMPro;
 
 public class ShopManager : MonoBehaviour
 {
-    // Hubungkan teks harga di Inspector jika ingin menampilkan harga yang berubah
+    [Header("Panel Toko (Pusat Navigasi)")]
+    public GameObject itemShopPanel;  
+    public GameObject statsShopPanel;
+    public GameObject skillShopPanel; // Menghubungkan panel skill baru
+    
+    [Header("UI Teks Harga Stats")]
     public TextMeshProUGUI healthPriceText;
     public TextMeshProUGUI mpPriceText;
     public TextMeshProUGUI energyPriceText;
@@ -15,17 +20,48 @@ public class ShopManager : MonoBehaviour
         UpdateUI(); // Update teks harga saat shop dibuka
     }
 
+    // --- FUNGSI NAVIGASI ANTI-TUMPANG TINDIH ---
+    public void SwitchToItemShop()
+    {
+        if (itemShopPanel != null && statsShopPanel != null && skillShopPanel != null)
+        {
+            itemShopPanel.SetActive(true);
+            statsShopPanel.SetActive(false);
+            skillShopPanel.SetActive(false); // Matikan panel lain
+            Debug.Log("Berpindah ke Item Shop.");
+        }
+    }
+
+    public void SwitchToStatsShop()
+    {
+        if (itemShopPanel != null && statsShopPanel != null && skillShopPanel != null)
+        {
+            itemShopPanel.SetActive(false);
+            statsShopPanel.SetActive(true);
+            skillShopPanel.SetActive(false); // Matikan panel lain
+            Debug.Log("Berpindah ke Stats Shop.");
+        }
+    }
+
+    public void SwitchToSkillShop()
+    {
+        if (itemShopPanel != null && statsShopPanel != null && skillShopPanel != null)
+        {
+            itemShopPanel.SetActive(false);
+            statsShopPanel.SetActive(false);
+            skillShopPanel.SetActive(true);  // Aktifkan panel skill
+            Debug.Log("Berpindah ke Skill Shop.");
+        }
+    }
+    
+    // --- LOGIKA UPGRADE STATS ---
     public void UpgradeHealth()
     {
         if (PlayerStats.instance.gold >= PlayerStats.instance.healthUpgradeCost)
         {
             PlayerStats.instance.gold -= PlayerStats.instance.healthUpgradeCost;
-            
-            // Efek Upgrade
             PlayerStats.instance.maxHealth += 10;
-            PlayerStats.instance.currentHealth += 10; // Bonus: isi nyawa saat upgrade
-            
-            // Lipat gandakan biaya
+            PlayerStats.instance.currentHealth += 10; 
             PlayerStats.instance.healthUpgradeCost *= 2;
             UpdateUI();
         }
@@ -36,10 +72,19 @@ public class ShopManager : MonoBehaviour
         if (PlayerStats.instance.gold >= PlayerStats.instance.mpUpgradeCost)
         {
             PlayerStats.instance.gold -= PlayerStats.instance.mpUpgradeCost;
-
             PlayerStats.instance.maxMP += 10;
-            PlayerStats.instance.mpRegenRate += 1;
-            
+            PlayerStats.instance.mpUpgradeCount++;
+
+            if (PlayerStats.instance.mpUpgradeCount % 3 == 0)
+            {
+                PlayerStats.instance.mpRegenRate += 1;
+                Debug.Log("Upgrade ke-" + PlayerStats.instance.mpUpgradeCount + "! MP Regen Rate bertambah +1. Sekarang: " + PlayerStats.instance.mpRegenRate);
+            }
+            else
+            {
+                Debug.Log("Upgrade MP Berhasil. But " + (3 - (PlayerStats.instance.mpUpgradeCount % 3)) + " upgrade lagi untuk menambah MP Regen.");
+            }
+
             PlayerStats.instance.mpUpgradeCost *= 2;
             UpdateUI();
         }
@@ -50,10 +95,8 @@ public class ShopManager : MonoBehaviour
         if (PlayerStats.instance.gold >= PlayerStats.instance.energyUpgradeCost)
         {
             PlayerStats.instance.gold -= PlayerStats.instance.energyUpgradeCost;
-
             PlayerStats.instance.maxEnergy += 5;
             PlayerStats.instance.energyRegenRate += 1;
-            
             PlayerStats.instance.energyUpgradeCost *= 2;
             UpdateUI();
         }
@@ -64,9 +107,7 @@ public class ShopManager : MonoBehaviour
         if (PlayerStats.instance.gold >= PlayerStats.instance.damageUpgradeCost)
         {
             PlayerStats.instance.gold -= PlayerStats.instance.damageUpgradeCost;
-
             PlayerStats.instance.damage += 1;
-            
             PlayerStats.instance.damageUpgradeCost *= 2;
             UpdateUI();
         }
@@ -77,10 +118,8 @@ public class ShopManager : MonoBehaviour
         if (PlayerStats.instance.gold >= PlayerStats.instance.speedUpgradeCost)
         {
             PlayerStats.instance.gold -= PlayerStats.instance.speedUpgradeCost;
-
             PlayerStats.instance.speed += 1;
             
-            // Update speed langsung ke PlayerMovement jika sedang aktif
             PlayerMovement pm = FindObjectOfType<PlayerMovement>();
             if (pm != null) pm.speed = PlayerStats.instance.speed;
 
@@ -91,7 +130,6 @@ public class ShopManager : MonoBehaviour
 
     void UpdateUI()
     {
-        // Update teks harga di UI (jika variabel teks diisi di Inspector)
         if (healthPriceText) healthPriceText.text = "Cost: " + PlayerStats.instance.healthUpgradeCost;
         if (mpPriceText) mpPriceText.text = "Cost: " + PlayerStats.instance.mpUpgradeCost;
         if (energyPriceText) energyPriceText.text = "Cost: " + PlayerStats.instance.energyUpgradeCost;

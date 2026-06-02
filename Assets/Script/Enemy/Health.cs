@@ -68,10 +68,23 @@ public class Health : MonoBehaviour
             
             currentHealth = PlayerStats.instance.currentHealth;
             PlayerMovement pm = GetComponent<PlayerMovement>();
-            if (pm != null && pm.isImmune) // Menggunakan isImmune, bukan isDashing
+            if (pm != null) 
             {
-                Debug.Log("Serangan Terhindar! (Immune)");
-                return; 
+                // 2. Terhindar karena Dash (Immune)
+                if (pm.isImmune)
+                {
+                    Debug.Log("Serangan Terhindar! (Immune)");
+                    return; 
+                }
+
+                // 3. Menahan serangan menggunakan Block Perisai
+                if (pm.AbsorbDamageWithBlock(damage))
+                {
+                    // Jika ingin memicu animasi perisai terpukul, kamu bisa menambahkan: anim.SetTrigger("blockHit");
+                    Debug.Log("Damage diserap sepenuhnya oleh perisai!");
+                    return; // Keluar fungsi awal agar darah & animasi getHit tidak jalan
+                }
+                pm.OnPlayerHit();
             }
         }
         currentHealth -= damage;

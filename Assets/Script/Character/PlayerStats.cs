@@ -9,15 +9,32 @@ public class PlayerStats : MonoBehaviour
     [Header("Status yang Disimpan")]
     public float currentHealth;
     public float maxHealth = 10f;
-    public float maxMP = 10f;      // Tambahkan ini
-    public float currentMP;        // Tambahkan ini
-    public float mpRegenRate = 1f; // MP pulih 2 poin per detik
+    public float maxMP = 10f;      
+    public float currentMP;        
+    public float mpRegenRate = 1f; 
     public float maxEnergy = 5f;
     public float currentEnergy;
-    public float energyRegenRate = 1f; // Energy pulih lebih cepat
+    public float energyRegenRate = 1f; 
     public float damage = 1f;
     public float speed = 5.0f;
     public int gold = 0;
+
+    [Header("Inventory Potion")]
+    public int smallPotionCount = 0;
+    public int mediumPotionCount= 0;
+    public int largePotionCount = 0;
+    public int smallMPCount = 0;
+    public int energyPotionCount = 0;
+    public int strengthPotionCount = 0;
+    public int speedPotionCount = 0;
+    
+    [Tooltip("Jumlah HP yang dipulihkan Potion Heal")] 
+    public float smallHealAmount = 10f;
+    public float mediumHealAmount = 100f;
+    public float largeHealAmount = 1000f; 
+
+    [Tooltip("Jumlah MP yang dipulihkan Potion Mana")] 
+    public float smallMPAmount = 10f;
 
     [Header("Rage Settings")]
     public float currentRage = 0f;
@@ -31,36 +48,46 @@ public class PlayerStats : MonoBehaviour
     public int damageUpgradeCost = 1;
     public int speedUpgradeCost = 20;
 
+    [HideInInspector] public int mpUpgradeCount = 0;
+
+    [Header("Skills Level & Data")]
+    public int skill1Level = 0;
+    public int skill2Level = 0;
+    public int maxSkillLevel = 5;
+
+    [Header("Skill MP Costs")]
+    public float skill1MpCost = 3f;
+    public float skill2MpCost = 4f;
+
+    [Header("Skill Upgrade Costs")]
+    public int skill1UpgradeCost = 10;
+    public int skill2UpgradeCost = 150;
+
     void Awake()
     {
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject); // JANGAN hapus saat pindah Scene
+            DontDestroyOnLoad(gameObject); 
 
-            // Inisialisasi status saat pertama kali load
             currentHealth = maxHealth;
-            currentMP = maxMP; // Set MP penuh di awal game
+            currentMP = maxMP; 
             currentEnergy = maxEnergy;
         }
         else
         {
-            Destroy(gameObject); // Hapus jika ada duplikat di Scene baru
+            Destroy(gameObject); 
         }
     }
 
     void Update()
     {
-        // Regenerasi MP otomatis setiap detik
         if (currentMP < maxMP)
         {
             currentMP += mpRegenRate * Time.deltaTime;
-            
-            // Memastikan MP tidak meluap melebihi maxMP
             currentMP = Mathf.Clamp(currentMP, 0, maxMP);
         }
 
-        // Regenerasi Energy otomatis
         if (currentEnergy < maxEnergy)
         {
             currentEnergy += energyRegenRate * Time.deltaTime;
