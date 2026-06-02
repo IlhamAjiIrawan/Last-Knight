@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 849a09ece539dd241bfd1a625d9549a4, type: 3}
   m_Name: Wave 4
   m_EditorClassIdentifier: Assembly-CSharp::WaveData
-  enemiesInWave: []
+  enemiesInWave:
+  - enemyPrefab: {fileID: 3889370758836871658, guid: 130dd7c1e332dab429b328b48011aba1, type: 3}
+    count: 1
   spawnInterval: 1.5
   isBossWave: 0

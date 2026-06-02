@@ -61,10 +61,10 @@ PrefabInstance:
       addedObject: {fileID: 5922512447440397939}
     - targetCorrespondingSourceObject: {fileID: 245743906601655648, guid: 85b213274c5828e4c9f21300034b3946, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7788003590531823777}
+      addedObject: {fileID: 3606238340361491766}
     - targetCorrespondingSourceObject: {fileID: 245743906601655648, guid: 85b213274c5828e4c9f21300034b3946, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3606238340361491766}
+      addedObject: {fileID: 7788003590531823777}
   m_SourcePrefab: {fileID: 100100000, guid: 85b213274c5828e4c9f21300034b3946, type: 3}
 --- !u!1 &1548119801499671017 stripped
 GameObject:
@@ -92,23 +92,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.23510002
   m_Center: {x: 0, y: 0.020954628, z: 0}
---- !u!114 &7788003590531823777
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1548119801499671017}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 148fb5c0d3b70194c9243be647b87c18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemCurrency
-  itemName: Currency7
-  value: 100
-  pullRadius: 3
-  moveSpeed: 7
-  magnetDelay: 3
 --- !u!54 &3606238340361491766
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -136,3 +119,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &7788003590531823777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1548119801499671017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 148fb5c0d3b70194c9243be647b87c18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemCurrency
+  itemName: Currency7
+  value: 100
+  pullRadius: 3
+  moveSpeed: 7
+  magnetDelay: 3

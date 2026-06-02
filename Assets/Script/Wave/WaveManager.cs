@@ -3,9 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class WaveManager : MonoBehaviour {
-    public List<WaveData> allWaves;    // Masukkan file WaveData di sini
-    public Transform[] spawnPoints;    // Lokasi muncul musuh
-    public GameObject shopPanel;       // Panel Upgrade
+    public List<WaveData> allWaves;
+    public Transform[] spawnPoints;
+    public GameObject shopPanel;  
+
+    [Header("Boss Wave Settings")]
+    public GameObject bossPrefab;      // Masukkan Prefab Boss (yang memakai script BossAI) di sini
+    public Transform bossSpawnPoint;
+    public GameObject bossHPBarUI;
     
     private int currentWaveIndex = 0;
     private int enemiesRemaining = 0;
@@ -28,6 +33,11 @@ public class WaveManager : MonoBehaviour {
                 yield return new WaitForSeconds(wave.spawnInterval);
             }
         }
+
+        if (wave.isBossWave) {
+            Debug.LogWarning("PERINGATAN: WAVE BOSS TELAH DIMULAI!");
+            SpawnBoss();
+        }
     }
 
     void SpawnEnemy(GameObject prefab) {
@@ -36,6 +46,28 @@ public class WaveManager : MonoBehaviour {
         
         // Hubungkan sinyal mati musuh ke fungsi di Manager ini
         enemy.GetComponent<Health>().onDeath += OnEnemyDefeated;
+        enemiesRemaining++;
+    }
+
+    void SpawnBoss() {
+        if (bossPrefab == null) {
+            Debug.LogError("Gagal Spawn! Prefab Boss belum dimasukkan ke WaveManager di Inspector.");
+            return;
+        }
+
+        // --- LOGIKA BARU: NYALAKAN UI SEBELUM BOSS MUNCUL ---
+        if (bossHPBarUI != null) {
+            bossHPBarUI.SetActive(true); 
+            Debug.Log("UI BossHPBar berhasil diaktifkan oleh WaveManager.");
+        }
+
+        // Tentukan titik spawn
+        Transform spawnPoint = bossSpawnPoint != null ? bossSpawnPoint : spawnPoints[Random.Range(0, spawnPoints.Length)];
+        
+        GameObject boss = Instantiate(bossPrefab, spawnPoint.position, Quaternion.identity);
+        
+        // Hubungkan sinyal mati Boss ke WaveManager
+        boss.GetComponent<Health>().onDeath += OnEnemyDefeated;
         enemiesRemaining++;
     }
 
