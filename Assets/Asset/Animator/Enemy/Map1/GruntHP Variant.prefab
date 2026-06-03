@@ -620,7 +620,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3889370758836871658}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 5
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -675,9 +675,9 @@ MonoBehaviour:
   player: {fileID: 0}
   chaseRange: 15
   attackRange: 5.5
-  moveSpeed: 3.5
+  moveSpeed: 9
   damage: 20
-  attackDelay: 1
+  attackDelay: 0.5
   stunDuration: 0.5
   patrolRadius: 8
   patrolWaitTime: 1
@@ -695,6 +695,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 8650621622134387245}
   maxHealth: 250
+  currentHealth: 0
   itemToDrop: {fileID: 3218043692679455554, guid: a09adf78f9405dd45bde5d0602c17c1a, type: 3}
   amountToDrop: 1
   dropSpread: 0.5

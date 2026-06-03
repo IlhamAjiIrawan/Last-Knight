@@ -163570,7 +163570,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveManager
   allWaves:
-  - {fileID: 11400000, guid: 332e0f7f74fa88f4fb37c4c021fc8179, type: 2}
+  - {fileID: 11400000, guid: 8a7b60fed82bc1849bb69bef0cf0448e, type: 2}
   - {fileID: 11400000, guid: ff7ed73c5baf5664e88a42d11f117123, type: 2}
   - {fileID: 11400000, guid: a2615a1c43f345044ac959681efe50f7, type: 2}
   - {fileID: 11400000, guid: 72192a2de2644a64e8fe463d9a8eec87, type: 2}
@@ -163974,8 +163974,8 @@ MonoBehaviour:
   maxEnergy: 5
   currentEnergy: 0
   energyRegenRate: 1
-  damage: 100
-  speed: 10
+  damage: 1
+  speed: 5
   gold: 0
   smallPotionCount: 1
   mediumPotionCount: 1
@@ -163997,7 +163997,7 @@ MonoBehaviour:
   damageUpgradeCost: 1
   speedUpgradeCost: 20
   mpUpgradeCount: 0
-  skill1Level: 1
+  skill1Level: 0
   skill2Level: 0
   maxSkillLevel: 5
   skill1MpCost: 3
@@ -200903,7 +200903,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1013327847892799460, guid: 130dd7c1e332dab429b328b48011aba1, type: 3}
       propertyPath: m_Mass
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1963102439706376855, guid: 130dd7c1e332dab429b328b48011aba1, type: 3}
       propertyPath: m_AnchorMax.y
@@ -200913,6 +200913,14 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 215926192}
+    - target: {fileID: 2338437373834125795, guid: 130dd7c1e332dab429b328b48011aba1, type: 3}
+      propertyPath: moveSpeed
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2338437373834125795, guid: 130dd7c1e332dab429b328b48011aba1, type: 3}
+      propertyPath: attackDelay
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3889370758836871552, guid: 130dd7c1e332dab429b328b48011aba1, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -201241,7 +201249,6 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 1119735500}
   - {fileID: 860340966}
-  - {fileID: 8183840255411644995}
   - {fileID: 1022623280}
   - {fileID: 1756971953}
   - {fileID: 989038173}
@@ -201261,3 +201268,4 @@ SceneRoots:
   - {fileID: 2359397993555671493}
   - {fileID: 7292430906211105317}
   - {fileID: 7002234732692790400}
+  - {fileID: 8183840255411644995}
