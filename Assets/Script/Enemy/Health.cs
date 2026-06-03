@@ -4,15 +4,18 @@ using System;
 
 public class Health : MonoBehaviour
 {
-    public Slider healthSlider; // Tarik slider musuh ke sini
+    public Slider healthSlider; // Tarik slider musuh/boss ke sini
     public float maxHealth = 10f;
-    private float currentHealth;
+
+    // --- DIUBAH JADI PUBLIC: Sesuai solusi error CS0122 agar bisa dibaca WaveManager ---
+    public float currentHealth; 
+    
     private Animator anim;
     private bool isDead = false;
     public Action onDeath;
 
     [Header("Drop Settings")]
-    public GameObject itemToDrop; // Prefab mata uang
+    public GameObject itemToDrop; // Prefab mata uang / koin
     public int amountToDrop = 1;  // Jumlah item yang dijatuhkan
     public float dropSpread = 0.5f; // Jarak pencaran antar koin agar tidak menumpuk di satu titik
 
@@ -26,7 +29,7 @@ public class Health : MonoBehaviour
         }
         else
         {
-            currentHealth = maxHealth; // Musuh tetap pakai nilai sendiri
+            currentHealth = maxHealth; // Musuh & Boss tetap pakai nilai maxHealth sendiri
         }
         anim = GetComponent<Animator>();
 
@@ -38,7 +41,6 @@ public class Health : MonoBehaviour
         }
     }
 
-    // Tambahkan ini di Health.cs
     void Update()
     {
         if (gameObject.CompareTag("Player"))
@@ -57,6 +59,7 @@ public class Health : MonoBehaviour
     public void TakeDamage(float damage)
     {
         if (isDead) return;
+        
         // Cek status immune dari PlayerMovement
         if (gameObject.CompareTag("Player"))
         {
@@ -70,29 +73,28 @@ public class Health : MonoBehaviour
             PlayerMovement pm = GetComponent<PlayerMovement>();
             if (pm != null) 
             {
-                // 2. Terhindar karena Dash (Immune)
+                // Terhindar karena Dash (Immune)
                 if (pm.isImmune)
                 {
                     Debug.Log("Serangan Terhindar! (Immune)");
                     return; 
                 }
 
-                // 3. Menahan serangan menggunakan Block Perisai
+                // Menahan serangan menggunakan Block Perisai
                 if (pm.AbsorbDamageWithBlock(damage))
                 {
-                    // Jika ingin memicu animasi perisai terpukul, kamu bisa menambahkan: anim.SetTrigger("blockHit");
                     Debug.Log("Damage diserap sepenuhnya oleh perisai!");
-                    return; // Keluar fungsi awal agar darah & animasi getHit tidak jalan
+                    return; 
                 }
                 pm.OnPlayerHit();
             }
         }
+
         currentHealth -= damage;
 
-        //Update Silder Enemy
-        if (gameObject.CompareTag("Enemy") && healthSlider != null)
+        // --- SINKRONISASI SLIDER: Ditambahkan kondisi || tag "Boss" ---
+        if ((gameObject.CompareTag("Enemy") || gameObject.CompareTag("Boss")) && healthSlider != null)
         {
-            // Munculkan health bar jika sebelumnya disembunyikan
             healthSlider.gameObject.SetActive(true); 
             healthSlider.value = currentHealth;
         }
@@ -106,15 +108,16 @@ public class Health : MonoBehaviour
                 anim.SetTrigger("getHit");
             }
         }
-        else if (gameObject.CompareTag("Enemy"))
+        else if (gameObject.CompareTag("Enemy") || gameObject.CompareTag("Boss"))
         {
-            // Panggil fungsi TakeHit di EnemyAI agar dia diam
+            // Panggil fungsi TakeHit di EnemyAI jika objeknya adalah kroco biasa
             EnemyAI ai = GetComponent<EnemyAI>();
             if (ai != null)
             {
                 ai.TakeHit();
             }
         }
+
         if (currentHealth <= 0) Die();
     }
 
@@ -124,10 +127,10 @@ public class Health : MonoBehaviour
         isDead = true;
         if (onDeath != null) onDeath.Invoke();
         if (healthSlider != null) healthSlider.gameObject.SetActive(false);
-        if (gameObject.CompareTag("Enemy"))
+
+        if (gameObject.CompareTag("Enemy") || gameObject.CompareTag("Boss"))
         {
-            PlayerStats.instance.currentRage += 1f; // Tambah 1 poin
-            // Pastikan tidak melebihi 100
+            PlayerStats.instance.currentRage += 1f; // Tambah 1 poin rage
             PlayerStats.instance.currentRage = Mathf.Clamp(PlayerStats.instance.currentRage, 0, 100);
         }
 
@@ -149,9 +152,13 @@ public class Health : MonoBehaviour
             }
         }
 
-        // 1. Matikan script AI agar Update() berhenti berjalan
+        // 1. Matikan script AI Kroco agar Update() berhenti berjalan
         if (GetComponent<EnemyAI>())
             GetComponent<EnemyAI>().enabled = false;
+
+        // --- TAMBAHAN BARU: Matikan script Boss AI RedDragon agar naga berhenti menyerang ---
+        if (GetComponent<RedDragon>())
+            GetComponent<RedDragon>().enabled = false;
 
         // 2. Matikan pergerakan player (jika ini player)
         if (GetComponent<PlayerMovement>())
@@ -170,7 +177,8 @@ public class Health : MonoBehaviour
 
         Debug.Log(gameObject.name + " telah mati.");
 
-        if (gameObject.CompareTag("Enemy"))
+        // Hancurkan gameobject setelah 5 detik (berlaku untuk Enemy dan Boss)
+        if (!gameObject.CompareTag("Player"))
             Destroy(gameObject, 5f);
     }
 }

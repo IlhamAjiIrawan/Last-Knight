@@ -18,16 +18,12 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI rageText;
 
 /*
-    void Start()
+    private void Start()
     {
-        if (PlayerStats.instance != null)
-        {
-            healthSlider.maxValue = PlayerStats.instance.maxHealth;
-            mpSlider.maxValue = PlayerStats.instance.maxMP;
-            energySlider.maxValue = PlayerStats.instance.maxEnergy;
-        }
+        UpdateMaxValues();
     }
 */
+
     void Update()
     {
         if (PlayerStats.instance == null) return;
