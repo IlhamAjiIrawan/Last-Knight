@@ -613,7 +613,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   player: {fileID: 0}
-  chaseRange: 15
+  chaseRange: 30
   attackRange: 2
   moveSpeed: 3.5
   damage: 1
@@ -635,6 +635,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 8388879694272436997}
   maxHealth: 5
+  currentHealth: 0
   itemToDrop: {fileID: 8681302943311832967, guid: 27aeb6c3e0d2aa348b8740efec403d7b, type: 3}
   amountToDrop: 5
   dropSpread: 0.5

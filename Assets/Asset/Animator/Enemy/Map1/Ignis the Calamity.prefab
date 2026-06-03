@@ -2234,7 +2234,7 @@ MonoBehaviour:
   roarDamagePerTick: 10
   defendDuration: 2
   screamDuration: 5
-  ultCooldown: 1
+  ultCooldown: 30
   ultDuration: 4
   ultTelegraphDuration: 1.8
   ultFlyHeight: 18
