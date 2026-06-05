@@ -92,8 +92,8 @@ public class Health : MonoBehaviour
 
         currentHealth -= damage;
 
-        // --- SINKRONISASI SLIDER: Ditambahkan kondisi || tag "Boss" ---
-        if ((gameObject.CompareTag("Enemy") || gameObject.CompareTag("Boss")) && healthSlider != null)
+        // --- UPDATE: Mendukung validasi untuk Tag Enemy, Boss, dan HeavyEnemy ---
+        if (IsTargetEnemy() && healthSlider != null)
         {
             healthSlider.gameObject.SetActive(true); 
             healthSlider.value = currentHealth;
@@ -108,9 +108,9 @@ public class Health : MonoBehaviour
                 anim.SetTrigger("getHit");
             }
         }
-        else if (gameObject.CompareTag("Enemy") || gameObject.CompareTag("Boss"))
+        else if (IsTargetEnemy())
         {
-            // Panggil fungsi TakeHit di EnemyAI jika objeknya adalah kroco biasa
+            // Panggil fungsi TakeHit di EnemyAI jika objeknya adalah kroco/musuh biasa/heavy enemy
             EnemyAI ai = GetComponent<EnemyAI>();
             if (ai != null)
             {
@@ -128,7 +128,8 @@ public class Health : MonoBehaviour
         if (onDeath != null) onDeath.Invoke();
         if (healthSlider != null) healthSlider.gameObject.SetActive(false);
 
-        if (gameObject.CompareTag("Enemy") || gameObject.CompareTag("Boss"))
+        // --- UPDATE: Menggunakan fungsi helper agar HeavyEnemy juga menambah Rage Point ---
+        if (IsTargetEnemy())
         {
             PlayerStats.instance.currentRage += 1f; // Tambah 1 poin rage
             PlayerStats.instance.currentRage = Mathf.Clamp(PlayerStats.instance.currentRage, 0, 100);
@@ -156,7 +157,7 @@ public class Health : MonoBehaviour
         if (GetComponent<EnemyAI>())
             GetComponent<EnemyAI>().enabled = false;
 
-        // --- TAMBAHAN BARU: Matikan script Boss AI RedDragon agar naga berhenti menyerang ---
+        // --- Matikan script Boss AI RedDragon agar naga berhenti menyerang ---
         if (GetComponent<RedDragon>())
             GetComponent<RedDragon>().enabled = false;
 
@@ -177,8 +178,20 @@ public class Health : MonoBehaviour
 
         Debug.Log(gameObject.name + " telah mati.");
 
-        // Hancurkan gameobject setelah 5 detik (berlaku untuk Enemy dan Boss)
+        // Hancurkan gameobject setelah 5 detik (berlaku untuk Enemy, HeavyEnemy, dan Boss)
         if (!gameObject.CompareTag("Player"))
             Destroy(gameObject, 5f);
+    }
+
+    // --- FUNGSI HELPER BARU ---
+    // Membantu menyederhanakan pengecekan kategori musuh di dalam script
+    private bool IsTargetEnemy()
+    {
+        int currentLayer = gameObject.layer;
+        
+        // Sesuaikan string di dalam NameToLayer dengan nama layer yang kamu buat di Unity (Case-Sensitive)
+        return currentLayer == LayerMask.NameToLayer("enemy") || 
+            currentLayer == LayerMask.NameToLayer("HeavyEnemy") || 
+            currentLayer == LayerMask.NameToLayer("Boss");
     }
 }

@@ -10,10 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 849a09ece539dd241bfd1a625d9549a4, type: 3}
-  m_Name: Wave 1
+  m_Name: Map2_Wave2
   m_EditorClassIdentifier: Assembly-CSharp::WaveData
   enemiesInWave:
-  - enemyPrefab: {fileID: 7207974507752662453, guid: 0c68cf537f49ac24eba18cd48c61b214, type: 3}
-    count: 5
-  spawnInterval: 1.5
+  - enemyPrefab: {fileID: 8123012318861251662, guid: 969e837ea02a9f849b4fb1cd35d22244, type: 3}
+    count: 10
+  - enemyPrefab: {fileID: 7430957901723539958, guid: 96720e3f0720f5944816e13667d41770, type: 3}
+    count: 10
+  spawnInterval: 2
   isBossWave: 0
