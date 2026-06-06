@@ -92,7 +92,7 @@ public class Health : MonoBehaviour
 
         currentHealth -= damage;
 
-        // --- UPDATE: Mendukung validasi untuk Tag Enemy, Boss, dan HeavyEnemy ---
+        // Jika objek adalah musuh, update UI Health Bar-nya
         if (IsTargetEnemy() && healthSlider != null)
         {
             healthSlider.gameObject.SetActive(true); 
@@ -128,7 +128,6 @@ public class Health : MonoBehaviour
         if (onDeath != null) onDeath.Invoke();
         if (healthSlider != null) healthSlider.gameObject.SetActive(false);
 
-        // --- UPDATE: Menggunakan fungsi helper agar HeavyEnemy juga menambah Rage Point ---
         if (IsTargetEnemy())
         {
             PlayerStats.instance.currentRage += 1f; // Tambah 1 poin rage
@@ -183,15 +182,17 @@ public class Health : MonoBehaviour
             Destroy(gameObject, 5f);
     }
 
-    // --- FUNGSI HELPER BARU ---
-    // Membantu menyederhanakan pengecekan kategori musuh di dalam script
+    // --- FUNGSI HELPER AMAN (Mencegah Typo Huruf Kapital di Unity Editor) ---
     private bool IsTargetEnemy()
     {
         int currentLayer = gameObject.layer;
         
-        // Sesuaikan string di dalam NameToLayer dengan nama layer yang kamu buat di Unity (Case-Sensitive)
+        // Memeriksa variasi huruf kapital/kecil agar sistem deteksi UI dan getHit tidak mogok
         return currentLayer == LayerMask.NameToLayer("enemy") || 
-            currentLayer == LayerMask.NameToLayer("HeavyEnemy") || 
-            currentLayer == LayerMask.NameToLayer("Boss");
+               currentLayer == LayerMask.NameToLayer("Enemy") || 
+               currentLayer == LayerMask.NameToLayer("HeavyEnemy") || 
+               currentLayer == LayerMask.NameToLayer("heavyenemy") || 
+               currentLayer == LayerMask.NameToLayer("Boss") || 
+               currentLayer == LayerMask.NameToLayer("boss");
     }
 }

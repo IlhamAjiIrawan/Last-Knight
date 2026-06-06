@@ -429,7 +429,8 @@ public class PlayerMovement : MonoBehaviour
     // --- DI SINI PERUBAHAN UTAMANYA ---
     void ApplyDamage(Collider enemy, float damage, bool causeKnockback)
     {
-        Health enemyHealth = enemy.GetComponent<Health>();
+        // --- PERBAIKAN 1: Gunakan GetComponentInParent agar bisa mendeteksi script meskipun collider ada di Child ---
+        Health enemyHealth = enemy.GetComponentInParent<Health>();
 
         if (impactVFXPrefab != null)
         {
@@ -458,13 +459,14 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // --- PERBAIKAN: Deteksi kebal knockback sekarang menggunakan Layer, bukan Tag ---
+        // Perhatikan penulisan nama Layer di bawah ini, sesuaikan huruf kapitalnya dengan di Unity Editor kamu ("HeavyEnemy" / "Boss")
         int heavyEnemyLayer = LayerMask.NameToLayer("HeavyEnemy");
         int bossLayer = LayerMask.NameToLayer("Boss");
 
         if (causeKnockback && enemy.gameObject.layer != bossLayer && enemy.gameObject.layer != heavyEnemyLayer)
         {
-            EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+            // --- PERBAIKAN 2: Gunakan GetComponentInParent juga untuk mengambil script AI-nya ---
+            EnemyAI enemyAI = enemy.GetComponentInParent<EnemyAI>();
             if (enemyAI != null)
             {
                 Vector3 knockbackDirection = (enemy.transform.position - transform.position).normalized;

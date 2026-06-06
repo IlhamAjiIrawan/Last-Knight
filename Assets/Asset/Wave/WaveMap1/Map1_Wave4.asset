@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Map1_Wave4
   m_EditorClassIdentifier: Assembly-CSharp::WaveData
   enemiesInWave:
-  - enemyPrefab: {fileID: 3071006823374636005, guid: b116a2a89a0ad8d42ab0e21ecf76bf3c, type: 3}
+  - enemyPrefab: {fileID: 8184032907293733433, guid: b116a2a89a0ad8d42ab0e21ecf76bf3c, type: 3}
     count: 1
   spawnInterval: 1.5
   isBossWave: 0
