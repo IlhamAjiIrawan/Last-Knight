@@ -677,7 +677,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   player: {fileID: 0}
-  chaseRange: 15
+  chaseRange: 50
   attackRange: 5
   moveSpeed: 7
   damage: 10

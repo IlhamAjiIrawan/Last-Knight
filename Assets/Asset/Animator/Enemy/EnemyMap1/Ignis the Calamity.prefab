@@ -2141,7 +2141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RedDragon
   player: {fileID: 0}
-  chaseRange: 20
+  chaseRange: 100
   attackRange: 6.5
   moveSpeed: 4
   damage: 25
