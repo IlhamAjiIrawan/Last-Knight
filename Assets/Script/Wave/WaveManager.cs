@@ -3,32 +3,38 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
+// --- SANGAT PENTING: Class pembantu agar bisa muncul rapi di Inspector ---
+[System.Serializable]
+public class BossDataSetup
+{
+    public GameObject bossPrefab;       // Tempat menaruh Prefab Boss
+    public string bossDisplayName;      // Tempat mengetik Nama Kustom Boss untuk UI
+}
+
 public class WaveManager : MonoBehaviour {
     public List<WaveData> allWaves;
     public Transform[] spawnPoints;
     public GameObject shopPanel;  
 
+    [Header("Audio Settings")]
+    public AudioSource bgmSource;       
+    public AudioClip normalWaveBGM;    
+    public AudioClip bossWaveBGM;      
+
     [Header("Boss Wave Settings")]
-    public GameObject bossPrefab;      // Masukkan Prefab Boss (yang memakai script BossAI) di sini
+    // --- DIUBAH: Sekarang menggunakan List dari class custom BossDataSetup ---
+    public List<BossDataSetup> bossToSpawnList;  
     public Transform bossSpawnPoint;
-    public GameObject bossHPBarUI;
-    public TextMeshProUGUI textBarBoss;
+
+    [Header("New Dynamic UI Settings")]
+    public GameObject bossHPBarPrefab;    
+    public Transform bossHPContainer;     
+
     private int currentWaveIndex = 0;
     private int enemiesRemaining = 0;
-    
-    // VARIABEL BARU: Untuk menyimpan data komponen Health dari Boss yang sedang aktif
-    private Health activeBossHealth;
 
     void Start() {
         StartCoroutine(StartWave());
-    }
-
-    // MEKANISME BARU: Update teks HP secara real-time dari data Boss yang aktif
-    void Update() {
-        if (activeBossHealth != null && textBarBoss != null) {
-            // Mengambil currentHealth dan maxHealth langsung dari komponen Health si Boss
-            textBarBoss.text = Mathf.Max(0, (int)activeBossHealth.currentHealth) + " / " + (int)activeBossHealth.maxHealth;
-        }
     }
 
     IEnumerator StartWave() {
@@ -38,6 +44,12 @@ public class WaveManager : MonoBehaviour {
         }
 
         WaveData wave = allWaves[currentWaveIndex];
+
+        if (wave.isBossWave) {
+            SwitchBGM(bossWaveBGM);
+        } else {
+            SwitchBGM(normalWaveBGM);
+        }
 
         foreach (var group in wave.enemiesInWave) {
             for (int i = 0; i < group.count; i++) {
@@ -56,72 +68,96 @@ public class WaveManager : MonoBehaviour {
         Transform randomPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
         GameObject enemy = Instantiate(prefab, randomPoint.position, Quaternion.identity);
         
-        // Hubungkan sinyal mati musuh ke fungsi di Manager ini
         enemy.GetComponent<Health>().onDeath += OnEnemyDefeated;
         enemiesRemaining++;
     }
 
     void SpawnBoss() {
-        if (bossPrefab == null) {
-            Debug.LogError("Gagal Spawn! Prefab Boss belum dimasukkan ke WaveManager di Inspector.");
+        // Cek apakah list boss kosong
+        if (bossToSpawnList == null || bossToSpawnList.Count == 0) {
+            Debug.LogError("Gagal Spawn! List 'Boss To Spawn List' masih kosong di WaveManager Inspector.");
             return;
         }
 
-        // Nyalakan UI HP Bar dan Teks HP sebelum Boss muncul
-        if (bossHPBarUI != null) {
-            bossHPBarUI.SetActive(true); 
-            Debug.Log("UI BossHPBar berhasil diaktifkan oleh WaveManager.");
-        }
-        if (textBarBoss != null) {
-            textBarBoss.gameObject.SetActive(true);
-        }
+        // Loop sebanyak data boss yang kamu daftarkan di Inspector
+        for (int i = 0; i < bossToSpawnList.Count; i++) {
+            // Validasi jika ada slot element yang lupa belum diisi prefab-nya
+            if (bossToSpawnList[i] == null || bossToSpawnList[i].bossPrefab == null) continue;
 
-        // Tentukan titik spawn
-        Transform spawnPoint = bossSpawnPoint != null ? bossSpawnPoint : spawnPoints[Random.Range(0, spawnPoints.Length)];
-        
-        GameObject boss = Instantiate(bossPrefab, spawnPoint.position, Quaternion.identity);
-        
-        // --- LOGIKA BARU: Ambil komponen Health dari clone Boss yang baru saja lahir ---
-        activeBossHealth = boss.GetComponent<Health>();
+            Transform spawnPoint = bossSpawnPoint != null ? bossSpawnPoint : spawnPoints[Random.Range(0, spawnPoints.Length)];
+            
+            Vector3 spawnPosition = spawnPoint.position;
+            if (i > 0) {
+                spawnPosition += new Vector3(Random.Range(-3.5f, 3.5f), 0, Random.Range(-3.5f, 3.5f));
+            }
 
-        // Hubungkan sinyal mati Boss ke WaveManager
-        boss.GetComponent<Health>().onDeath += OnEnemyDefeated;
-        enemiesRemaining++;
+            // 1. Lahirkan Boss menggunakan data Prefab dari list kustom
+            GameObject boss = Instantiate(bossToSpawnList[i].bossPrefab, spawnPosition, Quaternion.identity);
+            Health bossHealth = boss.GetComponent<Health>();
+
+            // 2. Lahirkan UI Health Bar Khusus untuk Boss ini
+            if (bossHPBarPrefab != null && bossHPContainer != null && bossHealth != null) {
+                GameObject uiBar = Instantiate(bossHPBarPrefab, bossHPContainer);
+                BossHPBar barScript = uiBar.GetComponent<BossHPBar>();
+                
+                if (barScript != null) {
+                    // --- FITUR BARU: Mengirimkan nama kustom dari Inspector ke UI Bar masing-masing ---
+                    string namaKustom = bossToSpawnList[i].bossDisplayName;
+                    
+                    // Jika kolom nama dikosongkan di inspector, otomatis pakai nama prefab asli sebagai cadangan
+                    if (string.IsNullOrEmpty(namaKustom)) {
+                        namaKustom = bossToSpawnList[i].bossPrefab.name;
+                    }
+
+                    barScript.Setup(bossHealth, namaKustom);
+                }
+            }
+
+            boss.GetComponent<Health>().onDeath += OnEnemyDefeated;
+            enemiesRemaining++;
+        }
     }
 
     void OnEnemyDefeated() {
         enemiesRemaining--;
         if (enemiesRemaining <= 0) {
-            // Ketika boss atau semua musuh mati, bersihkan referensi health dan sembunyikan UI Teks
-            activeBossHealth = null; 
-            if (textBarBoss != null) textBarBoss.gameObject.SetActive(false);
-
             StartCoroutine(WaitBeforeOpeningShop());
         }
     }
 
     IEnumerator WaitBeforeOpeningShop() {
         Debug.Log("Wave Clear! Memberi waktu 5 detik untuk memungut item...");
-        
-        // Tunggu selama 5 detik (gameplay masih berjalan)
         yield return new WaitForSeconds(5f);
-
-        // Setelah 5 detik, baru jalankan fungsi EndWave untuk buka shop
         EndWave();
     }
 
     void EndWave() {
-        if (bossHPBarUI != null) bossHPBarUI.SetActive(false); // Pastikan slider HP utama ikut mati saat wave kelar
-        shopPanel.SetActive(true); // Munculkan toko
+        if (bossHPContainer != null) {
+            foreach (Transform child in bossHPContainer) {
+                Destroy(child.gameObject);
+            }
+        }
+
+        shopPanel.SetActive(true); 
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;       // Pause game
+        Cursor.visible = true;      
     }
 
     public void GoToNextWave() {
         shopPanel.SetActive(false);
-        Time.timeScale = 1f;       // Resume game
+        Time.timeScale = 1f;       
         currentWaveIndex++;
         StartCoroutine(StartWave());
+    }
+
+    private void SwitchBGM(AudioClip newClip) {
+        if (bgmSource == null || newClip == null) return;
+        if (bgmSource.clip == newClip && bgmSource.isPlaying) return;
+
+        bgmSource.Stop();
+        bgmSource.clip = newClip;
+        bgmSource.loop = true; 
+        bgmSource.Play();
     }
 }

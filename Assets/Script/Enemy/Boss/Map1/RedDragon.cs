@@ -103,16 +103,6 @@ public class RedDragon : MonoBehaviour
             player = GameObject.FindGameObjectWithTag("Player").transform;
         }
 
-        GameObject bossUIObj = GameObject.Find("BossHPBar"); 
-        if (bossUIObj != null)
-        {
-            Slider bossSlider = bossUIObj.GetComponent<Slider>();
-            bossSlider.gameObject.SetActive(true); 
-            health.healthSlider = bossSlider; 
-            bossSlider.maxValue = health.maxHealth;
-            bossSlider.value = health.maxHealth;
-        }
-
         health.onDeath += HandleBossDeath;
         
         lastSkill1Time = Time.time - (skill1Cooldown / 2f); 
@@ -126,7 +116,7 @@ public class RedDragon : MonoBehaviour
     {
         if (isDead) return;
 
-        if (!isCounterAttacking && health.healthSlider != null && health.healthSlider.value <= nextHPThreshold)
+        if (!isCounterAttacking && health != null && health.currentHealth <= nextHPThreshold)
         {
             InterruptCurrentActions(); 
             StartCoroutine(CounterAttackRoutine());
