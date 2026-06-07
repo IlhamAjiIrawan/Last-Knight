@@ -786,7 +786,7 @@ MonoBehaviour:
   player: {fileID: 0}
   chaseRange: 50
   attackRange: 5
-  moveSpeed: 7
+  moveSpeed: 3
   damage: 10
   attackDelay: 0.5
   stunDuration: 0.5
