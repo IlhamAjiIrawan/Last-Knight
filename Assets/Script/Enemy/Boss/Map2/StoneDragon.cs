@@ -24,8 +24,22 @@ public class StoneDragon : MonoBehaviour
     public float telegraphDuration = 1.2f; 
     public float postHitDuration = 1.5f;   
 
+    [Header("Skill 2 Settings (Claw Semi-Circle)")]
+    public float skill2Cooldown = 6f;
+    public float skill2Range = 5f;
+    [Tooltip("180 derajat berarti setengah lingkaran pas di depan boss")]
+    public float skill2Angle = 180f; 
+    public float skill2Damage = 35f;
+    public float skill2TelegraphDuration = 0.6f; // Cakaran biasanya lebih instan/cepat
+    public float skill2PostHitDuration = 0.8f;
+
     [Header("Danger Zone Visuals")]
     public GameObject dangerZoneBoxPrefab;   
+    public GameObject dangerZoneConePrefab;  // Gunakan prefab cone/fan untuk area melingkar
+
+    [Header("Skill 2 VFX Prefabs")]
+    public GameObject clawVFXPrefab;         // Prefab efek visual sabetan cakar
+    public Transform clawSpawnPoint;
 
     [Header("Counter Attack (Defend & Scream) Settings")]
     public GameObject shieldPrefab;          
@@ -52,6 +66,7 @@ public class StoneDragon : MonoBehaviour
     private bool isUsingSkill = false;    
     private float lastAttackTime;
     private float lastSkill1Time;         
+    private float lastSkill2Time;         
 
     private GameObject currentSkillDangerZone; 
     private GameObject currentSkillVFX;        
@@ -71,10 +86,9 @@ public class StoneDragon : MonoBehaviour
 
         health.onDeath += HandleBossDeath;
         
-        // Mengatur cooldown awal agar skill 1 siap lebih cepat di awal game
         lastSkill1Time = Time.time - (skill1Cooldown / 2f); 
+        lastSkill2Time = Time.time - (skill2Cooldown / 3f); // Mengatur jeda awal skill 2
 
-        // Menentukan batasan darah awal untuk Counter Attack (70% HP)
         nextHPThreshold = health.maxHealth * 0.7f;
     }
 
@@ -82,7 +96,6 @@ public class StoneDragon : MonoBehaviour
     {
         if (isDead) return;
 
-        // Cek Mekanisme Counter Attack
         if (!isCounterAttacking && health != null && health.currentHealth <= nextHPThreshold)
         {
             InterruptCurrentActions(); 
@@ -94,10 +107,14 @@ public class StoneDragon : MonoBehaviour
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        // Hanya mengecek Skill 1, Basic Attack, dan Pergerakan mengejar player
+        // Prioritas: Skill 1 (Jarak Jauh) -> Skill 2 (Jarak Menengah/Setengah Lingkaran) -> Basic Attack
         if (distanceToPlayer <= skill1Range && Time.time >= lastSkill1Time + skill1Cooldown)
         {
             StartCoroutine(Skill1Routine());
+        }
+        else if (distanceToPlayer <= skill2Range && Time.time >= lastSkill2Time + skill2Cooldown)
+        {
+            StartCoroutine(Skill2Routine());
         }
         else if (distanceToPlayer <= attackRange)
         {
@@ -144,6 +161,7 @@ public class StoneDragon : MonoBehaviour
         {
             anim.ResetTrigger("attack");
             anim.ResetTrigger("skill1");
+            anim.ResetTrigger("skill2"); // Reset trigger skill 2 jika terpotong
             anim.ResetTrigger("defend");
             anim.ResetTrigger("scream");
         }
@@ -221,6 +239,75 @@ public class StoneDragon : MonoBehaviour
         if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = false;
         lastSkill1Time = Time.time;
         isUsingSkill = false;
+    }
+
+    // --- BARU: LOGIKA SKILL 2 (CAKARAN SETENGAH LINGKARAN) ---
+    IEnumerator Skill2Routine()
+    {
+        isUsingSkill = true;
+        anim.SetBool("isMoving", false);
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = true;
+
+        transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
+
+        // Munculkan indikator area (Cone/Fan)
+        if (dangerZoneConePrefab != null)
+        {
+            Vector3 spawnPos = clawSpawnPoint != null ? clawSpawnPoint.position : transform.position;
+            spawnPos.y = transform.position.y + 0.05f;
+
+            currentSkillDangerZone = Instantiate(dangerZoneConePrefab, spawnPos, transform.rotation);
+            currentSkillDangerZone.transform.SetParent(transform);
+            currentSkillDangerZone.transform.localScale = new Vector3(skill2Range, 1f, skill2Range);
+        }
+
+        // Memicu animasi mencakar
+        anim.SetTrigger("skill2");
+        
+        // Tunggu sampai durasi indikator merah selesai sebelum menghapusnya
+        yield return new WaitForSeconds(skill2TelegraphDuration);
+
+        if (currentSkillDangerZone != null) Destroy(currentSkillDangerZone);
+
+        // --- KODE SPAWN VFX DI SINI SUDAH DIHAPUS ---
+        // Sekarang pemunculan VFX diserahkan penuh ke Animation Event (Fungsi TriggerClawVFX di bawah)
+
+        // PERHITUNGAN DAMAGE AREA SETENGAH LINGKARAN
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, skill2Range);
+        foreach (Collider col in hitColliders)
+        {
+            if (col.CompareTag("Player") && !isDead)
+            {
+                Vector3 dirToPlayer = (col.transform.position - transform.position).normalized;
+                float angleToPlayer = Vector3.Angle(transform.forward, dirToPlayer);
+
+                if (angleToPlayer <= (skill2Angle / 2f))
+                {
+                    col.GetComponent<Health>().TakeDamage(skill2Damage);
+                }
+                break; 
+            }
+        }
+
+        yield return new WaitForSeconds(skill2PostHitDuration);
+
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = false;
+        lastSkill2Time = Time.time;
+        isUsingSkill = false;
+    }
+
+    // --- FUNGSI BARU: Dipanggil khusus melalui Animation Event ---
+    public void TriggerClawVFX()
+    {
+        if (isDead || clawVFXPrefab == null) return;
+
+        Vector3 spawnPosition = transform.position + transform.forward * 2f; // Lahir 2 meter di depan boss
+        spawnPosition.y = transform.position.y + 1f; // Naikkan 1 meter dari tanah agar tidak tenggelam
+
+        Transform spawnPoint = clawSpawnPoint != null ? clawSpawnPoint : transform;
+
+        GameObject slashVFX = Instantiate(clawVFXPrefab, spawnPoint.position, spawnPoint.rotation);
+        Destroy(slashVFX, 1.5f);
     }
 
     IEnumerator CounterAttackRoutine()
@@ -347,6 +434,7 @@ public class StoneDragon : MonoBehaviour
         Gizmos.color = Color.white;
         Gizmos.DrawWireSphere(transform.position, roarRange);
 
+        // GIZMOS SKILL 1 BOX
         Matrix4x4 skill1Matrix = Gizmos.matrix;
         Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
         Gizmos.color = new Color(1f, 0f, 0f, 0.15f);
@@ -355,5 +443,24 @@ public class StoneDragon : MonoBehaviour
         Gizmos.DrawCube(localCenter, localSize);
         Gizmos.DrawWireCube(localCenter, localSize);
         Gizmos.matrix = skill1Matrix;
+
+        // --- BARU: GIZMOS SKILL 2 (SETENGAH LINGKARAN / ARC) ---
+        Gizmos.color = Color.orange;
+        Vector3 leftBoundary = Quaternion.Euler(0, -skill2Angle / 2f, 0) * transform.forward * skill2Range;
+        Vector3 rightBoundary = Quaternion.Euler(0, skill2Angle / 2f, 0) * transform.forward * skill2Range;
+
+        Gizmos.DrawLine(transform.position, transform.position + leftBoundary);
+        Gizmos.DrawLine(transform.position, transform.position + rightBoundary);
+
+        // Menggambar garis lengkung luar setengah lingkaran
+        int segments = 10;
+        Vector3 previousPoint = transform.position + leftBoundary;
+        for (int i = 1; i <= segments; i++)
+        {
+            float currentAngle = -(skill2Angle / 2f) + ((skill2Angle / segments) * i);
+            Vector3 nextPoint = transform.position + (Quaternion.Euler(0, currentAngle, 0) * transform.forward * skill2Range);
+            Gizmos.DrawLine(previousPoint, nextPoint);
+            previousPoint = nextPoint;
+        }
     }
 }
