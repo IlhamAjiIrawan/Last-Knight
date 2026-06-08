@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
-// --- SANGAT PENTING: Class pembantu agar bisa muncul rapi di Inspector ---
 [System.Serializable]
 public class BossDataSetup
 {
@@ -22,13 +21,12 @@ public class WaveManager : MonoBehaviour {
     public AudioClip bossWaveBGM;      
 
     [Header("Boss Wave Settings")]
-    // --- DIUBAH: Sekarang menggunakan List dari class custom BossDataSetup ---
     public List<BossDataSetup> bossToSpawnList;  
     public Transform bossSpawnPoint;
 
     [Header("New Dynamic UI Settings")]
     public GameObject bossHPBarPrefab;    
-    public Transform bossHPContainer;     
+    public Transform bossHPContainer;    
 
     private int currentWaveIndex = 0;
     private int enemiesRemaining = 0;
@@ -73,15 +71,16 @@ public class WaveManager : MonoBehaviour {
     }
 
     void SpawnBoss() {
-        // Cek apakah list boss kosong
         if (bossToSpawnList == null || bossToSpawnList.Count == 0) {
             Debug.LogError("Gagal Spawn! List 'Boss To Spawn List' masih kosong di WaveManager Inspector.");
             return;
         }
 
-        // Loop sebanyak data boss yang kamu daftarkan di Inspector
+        // --- VARIABEL SEMENTARA UNTUK MENAMPUNG KEDUA BOSS ---
+        KingBarbarian barbarianScript = null;
+        Health dragonHealth = null;
+
         for (int i = 0; i < bossToSpawnList.Count; i++) {
-            // Validasi jika ada slot element yang lupa belum diisi prefab-nya
             if (bossToSpawnList[i] == null || bossToSpawnList[i].bossPrefab == null) continue;
 
             Transform spawnPoint = bossSpawnPoint != null ? bossSpawnPoint : spawnPoints[Random.Range(0, spawnPoints.Length)];
@@ -91,20 +90,24 @@ public class WaveManager : MonoBehaviour {
                 spawnPosition += new Vector3(Random.Range(-3.5f, 3.5f), 0, Random.Range(-3.5f, 3.5f));
             }
 
-            // 1. Lahirkan Boss menggunakan data Prefab dari list kustom
             GameObject boss = Instantiate(bossToSpawnList[i].bossPrefab, spawnPosition, Quaternion.identity);
             Health bossHealth = boss.GetComponent<Health>();
 
-            // 2. Lahirkan UI Health Bar Khusus untuk Boss ini
+            if (boss.GetComponent<KingBarbarian>() != null) {
+                barbarianScript = boss.GetComponent<KingBarbarian>();
+            }
+            
+            if (boss.GetComponent<StoneDragon>() != null) {
+                dragonHealth = bossHealth;
+            }
+
             if (bossHPBarPrefab != null && bossHPContainer != null && bossHealth != null) {
                 GameObject uiBar = Instantiate(bossHPBarPrefab, bossHPContainer);
                 BossHPBar barScript = uiBar.GetComponent<BossHPBar>();
                 
                 if (barScript != null) {
-                    // --- FITUR BARU: Mengirimkan nama kustom dari Inspector ke UI Bar masing-masing ---
                     string namaKustom = bossToSpawnList[i].bossDisplayName;
                     
-                    // Jika kolom nama dikosongkan di inspector, otomatis pakai nama prefab asli sebagai cadangan
                     if (string.IsNullOrEmpty(namaKustom)) {
                         namaKustom = bossToSpawnList[i].bossPrefab.name;
                     }
@@ -115,6 +118,11 @@ public class WaveManager : MonoBehaviour {
 
             boss.GetComponent<Health>().onDeath += OnEnemyDefeated;
             enemiesRemaining++;
+        }
+
+        if (barbarianScript != null && dragonHealth != null) {
+            barbarianScript.otherBossHealth = dragonHealth;
+            Debug.Log("<color=green>🔗 [WaveManager]: Berhasil menjodohkan King Barbarian dengan Stone Dragon secara Real-Time!</color>");
         }
     }
 

@@ -2251,12 +2251,12 @@ MonoBehaviour:
   chaseRange: 100
   attackRange: 6.5
   moveSpeed: 4
-  damage: 15
+  damage: 10
   attackCooldown: 2
   attackDelay: 0.6
   skill1Cooldown: 10
   skill1Range: 10
-  skill1Damage: 40
+  skill1Damage: 30
   jumpDistance: 13
   skill1Width: 4
   telegraphDuration: 1.2
@@ -2264,7 +2264,7 @@ MonoBehaviour:
   skill2Cooldown: 30
   skill2Range: 40
   skill2Angle: 55
-  skill2DamagePerTick: 10
+  skill2DamagePerTick: 5
   skill2TelegraphDuration: 1
   skill2Duration: 2.5
   dangerZoneBoxPrefab: {fileID: 6266338237032078778, guid: c999d136be954f443bf8b5e8b461f53d, type: 3}
@@ -2276,7 +2276,7 @@ MonoBehaviour:
   dangerZoneCirclePrefab: {fileID: 4506262285324917138, guid: aa5a632dcdf49314e8dfd12267eefa05, type: 3}
   windPrefab: {fileID: 7505548116199674855, guid: 04da4657c13ab3541b0f4d3125334c52, type: 3}
   roarRange: 30
-  roarDamagePerTick: 10
+  roarDamagePerTick: 5
   defendDuration: 5
   screamDuration: 5
   ultCooldown: 60
@@ -2285,7 +2285,7 @@ MonoBehaviour:
   ultFlyHeight: 18
   ultWidth: 10
   ultLength: 70
-  ultDamagePerTick: 20
+  ultDamagePerTick: 10
   dangerZoneSquarePrefab: {fileID: 6266338237032078778, guid: c999d136be954f443bf8b5e8b461f53d, type: 3}
   ultFirePrefab: {fileID: 1000011113172478, guid: 4b9e1e5074422484cb2d2aca777ef525, type: 3}
   ultimateSpawnPoint: {fileID: 5799101257984563616}

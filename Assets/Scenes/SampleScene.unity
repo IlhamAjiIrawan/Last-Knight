@@ -8136,68 +8136,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 98675624}
   m_Mesh: {fileID: -6864927501807787473, guid: 9b9bbdaf8620b1143b47aeb294894361, type: 3}
---- !u!1001 &98794499
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 2141662782}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: c494c7a66726dbb459123b78fb078b1f, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: c494c7a66726dbb459123b78fb078b1f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: c494c7a66726dbb459123b78fb078b1f, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: c494c7a66726dbb459123b78fb078b1f, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: c494c7a66726dbb459123b78fb078b1f, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: c494c7a66726dbb459123b78fb078b1f, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: c494c7a66726dbb459123b78fb078b1f, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: c494c7a66726dbb459123b78fb078b1f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: c494c7a66726dbb459123b78fb078b1f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: c494c7a66726dbb459123b78fb078b1f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: c494c7a66726dbb459123b78fb078b1f, type: 3}
-      propertyPath: m_Name
-      value: axe_2handed
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: c494c7a66726dbb459123b78fb078b1f, type: 3}
---- !u!4 &98794500 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c494c7a66726dbb459123b78fb078b1f, type: 3}
-  m_PrefabInstance: {fileID: 98794499}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &99153289
 GameObject:
   m_ObjectHideFlags: 0
@@ -9524,6 +9462,67 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5e2ccbd587d93bd48828aaa037d043a1, type: 3}
   m_PrefabInstance: {fileID: 115596402}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &116336543
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -50.10855
+      objectReference: {fileID: 0}
+    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.13912
+      objectReference: {fileID: 0}
+    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 11.75406
+      objectReference: {fileID: 0}
+    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1244633962098404419, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
+      propertyPath: m_Name
+      value: Vritra The Sand Tyrant
+      objectReference: {fileID: 0}
+    - target: {fileID: 1244633962098404419, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
 --- !u!1 &117906518
 GameObject:
   m_ObjectHideFlags: 0
@@ -163725,10 +163724,10 @@ MonoBehaviour:
   normalWaveBGM: {fileID: 8300000, guid: 99bd5bfa6c96d4343bb422cdb025e636, type: 3}
   bossWaveBGM: {fileID: 8300000, guid: 49ddb60d35ba756459b743410cb0a84b, type: 3}
   bossToSpawnList:
+  - bossPrefab: {fileID: 6525196032202678712, guid: 4260d891080cb934f9eab08a47fc7ca4, type: 3}
+    bossDisplayName: Ragnar
   - bossPrefab: {fileID: 1244633962098404419, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-    bossDisplayName: Vritra, The Sand Tyrant
-  - bossPrefab: {fileID: 2176137159092654180, guid: 1e0b4402e9244cf46927474e6218dfc5, type: 3}
-    bossDisplayName: Ignis The Calamity
+    bossDisplayName: Vritra The Sand Tyrant
   bossSpawnPoint: {fileID: 1473800007}
   bossHPBarPrefab: {fileID: 3870397800445155264, guid: 9847bed5bd991844883bcabc5a313547, type: 3}
   bossHPContainer: {fileID: 502915658}
@@ -200027,75 +200026,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2139028720}
   m_Mesh: {fileID: -6864927501807787473, guid: 9b9bbdaf8620b1143b47aeb294894361, type: 3}
---- !u!1001 &2141662781
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -30
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 7.0000005
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -3
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-      propertyPath: m_Name
-      value: Barbarian
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: -5515783359193845756, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 98794500}
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 108b1e157c4232848b72312762c440b3, type: 3}
---- !u!4 &2141662782 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -5515783359193845756, guid: 108b1e157c4232848b72312762c440b3, type: 3}
-  m_PrefabInstance: {fileID: 2141662781}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2141735863
 GameObject:
   m_ObjectHideFlags: 0
@@ -201053,67 +200983,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d48e25f4716bead4fb64f4ede1c26045, type: 3}
---- !u!1001 &3501526182817592157
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -4.95341
-      objectReference: {fileID: 0}
-    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 20.90046
-      objectReference: {fileID: 0}
-    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 938732733049773588, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1244633962098404419, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-      propertyPath: m_Name
-      value: Vritra The Sand Tyrant
-      objectReference: {fileID: 0}
-    - target: {fileID: 1244633962098404419, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
 --- !u!1001 &3886329329577111940
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -202332,11 +202201,10 @@ SceneRoots:
   - {fileID: 730818585}
   - {fileID: 1424318524}
   - {fileID: 1666360696}
-  - {fileID: 2141662781}
   - {fileID: 1726069111}
   - {fileID: 50903230}
   - {fileID: 2359397993555671493}
   - {fileID: 3886329329577111940}
+  - {fileID: 116336543}
   - {fileID: 1625974540}
-  - {fileID: 3501526182817592157}
   - {fileID: 1648163985}

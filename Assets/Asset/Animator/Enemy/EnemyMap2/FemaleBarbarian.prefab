@@ -2751,7 +2751,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 7225902063857439550}
-  maxHealth: 50
+  maxHealth: 25
   currentHealth: 0
   itemToDrop: {fileID: 7125855553297238786, guid: 8453e409237613341b270dcd6bbc80c4, type: 3}
   amountToDrop: 5

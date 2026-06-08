@@ -534,10 +534,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 0}
-  maxHealth: 500
+  maxHealth: 250
   currentHealth: 0
-  itemToDrop: {fileID: 1217738212260209600, guid: ddcc02d2dab5e8547ad8166ff4a12c15, type: 3}
-  amountToDrop: 1
+  itemToDrop: {fileID: 4419682957062868931, guid: 320dad18c6b689743bab42bae5b4e966, type: 3}
+  amountToDrop: 2
   dropSpread: 0.5
 --- !u!114 &5936859387827902632
 MonoBehaviour:
@@ -555,12 +555,12 @@ MonoBehaviour:
   chaseRange: 100
   attackRange: 3.5
   moveSpeed: 7
-  damage: 25
+  damage: 15
   attackCooldown: 2
   attackDelay: 0.8
   skill1Cooldown: 10
   skill1Range: 7
-  skill1Damage: 50
+  skill1Damage: 30
   jumpDistance: 7
   skill1Width: 4
   telegraphDuration: 1.2
@@ -568,7 +568,7 @@ MonoBehaviour:
   skill2Cooldown: 10
   skill2Range: 6
   skill2Angle: 180
-  skill2Damage: 50
+  skill2Damage: 30
   skill2TelegraphDuration: 0.6
   skill2PostHitDuration: 0.8
   dangerZoneBoxPrefab: {fileID: 6266338237032078778, guid: c999d136be954f443bf8b5e8b461f53d, type: 3}
@@ -580,7 +580,7 @@ MonoBehaviour:
   dangerZoneCirclePrefab: {fileID: 4506262285324917138, guid: aa5a632dcdf49314e8dfd12267eefa05, type: 3}
   windPrefab: {fileID: 6526302276393259002, guid: d3355742a6aca7645a62f9866a11e5ce, type: 3}
   roarRange: 30
-  roarDamagePerTick: 15
+  roarDamagePerTick: 7
   defendDuration: 4
   screamDuration: 5
 --- !u!1 &1353024095267149074
