@@ -44,6 +44,10 @@ public class RedDragon : MonoBehaviour
     public GameObject shieldPrefab;          
     public Transform shieldSpawnPoint;       
     public GameObject dangerZoneCirclePrefab; 
+
+    [Tooltip("Tarik prefab efek angin/scream ke sini")]
+    public GameObject windPrefab;             
+
     public float roarRange = 15f;            
     public float roarDamagePerTick = 15f;    
     public float defendDuration = 2f;        
@@ -57,24 +61,16 @@ public class RedDragon : MonoBehaviour
     public float ultWidth = 8f;               
     public float ultLength = 14f;              
     public float ultDamagePerTick = 20f;      
-    public GameObject dangerZoneSquarePrefab; // Prefab Sprite 2D Kotak Merah
+    public GameObject dangerZoneSquarePrefab; 
     public GameObject ultFirePrefab;          
 
-    // ====================================================================
-    // --- UPDATE FITUR: KONTROL STATIS FULL (SPAWN POINT & DANGER ZONE) ---
-    // ====================================================================
-    [Space(5)]
     [Header("Ultimate Spawn Control")]
-    [Tooltip("Tarik objek 'Ultimate_SpawnPoint' dari hierarki ke sini untuk posisi tembakan api statis")]
     public Transform ultimateSpawnPoint;      
-    [Tooltip("Tarik objek penanda lantai dari hierarki ke sini untuk posisi area bahaya statis (misal: CenterArena)")]
     public Transform ultimateDangerZonePoint; 
-    [Tooltip("Gunakan ini untuk menggeser posisi api secara manual dari titik spawn (X, Y, Z)")]
     public Vector3 ultFireOffset;             
     
     [HideInInspector] public bool spawnFromBossInSky = true; 
     [HideInInspector] public Transform ultFireSpawnPoint;
-    // ====================================================================
 
     private float lastUltTime;
     [Header("MECHANICS: Counter Attack Threshold")]
@@ -107,16 +103,6 @@ public class RedDragon : MonoBehaviour
             player = GameObject.FindGameObjectWithTag("Player").transform;
         }
 
-        GameObject bossUIObj = GameObject.Find("BossHPBar"); 
-        if (bossUIObj != null)
-        {
-            Slider bossSlider = bossUIObj.GetComponent<Slider>();
-            bossSlider.gameObject.SetActive(true); 
-            health.healthSlider = bossSlider; 
-            bossSlider.maxValue = health.maxHealth;
-            bossSlider.value = health.maxHealth;
-        }
-
         health.onDeath += HandleBossDeath;
         
         lastSkill1Time = Time.time - (skill1Cooldown / 2f); 
@@ -130,7 +116,7 @@ public class RedDragon : MonoBehaviour
     {
         if (isDead) return;
 
-        if (!isCounterAttacking && health.healthSlider != null && health.healthSlider.value <= nextHPThreshold)
+        if (!isCounterAttacking && health != null && health.currentHealth <= nextHPThreshold)
         {
             InterruptCurrentActions(); 
             StartCoroutine(CounterAttackRoutine());
@@ -383,6 +369,16 @@ public class RedDragon : MonoBehaviour
 
         anim.SetTrigger("scream");
 
+        if (windPrefab != null)
+        {
+            // Menggunakan shieldSpawnPoint (atau transform utama jika kosong) sebagai titik pusat angin
+            Transform spawnPoint = shieldSpawnPoint != null ? shieldSpawnPoint : transform;
+            currentSkillVFX = Instantiate(windPrefab, spawnPoint.position, spawnPoint.rotation);
+            
+            // Menjadikan anak dari boss agar efek angin ikut berputar mengikuti arah hadap boss ke player
+            currentSkillVFX.transform.SetParent(spawnPoint);
+        }
+
         float elapsed = 0f;
         while (elapsed < screamDuration) 
         {
@@ -400,6 +396,20 @@ public class RedDragon : MonoBehaviour
             elapsed += 0.5f;
         }
 
+        if (currentSkillVFX != null)
+        {
+            ParticleSystem ps = currentSkillVFX.GetComponentInChildren<ParticleSystem>();
+            if (ps != null) 
+            { 
+                ps.Stop(); 
+                Destroy(currentSkillVFX, 2f); // Beri jeda 2 detik agar sisa partikel menghilang halus
+            }
+            else 
+            { 
+                Destroy(currentSkillVFX); 
+            }
+        }
+
         if (currentSkillDangerZone != null) Destroy(currentSkillDangerZone);
 
         isUsingSkill = false;
@@ -407,9 +417,6 @@ public class RedDragon : MonoBehaviour
         if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = false;
     }
 
-    // ====================================================================
-    // --- COROUTINE ULTIMATE: STATIS TOTAL (DANGER ZONE & SPAWN API) ---
-    // ====================================================================
     IEnumerator UltimateSkillRoutine()
     {
         isUsingSkill = true;
@@ -435,32 +442,24 @@ public class RedDragon : MonoBehaviour
         }
         transform.position = targetFlyPos;
 
-        // ----------------------------------------------------------------
-        // AMBIL TITIK KOORDINAT DAN ROTASI DARI PUSAT DANGER ZONE STATIS
-        // ----------------------------------------------------------------
         Vector3 targetAttackCenter;
         Quaternion attackRotation;
 
         if (ultimateDangerZonePoint != null)
         {
-            // Mengunci mutlak ke posisi objek statis di lantai arena
             targetAttackCenter = ultimateDangerZonePoint.position;
             attackRotation = ultimateDangerZonePoint.rotation;
         }
         else
         {
-            // Fallback dinamis otomatis ke posisi player jika slot belum diisi
             targetAttackCenter = new Vector3(player.position.x, startGroundPos.y, player.position.z);
             Vector3 lookDir = (targetAttackCenter - new Vector3(transform.position.x, startGroundPos.y, transform.position.z)).normalized;
             attackRotation = Quaternion.LookRotation(lookDir);
         }
-        // ----------------------------------------------------------------
 
-        // Memunculkan Danger Zone Kotak Menggunakan Sprite 2D secara Statis
         if (dangerZoneSquarePrefab != null)
         {
             Vector3 spawnZonePos = new Vector3(targetAttackCenter.x, targetAttackCenter.y + 0.02f, targetAttackCenter.z);
-            // Mengikuti rotasi landasan objek agar kamu bisa memutar area kotak dari Inspector
             Quaternion spriteRotation = attackRotation * Quaternion.Euler(90f, 0f, 0f);
             currentSkillDangerZone = Instantiate(dangerZoneSquarePrefab, spawnZonePos, spriteRotation);
             currentSkillDangerZone.transform.localScale = new Vector3(ultWidth, ultLength, 1f);
@@ -469,7 +468,6 @@ public class RedDragon : MonoBehaviour
         yield return new WaitForSeconds(ultTelegraphDuration);
         if (currentSkillDangerZone != null) Destroy(currentSkillDangerZone);
 
-        // Memunculkan Api Mengikuti Object "Ultimate_SpawnPoint" (Statis)
         if (ultFirePrefab != null)
         {
             Vector3 fireSpawnPos;
@@ -494,7 +492,6 @@ public class RedDragon : MonoBehaviour
             }
         }
 
-        // Jalankan damage interval OverlapBox di area statis yang telah ditentukan
         float attackElapsed = 0f;
         Vector3 boxHalfExtents = new Vector3(ultWidth / 2f, 6f, ultLength / 2f);
         while (attackElapsed < ultDuration)

@@ -92,8 +92,8 @@ public class Health : MonoBehaviour
 
         currentHealth -= damage;
 
-        // --- SINKRONISASI SLIDER: Ditambahkan kondisi || tag "Boss" ---
-        if ((gameObject.CompareTag("Enemy") || gameObject.CompareTag("Boss")) && healthSlider != null)
+        // Jika objek adalah musuh, update UI Health Bar-nya
+        if (IsTargetEnemy() && healthSlider != null)
         {
             healthSlider.gameObject.SetActive(true); 
             healthSlider.value = currentHealth;
@@ -108,9 +108,9 @@ public class Health : MonoBehaviour
                 anim.SetTrigger("getHit");
             }
         }
-        else if (gameObject.CompareTag("Enemy") || gameObject.CompareTag("Boss"))
+        else if (IsTargetEnemy())
         {
-            // Panggil fungsi TakeHit di EnemyAI jika objeknya adalah kroco biasa
+            // Panggil fungsi TakeHit di EnemyAI jika objeknya adalah kroco/musuh biasa/heavy enemy
             EnemyAI ai = GetComponent<EnemyAI>();
             if (ai != null)
             {
@@ -128,7 +128,7 @@ public class Health : MonoBehaviour
         if (onDeath != null) onDeath.Invoke();
         if (healthSlider != null) healthSlider.gameObject.SetActive(false);
 
-        if (gameObject.CompareTag("Enemy") || gameObject.CompareTag("Boss"))
+        if (IsTargetEnemy())
         {
             PlayerStats.instance.currentRage += 1f; // Tambah 1 poin rage
             PlayerStats.instance.currentRage = Mathf.Clamp(PlayerStats.instance.currentRage, 0, 100);
@@ -156,7 +156,7 @@ public class Health : MonoBehaviour
         if (GetComponent<EnemyAI>())
             GetComponent<EnemyAI>().enabled = false;
 
-        // --- TAMBAHAN BARU: Matikan script Boss AI RedDragon agar naga berhenti menyerang ---
+        // --- Matikan script Boss AI RedDragon agar naga berhenti menyerang ---
         if (GetComponent<RedDragon>())
             GetComponent<RedDragon>().enabled = false;
 
@@ -177,8 +177,22 @@ public class Health : MonoBehaviour
 
         Debug.Log(gameObject.name + " telah mati.");
 
-        // Hancurkan gameobject setelah 5 detik (berlaku untuk Enemy dan Boss)
+        // Hancurkan gameobject setelah 5 detik (berlaku untuk Enemy, HeavyEnemy, dan Boss)
         if (!gameObject.CompareTag("Player"))
             Destroy(gameObject, 5f);
+    }
+
+    // --- FUNGSI HELPER AMAN (Mencegah Typo Huruf Kapital di Unity Editor) ---
+    private bool IsTargetEnemy()
+    {
+        int currentLayer = gameObject.layer;
+        
+        // Memeriksa variasi huruf kapital/kecil agar sistem deteksi UI dan getHit tidak mogok
+        return currentLayer == LayerMask.NameToLayer("enemy") || 
+               currentLayer == LayerMask.NameToLayer("Enemy") || 
+               currentLayer == LayerMask.NameToLayer("HeavyEnemy") || 
+               currentLayer == LayerMask.NameToLayer("heavyenemy") || 
+               currentLayer == LayerMask.NameToLayer("Boss") || 
+               currentLayer == LayerMask.NameToLayer("boss");
     }
 }
