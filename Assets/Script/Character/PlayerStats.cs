@@ -44,9 +44,9 @@ public class PlayerStats : MonoBehaviour
     [Header("Upgrade Costs")]
     public int healthUpgradeCost = 1;
     public int mpUpgradeCost = 1;
-    public int energyUpgradeCost = 50;
+    public int energyUpgradeCost = 10;
     public int damageUpgradeCost = 1;
-    public int speedUpgradeCost = 20;
+    public int speedUpgradeCost = 10;
 
     [HideInInspector] public int mpUpgradeCount = 0;
 
@@ -93,5 +93,39 @@ public class PlayerStats : MonoBehaviour
             currentEnergy += energyRegenRate * Time.deltaTime;
             currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
         }
+    }
+
+    // Ganti fungsi ResetStats lama dengan ini JIKA ingin reset total saat Game Over
+    public void ResetStats()
+    {
+        // 1. Kembalikan batas maksimum status ke nilai awal game
+        maxHealth = 10f;
+        maxMP = 10f;
+        maxEnergy = 5f;
+        damage = 1f;
+        speed = 5.0f;
+
+        // 2. Isi penuh statusnya
+        currentHealth = maxHealth;
+        currentMP = maxMP;
+        currentEnergy = maxEnergy;
+        
+        currentRage = 0f;
+        isRageMode = false;
+
+        // 3. Hanguskan semua barang bawaan dan progresi
+        gold = 0;
+        smallPotionCount = 0;
+        mediumPotionCount = 0;
+        largePotionCount = 0;
+        smallMPCount = 0;
+        energyPotionCount = 0;
+        strengthPotionCount = 0;
+        speedPotionCount = 0;
+
+        skill1Level = 0;
+        skill2Level = 0;
+
+        Debug.Log("PLAYER STATS: Reset Total! Semua upgrade dan item hangus karena player mati");
     }
 }
