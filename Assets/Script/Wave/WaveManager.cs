@@ -6,8 +6,8 @@ using TMPro;
 [System.Serializable]
 public class BossDataSetup
 {
-    public GameObject bossPrefab;       // Tempat menaruh Prefab Boss
-    public string bossDisplayName;      // Tempat mengetik Nama Kustom Boss untuk UI
+    public GameObject bossPrefab;       
+    public string bossDisplayName;      
 }
 
 public class WaveManager : MonoBehaviour {
@@ -28,8 +28,13 @@ public class WaveManager : MonoBehaviour {
     public GameObject bossHPBarPrefab;    
     public Transform bossHPContainer;    
 
+    [Header("Optimization Settings")]
+    [Tooltip("Jumlah maksimal musuh yang boleh ada di map secara bersamaan")]
+    public int maxActiveEnemies = 10; 
+
     private int currentWaveIndex = 0;
-    private int enemiesRemaining = 0;
+    private int enemiesRemaining = 0;        // Untuk membatasi maxActiveEnemies di layar
+    private int totalWaveEnemiesRemaining = 0; // 🔥 BARU: Penentu mutlak Wave Clear
 
     void Start() {
         StartCoroutine(StartWave());
@@ -43,19 +48,35 @@ public class WaveManager : MonoBehaviour {
 
         WaveData wave = allWaves[currentWaveIndex];
 
+        totalWaveEnemiesRemaining = 0;
+        foreach (var group in wave.enemiesInWave) {
+            totalWaveEnemiesRemaining += group.count;
+        }
+        if (wave.isBossWave) {
+            totalWaveEnemiesRemaining += bossToSpawnList.Count;
+        }
+
         if (wave.isBossWave) {
             SwitchBGM(bossWaveBGM);
         } else {
             SwitchBGM(normalWaveBGM);
         }
 
+        // --- PROSES SPAWN MUSUH NORMAL ---
         foreach (var group in wave.enemiesInWave) {
             for (int i = 0; i < group.count; i++) {
+                
+                // Batasan maksimal musuh aktif di layar
+                while (enemiesRemaining >= maxActiveEnemies) {
+                    yield return null; 
+                }
+
                 SpawnEnemy(group.enemyPrefab);
                 yield return new WaitForSeconds(wave.spawnInterval);
             }
         }
 
+        // --- PROSES SPAWN BOSS ---
         if (wave.isBossWave) {
             Debug.LogWarning("PERINGATAN: WAVE BOSS TELAH DIMULAI!");
             SpawnBoss();
@@ -67,16 +88,15 @@ public class WaveManager : MonoBehaviour {
         GameObject enemy = Instantiate(prefab, randomPoint.position, Quaternion.identity);
         
         enemy.GetComponent<Health>().onDeath += OnEnemyDefeated;
-        enemiesRemaining++;
+        enemiesRemaining++; 
     }
 
     void SpawnBoss() {
         if (bossToSpawnList == null || bossToSpawnList.Count == 0) {
-            Debug.LogError("Gagal Spawn! List 'Boss To Spawn List' masih kosong di WaveManager Inspector.");
+            Debug.LogError("Gagal Spawn! List 'Boss To Spawn List' masih kosong.");
             return;
         }
 
-        // --- VARIABEL SEMENTARA UNTUK MENAMPUNG KEDUA BOSS ---
         KingBarbarian barbarianScript = null;
         Health dragonHealth = null;
 
@@ -84,8 +104,8 @@ public class WaveManager : MonoBehaviour {
             if (bossToSpawnList[i] == null || bossToSpawnList[i].bossPrefab == null) continue;
 
             Transform spawnPoint = bossSpawnPoint != null ? bossSpawnPoint : spawnPoints[Random.Range(0, spawnPoints.Length)];
-            
             Vector3 spawnPosition = spawnPoint.position;
+            
             if (i > 0) {
                 spawnPosition += new Vector3(Random.Range(-3.5f, 3.5f), 0, Random.Range(-3.5f, 3.5f));
             }
@@ -107,17 +127,15 @@ public class WaveManager : MonoBehaviour {
                 
                 if (barScript != null) {
                     string namaKustom = bossToSpawnList[i].bossDisplayName;
-                    
                     if (string.IsNullOrEmpty(namaKustom)) {
                         namaKustom = bossToSpawnList[i].bossPrefab.name;
                     }
-
                     barScript.Setup(bossHealth, namaKustom);
                 }
             }
 
             boss.GetComponent<Health>().onDeath += OnEnemyDefeated;
-            enemiesRemaining++;
+            enemiesRemaining++; // Boss juga dihitung sebagai musuh aktif di layar
         }
 
         if (barbarianScript != null && dragonHealth != null) {
@@ -127,8 +145,11 @@ public class WaveManager : MonoBehaviour {
     }
 
     void OnEnemyDefeated() {
-        enemiesRemaining--;
-        if (enemiesRemaining <= 0) {
+        enemiesRemaining--;          // Mengurangi slot kuota musuh di layar (bisa spawn lagi)
+        totalWaveEnemiesRemaining--; // Mengurangi target sisa musuh di wave ini
+
+        // Wave HANYA BERSIH jika semua musuh yang dijadwalkan sudah benar-benar MATI
+        if (totalWaveEnemiesRemaining <= 0) {
             StartCoroutine(WaitBeforeOpeningShop());
         }
     }

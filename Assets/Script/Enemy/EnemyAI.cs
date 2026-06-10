@@ -11,6 +11,11 @@ public class EnemyAI : MonoBehaviour
     public float damage = 10f;
     private float attackCooldown = 1.5f;
 
+    [Header("Optimization Settings")]
+    [Tooltip("Jika jarak player melebihi angka ini, fitur patroli dimatikan agar game ringan")]
+    public float patrolDisableRange = 25f; 
+    private bool isSleeping = false; // Status apakah AI sedang dinonaktifkan komponen geraknya
+
     [Header("New Attack Delay Settings")]
     public float attackDelay = 0.5f; // Jeda sebelum serangan benar-benar kena (Ancang-ancang)
     private bool isPreparingAttack = false; // Status apakah sedang ancang-ancang
@@ -46,10 +51,29 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        // Jika mati atau sedang tertegun (stun), jangan lakukan apapun
-        if (isDead || isStunned || isPreparingAttack || isKnockedBack) return;
+        // Jika mati, jangan lakukan apapun
+        if (isDead) return;
 
         distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+        if (distanceToPlayer > patrolDisableRange)
+        {
+            if (!isSleeping)
+            {
+                EnterSleepMode();
+            }
+            return; // Potong logic Update ke bawah agar CPU tidak memproses pathfinding & state lainnya
+        }
+        else
+        {
+            if (isSleeping)
+            {
+                ExitSleepMode();
+            }
+        }
+
+        // Jika sedang tertegun (stun), bersiap serang, atau terpental, lewatkan logic di bawah
+        if (isStunned || isPreparingAttack || isKnockedBack) return;
 
         if (distanceToPlayer <= attackRange)
         {
@@ -74,6 +98,34 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    // --- FUNGSI OPTIMASI MATIKAN AI ---
+    void EnterSleepMode()
+    {
+        isSleeping = true;
+        hasPatrolTarget = false; // Reset target patroli agar saat bangun mencari rute baru
+
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.ResetPath(); // Hapus sisa kalkulasi jalur di memori NavMesh
+        }
+
+        anim.SetBool("isMoving", false);
+        // Debug.Log($"{gameObject.name} tidur untuk menghemat CPU.");
+    }
+
+    // --- FUNGSI MENYALAKAN KEMBALI AI ---
+    void ExitSleepMode()
+    {
+        isSleeping = false;
+        
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = false;
+        }
+        // Debug.Log($"{gameObject.name} terbangun karena player mendekat.");
+    }
+
     void Patrol()
     {
         if (!agent.isActiveAndEnabled || !agent.isOnNavMesh) return;
@@ -87,7 +139,7 @@ public class EnemyAI : MonoBehaviour
             anim.SetBool("isMoving", true);
             hasPatrolTarget = true;
             patrolTimer = 0f;
-            return; // KELUAR DULU dari fungsi agar NavMesh punya waktu menghitung jalur di frame berikutnya
+            return; 
         }
 
         // 2. Tambahan Cek: Pastikan NavMesh tidak sedang menghitung jalur (Path Pending)
@@ -114,43 +166,25 @@ public class EnemyAI : MonoBehaviour
 
     Vector3 GetRandomPoint(Vector3 center, float radius)
     {
-        // Cari posisi acak di dalam lingkaran khayal
         Vector3 randomDirection = Random.insideUnitSphere * radius;
         randomDirection += center;
 
         NavMeshHit navHit;
-        // Cari titik terdekat yang valid di dalam NavMesh berdasarkan posisi acak tadi
         if (NavMesh.SamplePosition(randomDirection, out navHit, radius, NavMesh.AllAreas))
         {
             return navHit.position;
         }
 
-        return center; // Kembalikan ke posisi awal jika gagal menemukan titik valid
+        return center;
     }
 
     void ChasePlayer()
     {
-        // Cek apakah agent aktif dan sedang menempel di NavMesh
         if (!agent.isActiveAndEnabled || !agent.isOnNavMesh) return;
 
         agent.isStopped = false;
         agent.SetDestination(player.position);
         anim.SetBool("isMoving", true);
-    }
-
-    void AttackPlayer()
-    {
-        if (!agent.isActiveAndEnabled || !agent.isOnNavMesh) return;
-
-        agent.isStopped = true;
-        transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
-
-        if (Time.time >= lastAttackTime + attackCooldown)
-        {
-            anim.SetTrigger("attack");
-            player.GetComponent<Health>().TakeDamage(damage);
-            lastAttackTime = Time.time;
-        }
     }
 
     void StopMoving()
@@ -168,9 +202,12 @@ public class EnemyAI : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, attackRange);
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, chaseRange);
+        
+        // 🔥 BARU: Menggambar lingkaran batas tidur musuh (Warna Biru)
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, patrolDisableRange);
     }
 
-    // Fungsi baru untuk dipanggil saat kena pukul
     public void TakeHit()
     {
         if (isDead) return;
@@ -178,7 +215,7 @@ public class EnemyAI : MonoBehaviour
         hasPatrolTarget = false;
         
         StopCoroutine("StunRoutine");
-        StopCoroutine("AttackRoutine"); // Batalkan serangan jika kena pukul
+        StopCoroutine("AttackRoutine"); 
         StartCoroutine("StunRoutine");
     }
 
@@ -186,7 +223,6 @@ public class EnemyAI : MonoBehaviour
     {
         isStunned = true;
         
-        // Hentikan navigasi agar tidak meluncur saat getHit
         if (agent.isActiveAndEnabled && agent.isOnNavMesh)
         {
             agent.isStopped = true;
@@ -195,12 +231,10 @@ public class EnemyAI : MonoBehaviour
         anim.SetBool("isMoving", false);
         anim.SetTrigger("getHit");
 
-        // Tunggu selama durasi stun
         yield return new WaitForSeconds(stunDuration);
 
         isStunned = false;
         
-        // Kembalikan navigasi jika masih hidup
         if (!isDead && agent.isActiveAndEnabled && agent.isOnNavMesh)
         {
             agent.isStopped = false;
@@ -214,7 +248,7 @@ public class EnemyAI : MonoBehaviour
         isPreparingAttack = false;
         hasPatrolTarget = false;
 
-        StopAllCoroutines(); // Hentikan patroli, stun lama, atau serangan yang sedang bersiap
+        StopAllCoroutines(); 
         StartCoroutine(KnockbackRoutine(direction, force));
     }
 
@@ -224,19 +258,18 @@ public class EnemyAI : MonoBehaviour
 
         if (agent.isActiveAndEnabled && agent.isOnNavMesh)
         {
-            agent.isStopped = true; // Hentikan perintah gerak AI
+            agent.isStopped = true; 
         }
 
-        anim.SetTrigger("getHit"); // Putar animasi terkejut/terluka
+        anim.SetTrigger("getHit"); 
 
-        float duration = 0.2f; // Durasi pentalan (singkat saja agar terasa responsif)
+        float duration = 0.2f; 
         float timer = 0f;
 
         while (timer < duration)
         {
             if (agent.isActiveAndEnabled && agent.isOnNavMesh)
             {
-                // Dorong posisi musuh menggunakan agent.Move secara halus
                 agent.Move(direction * force * Time.deltaTime);
             }
             timer += Time.deltaTime;
@@ -244,28 +277,20 @@ public class EnemyAI : MonoBehaviour
         }
 
         isKnockedBack = false;
-
-        // Setelah selesai terpental, berikan efek Stun/diam sejenak agar player bisa mengejar
         StartCoroutine("StunRoutine");
     }
 
-    // Logic serangan baru dengan Coroutine untuk Delay
     IEnumerator AttackRoutine()
     {
         isPreparingAttack = true;
         agent.isStopped = true;
         anim.SetBool("isMoving", false);
 
-        // Menghadap ke player
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
-
-        // 1. Trigger animasi Attack (Ancang-ancang dimulai)
         anim.SetTrigger("attack");
 
-        // 2. Jeda waktu sebelum damage dikirim (Pemain punya waktu buat Dash menjauh!)
         yield return new WaitForSeconds(attackDelay);
 
-        // 3. Cek lagi, apakah setelah delay pemain masih di dalam jangkauan?
         float currentDistance = Vector3.Distance(transform.position, player.position);
         if (currentDistance <= attackRange + 0.5f && !isDead && !isStunned)
         {
@@ -280,7 +305,7 @@ public class EnemyAI : MonoBehaviour
     {
         isDead = true;
         isPreparingAttack = false;
-        StopAllCoroutines(); // Hentikan stun jika mati
+        StopAllCoroutines(); 
         if (agent != null) agent.enabled = false;
     }
 }
