@@ -90,6 +90,14 @@ public class Health : MonoBehaviour
             }
         }
 
+        if (IsTargetEnemy() && PlayerStats.instance != null && !PlayerStats.instance.isRageMode)
+        {
+            PlayerStats.instance.currentRage += 1f;
+            // Batasi langsung dengan Max Rage dari PlayerStats
+            PlayerStats.instance.currentRage = Mathf.Clamp(PlayerStats.instance.currentRage, 0f, PlayerStats.instance.maxRage);
+            Debug.Log("Serangan masuk! +1 Rage. Total: " + PlayerStats.instance.currentRage);
+        }
+
         currentHealth -= damage;
 
         // Jika objek adalah musuh, update UI Health Bar-nya
@@ -130,7 +138,7 @@ public class Health : MonoBehaviour
 
         if (IsTargetEnemy())
         {
-            PlayerStats.instance.currentRage += 1f; // Tambah 1 poin rage
+            PlayerStats.instance.currentRage += 2f; // Tambah 1 poin rage
             PlayerStats.instance.currentRage = Mathf.Clamp(PlayerStats.instance.currentRage, 0, 100);
         }
 

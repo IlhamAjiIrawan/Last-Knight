@@ -44,6 +44,8 @@ public class PlayerMovement : MonoBehaviour
     private float potionDamageMultiplier = 1f;
     private float potionSpeedMultiplier = 1f;
 
+    [HideInInspector] public float trapSpeedMultiplier = 1f;
+
     public Transform attackPoint;
     public LayerMask enemyLayers;
     public bool isUsingPotion = false;
@@ -334,7 +336,7 @@ public class PlayerMovement : MonoBehaviour
         if (moveInput.magnitude >= 0.1f)
         {
             Vector3 localMove = transform.InverseTransformDirection(moveInput);
-            float currentSpeed = speed * potionSpeedMultiplier;
+            float currentSpeed = speed * potionSpeedMultiplier * trapSpeedMultiplier;
 
             if (isBowMode && isCharging)
             {
@@ -426,10 +428,8 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // --- DI SINI PERUBAHAN UTAMANYA ---
     void ApplyDamage(Collider enemy, float damage, bool causeKnockback)
     {
-        // --- PERBAIKAN 1: Gunakan GetComponentInParent agar bisa mendeteksi script meskipun collider ada di Child ---
         Health enemyHealth = enemy.GetComponentInParent<Health>();
 
         if (impactVFXPrefab != null)
