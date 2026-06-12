@@ -124,6 +124,12 @@ public class Health : MonoBehaviour
             {
                 ai.TakeHit();
             }
+
+            RangedEnemyAI rangedAi = GetComponent<RangedEnemyAI>();
+            if (rangedAi != null)
+            {
+                rangedAi.TakeHit();
+            }
         }
 
         if (currentHealth <= 0) Die();
@@ -136,10 +142,10 @@ public class Health : MonoBehaviour
         if (onDeath != null) onDeath.Invoke();
         if (healthSlider != null) healthSlider.gameObject.SetActive(false);
 
-        if (IsTargetEnemy())
+        if (IsTargetEnemy() && PlayerStats.instance != null && !PlayerStats.instance.isRageMode)
         {
-            PlayerStats.instance.currentRage += 2f; // Tambah 1 poin rage
-            PlayerStats.instance.currentRage = Mathf.Clamp(PlayerStats.instance.currentRage, 0, 100);
+            PlayerStats.instance.currentRage += 2f; 
+            PlayerStats.instance.currentRage = Mathf.Clamp(PlayerStats.instance.currentRage, 0f, PlayerStats.instance.maxRage);
         }
 
         anim.ResetTrigger("getHit");
@@ -163,6 +169,9 @@ public class Health : MonoBehaviour
         // 1. Matikan script AI Kroco agar Update() berhenti berjalan
         if (GetComponent<EnemyAI>())
             GetComponent<EnemyAI>().enabled = false;
+
+        if (GetComponent<RangedEnemyAI>())
+            GetComponent<RangedEnemyAI>().enabled = false;
 
         // --- Matikan script Boss AI RedDragon agar naga berhenti menyerang ---
         if (GetComponent<RedDragon>())

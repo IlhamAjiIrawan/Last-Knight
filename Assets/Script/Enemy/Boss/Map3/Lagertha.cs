@@ -12,6 +12,12 @@ public class WizardBossAI : MonoBehaviour
     public float damage = 20f;
     public float attackCooldown = 2f;
 
+    [Header("Retreat / Kiting Settings")]
+    [Tooltip("Jarak minimum Player sebelum Boss memutuskan untuk mundur menjauh")]
+    public float minSafeDistance = 5f; 
+    [Tooltip("Seberapa jauh Boss akan melangkah mundur setiap kali menjauh")]
+    public float retreatStepDistance = 4f;
+
     [Header("Basic Attack Settings")]
     public GameObject basicProjectilePrefab; 
     public Transform firePoint;              
@@ -106,7 +112,12 @@ public class WizardBossAI : MonoBehaviour
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        if (distanceToPlayer <= skill1Range && Time.time >= lastSkill1Time + skill1Cooldown)
+        // 🌟 URUTAN LOGIKA BARU: JAGA JARAK MENDAPAT PRIORITAS UTAMA
+        if (distanceToPlayer < minSafeDistance)
+        {
+            RetreatFromPlayer();
+        }
+        else if (distanceToPlayer <= skill1Range && Time.time >= lastSkill1Time + skill1Cooldown)
         {
             StartCoroutine(Skill1Routine());
         }
@@ -133,6 +144,33 @@ public class WizardBossAI : MonoBehaviour
         else
         {
             StopMoving();
+        }
+    }
+
+    void RetreatFromPlayer()
+    {
+        if (!agent.isActiveAndEnabled || !agent.isOnNavMesh) return;
+
+        // Hitung arah menjauh (Posisi Boss dikurangi Posisi Player)
+        Vector3 retreatDirection = (transform.position - player.position).normalized;
+        retreatDirection.y = 0; // Kunci sumbu Y agar tidak melayang/amblas
+
+        // Tentukan titik target mundur di belakang boss
+        Vector3 targetRetreatPosition = transform.position + (retreatDirection * retreatStepDistance);
+
+        NavMeshHit hit;
+        // Validasi titik target agar tetap berada di dalam batasan NavMesh (tidak menembus dinding luar map)
+        if (NavMesh.SamplePosition(targetRetreatPosition, out hit, 4f, NavMesh.AllAreas))
+        {
+            agent.isStopped = false;
+            agent.SetDestination(hit.position);
+            anim.SetBool("isMoving", true);
+        }
+        else
+        {
+            // Jika mentok dinding/sudut ruangan, terpaksa diam dan hadapi player
+            StopMoving();
+            LookAtPlayer();
         }
     }
 
@@ -217,17 +255,11 @@ public class WizardBossAI : MonoBehaviour
 
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
 
-        // 2. Munculkan indikator Danger Zone kotak memanjang sesuai rumus IceDragon
         if (skill1DangerZoneBoxPrefab != null)
         {
-            // Hitung titik tengah area kotak di depan Boss (setengah dari skill1Range)
             Vector3 boxCenter = transform.position + transform.forward * (skill1Range / 2f);
             Vector3 spawnPos = new Vector3(boxCenter.x, transform.position.y + 0.02f, boxCenter.z);
-            
-            // Spawn dengan memutar objek 90 derajat di sumbu X (Sama seperti IceDragon)
             currentSkillDangerZone = Instantiate(skill1DangerZoneBoxPrefab, spawnPos, transform.rotation * Quaternion.Euler(90f, 0f, 0f));
-            
-            // Mengatur Skala: X = Lebar Kotak, Y = Jangkauan/Panjang ke Depan, Z = 1f
             currentSkillDangerZone.transform.localScale = new Vector3(skill1Width, skill1Range, 1f);
         }
 
@@ -242,8 +274,8 @@ public class WizardBossAI : MonoBehaviour
 
             if (spawnPoint != null)
             {
-                Vector3 spawnDir = transform.forward; // Arah tembakan lurus mutlak ke depan
-                float horizontalSpreadFactor = skill1Width * 0.7f; // Ambil area sebaran aman di dalam kotak
+                Vector3 spawnDir = transform.forward; 
+                float horizontalSpreadFactor = skill1Width * 0.7f; 
                 float startOffset = -horizontalSpreadFactor / 2f;
 
                 for (int i = 0; i < laserCount; i++)
@@ -424,7 +456,9 @@ public class WizardBossAI : MonoBehaviour
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, counterBlastRange);
 
-        // 🌟 GIZMOS BARU: RENDERING KOTAK MEMANJANG UNTUK AREA SKILL 1
+        Gizmos.color = Color.gray;
+        Gizmos.DrawWireSphere(transform.position, minSafeDistance);
+
         Matrix4x4 skill1Matrix = Gizmos.matrix;
         Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
         Gizmos.color = Color.magenta;
@@ -433,7 +467,6 @@ public class WizardBossAI : MonoBehaviour
         Gizmos.DrawWireCube(localCenter, localSize);
         Gizmos.matrix = skill1Matrix;
 
-        // Gizmos Area Kipas (Skill 2)
         Gizmos.color = Color.blue;
         Vector3 leftBoundary = Quaternion.Euler(0, -skill2Angle / 2f, 0) * transform.forward * skill2Range;
         Vector3 rightBoundary = Quaternion.Euler(0, skill2Angle / 2f, 0) * transform.forward * skill2Range;

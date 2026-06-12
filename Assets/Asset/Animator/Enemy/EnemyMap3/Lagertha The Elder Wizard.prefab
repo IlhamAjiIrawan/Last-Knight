@@ -708,10 +708,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lagertha
   player: {fileID: 0}
   chaseRange: 100
-  attackRange: 12
-  moveSpeed: 4.5
+  attackRange: 15
+  moveSpeed: 7
   damage: 20
   attackCooldown: 2
+  minSafeDistance: 5
+  retreatStepDistance: 4
   basicProjectilePrefab: {fileID: 683182934616091483, guid: 9f9f38aa80b96c140a05548c2cfd68a6, type: 3}
   firePoint: {fileID: 5115479349925975387}
   attackDelay: 0.6

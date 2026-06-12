@@ -47,6 +47,12 @@ public class EnemyAI : MonoBehaviour
         if (player == null) {
             player = GameObject.FindGameObjectWithTag("Player").transform;
         }
+
+        Health h = GetComponent<Health>();
+        if (h != null)
+        {
+            h.onDeath += OnDeath;
+        }
     }
 
     void Update()
