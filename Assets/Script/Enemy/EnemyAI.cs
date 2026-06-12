@@ -1,12 +1,12 @@
 using UnityEngine;
-using UnityEngine.AI; // Wajib untuk NavMesh
-using System.Collections; // Wajib untuk IEnumerator
+using UnityEngine.AI;
+using System.Collections;
 
 public class EnemyAI : MonoBehaviour
 {
-    public Transform player;      // Tarik objek Knight ke sini
-    public float chaseRange = 10f; // Jarak musuh mulai mengejar
-    public float attackRange = 2f; // Jarak musuh mulai menyerang
+    public Transform player;
+    public float chaseRange = 10f;
+    public float attackRange = 2f;
     public float moveSpeed = 3.5f;
     public float damage = 10f;
     private float attackCooldown = 1.5f;
@@ -14,11 +14,11 @@ public class EnemyAI : MonoBehaviour
     [Header("Optimization Settings")]
     [Tooltip("Jika jarak player melebihi angka ini, fitur patroli dimatikan agar game ringan")]
     public float patrolDisableRange = 25f; 
-    private bool isSleeping = false; // Status apakah AI sedang dinonaktifkan komponen geraknya
+    private bool isSleeping = false; 
 
     [Header("New Attack Delay Settings")]
-    public float attackDelay = 0.5f; // Jeda sebelum serangan benar-benar kena (Ancang-ancang)
-    private bool isPreparingAttack = false; // Status apakah sedang ancang-ancang
+    public float attackDelay = 0.5f;
+    private bool isPreparingAttack = false; 
 
     private float lastAttackTime;
     private bool isDead = false;
@@ -98,7 +98,6 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    // --- FUNGSI OPTIMASI MATIKAN AI ---
     void EnterSleepMode()
     {
         isSleeping = true;
@@ -111,10 +110,8 @@ public class EnemyAI : MonoBehaviour
         }
 
         anim.SetBool("isMoving", false);
-        // Debug.Log($"{gameObject.name} tidur untuk menghemat CPU.");
     }
 
-    // --- FUNGSI MENYALAKAN KEMBALI AI ---
     void ExitSleepMode()
     {
         isSleeping = false;
@@ -123,7 +120,6 @@ public class EnemyAI : MonoBehaviour
         {
             agent.isStopped = false;
         }
-        // Debug.Log($"{gameObject.name} terbangun karena player mendekat.");
     }
 
     void Patrol()

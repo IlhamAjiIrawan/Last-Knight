@@ -139,6 +139,37 @@ Transform:
   - {fileID: 6991379159387226820}
   m_Father: {fileID: 7084829990276240241}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &776112406159987182
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1496239695835280018}
+  m_Layer: 6
+  m_Name: AttackPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1496239695835280018
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 776112406159987182}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9095939399616075372}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &844960528436746816
 GameObject:
   m_ObjectHideFlags: 0
@@ -354,8 +385,8 @@ GameObject:
   - component: {fileID: 5794956284197864862}
   - component: {fileID: 5558971619377884696}
   - component: {fileID: 4578552943790661438}
-  - component: {fileID: 129707682852184508}
   - component: {fileID: 2639538536717050389}
+  - component: {fileID: 8454377206686367692}
   m_Layer: 6
   m_Name: Minions
   m_TagString: Enemy
@@ -379,6 +410,7 @@ Transform:
   - {fileID: 3241531218728914232}
   - {fileID: 3421767067627156158}
   - {fileID: 4068596674694275574}
+  - {fileID: 1496239695835280018}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &8788090445680942830
@@ -473,27 +505,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 2, z: 1}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &129707682852184508
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2389870245832782155}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e22f319abc2ac5d4ba390851704e17ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
-  player: {fileID: 0}
-  chaseRange: 10
-  attackRange: 2
-  moveSpeed: 10
-  damage: 10
-  attackDelay: 0.5
-  stunDuration: 0.5
-  patrolRadius: 8
-  patrolWaitTime: 1
 --- !u!114 &2639538536717050389
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -510,8 +521,33 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 0
   itemToDrop: {fileID: 1548119801499671017, guid: 1a0a29d0ab58448429640b15e6e87cca, type: 3}
-  amountToDrop: 2
+  amountToDrop: 5
   dropSpread: 0.5
+--- !u!114 &8454377206686367692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2389870245832782155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 909fdc6ff8b71ae4fb9a4684e076be18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RangedEnemyAI
+  player: {fileID: 0}
+  chaseRange: 15
+  attackRange: 10
+  moveSpeed: 3.5
+  projectilePrefab: {fileID: 683182934616091483, guid: 9f9f38aa80b96c140a05548c2cfd68a6, type: 3}
+  firePoint: {fileID: 1496239695835280018}
+  attackDelay: 0.5
+  fleeRange: 4
+  fleeDistance: 6
+  patrolDisableRange: 30
+  stunDuration: 0.5
+  patrolRadius: 8
+  patrolWaitTime: 1
 --- !u!1 &2983007869310225482
 GameObject:
   m_ObjectHideFlags: 0

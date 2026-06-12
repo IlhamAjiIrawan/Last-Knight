@@ -892,4 +892,23 @@ public class PlayerMovement : MonoBehaviour
         potionSpeedMultiplier = 1f;
         Debug.Log("Buff Berakhir: Kecepatan kembali normal.");
     }
+
+    public void ApplyFreeze(float duration)
+    {
+        // Jalankan Coroutine freeze tanpa menumpuk jika sedang melambat
+        StopCoroutine("FreezeRoutine"); 
+        StartCoroutine(FreezeRoutine(duration));
+    }
+
+    private IEnumerator FreezeRoutine(float duration)
+    {
+        // 1. Set multiplier menjadi 0.4f (Kecepatan berkurang 60%, sisa 40%)
+        trapSpeedMultiplier = 0.1f; 
+
+        // 2. Tunggu selama durasi freeze yang ditentukan oleh boss
+        yield return new WaitForSeconds(duration);
+
+        // 3. Kembalikan multiplier ke normal (1.0f = 100% speed)
+        trapSpeedMultiplier = 1f;
+    }
 }
