@@ -793,7 +793,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 0}
-  maxHealth: 250
+  maxHealth: 3500
   currentHealth: 0
   itemToDrop: {fileID: 4419682957062868931, guid: 320dad18c6b689743bab42bae5b4e966, type: 3}
   amountToDrop: 3
@@ -814,8 +814,8 @@ MonoBehaviour:
   chaseRange: 100
   attackRange: 3.5
   moveSpeed: 5
-  damage: 25
-  attackCooldown: 2
+  damage: 35
+  attackCooldown: 3
   attackDelay: 0.8
   skill1Cooldown: 15
   skill1Range: 10

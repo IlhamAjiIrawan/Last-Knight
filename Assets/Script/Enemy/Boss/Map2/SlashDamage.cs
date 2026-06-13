@@ -17,10 +17,7 @@ public class SlashDamage : MonoBehaviour
                 // 2. Berikan damage ke Player
                 playerHealth.TakeDamage(damage);
                 
-                // 3. Kunci agar tidak memberikan damage lagi saat peluru sedang berjalan menembus tubuh player
                 hasDamagedPlayer = true; 
-                
-                Debug.Log("<color=red>💥 Player terkena Straight Slash (Menembus)! Damage: </color>" + damage);
             }
         }
     }

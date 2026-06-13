@@ -689,10 +689,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 0}
-  maxHealth: 1000
+  maxHealth: 2000
   currentHealth: 0
-  itemToDrop: {fileID: 0}
-  amountToDrop: 1
+  itemToDrop: {fileID: 3658929112754105701, guid: d8c4e9edb76d31c40a3d2696a662a273, type: 3}
+  amountToDrop: 5
   dropSpread: 0.5
 --- !u!114 &206850180171794589
 MonoBehaviour:
@@ -708,8 +708,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lagertha
   player: {fileID: 0}
   chaseRange: 100
-  attackRange: 15
-  moveSpeed: 7
+  attackRange: 20
+  moveSpeed: 8
   damage: 20
   attackCooldown: 2
   minSafeDistance: 5
@@ -729,7 +729,7 @@ MonoBehaviour:
   skill2Cooldown: 14
   skill2Range: 18
   skill2Angle: 90
-  skill2InstantDamage: 30
+  skill2InstantDamage: 50
   skill2TelegraphDuration: 1.2
   iceFloorPrefab: {fileID: 3156866507962234106, guid: b9fba7c77d5d074419c83a2ed010ad10, type: 3}
   iceSpawnPoint: {fileID: 5963934324819321957}
@@ -741,7 +741,7 @@ MonoBehaviour:
   dangerZoneCounterCirclePrefab: {fileID: 4506262285324917138, guid: aa5a632dcdf49314e8dfd12267eefa05, type: 3}
   instantBlastVFX: {fileID: 3763616447942984419, guid: 3c571bf4332bf764cb764e30ba6b64d8, type: 3}
   counterBlastRange: 20
-  counterBlastDamage: 40
+  counterBlastDamage: 150
   freezeDuration: 5
   defendDuration: 2
 --- !u!4 &5710315000300301828 stripped

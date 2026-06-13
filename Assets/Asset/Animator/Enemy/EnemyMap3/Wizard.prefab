@@ -2021,7 +2021,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 6144431733498320229}
-  maxHealth: 10
+  maxHealth: 300
   currentHealth: 0
   itemToDrop: {fileID: 1917600463406995853, guid: 3ec5c3f0459fabc419eaea907bd1e4a0, type: 3}
   amountToDrop: 5
@@ -2039,10 +2039,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RangedEnemyAI
   player: {fileID: 0}
-  chaseRange: 20
-  attackRange: 10
+  chaseRange: 30
+  attackRange: 15
   moveSpeed: 3.5
-  projectilePrefab: {fileID: 683182934616091483, guid: 9f9f38aa80b96c140a05548c2cfd68a6, type: 3}
+  projectilePrefab: {fileID: 683182934616091483, guid: c7e77c0ff6b95614293fde43fcd07dd2, type: 3}
   firePoint: {fileID: 8614397569583141285}
   attackDelay: 0.5
   fleeRange: 4
