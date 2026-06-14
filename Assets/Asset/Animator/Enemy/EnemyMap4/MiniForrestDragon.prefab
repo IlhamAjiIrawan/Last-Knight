@@ -1035,7 +1035,7 @@ Transform:
   m_GameObject: {fileID: 4468253782879038808}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -27.165232, y: 1, z: 22.35906}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1150,10 +1150,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 3387264509136166921}
-  maxHealth: 10
+  maxHealth: 500
   currentHealth: 0
-  itemToDrop: {fileID: 0}
-  amountToDrop: 1
+  itemToDrop: {fileID: 1917600463406995853, guid: 3ec5c3f0459fabc419eaea907bd1e4a0, type: 3}
+  amountToDrop: 5
   dropSpread: 0.5
 --- !u!114 &1560062984217448594
 MonoBehaviour:
@@ -1168,11 +1168,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   player: {fileID: 0}
-  chaseRange: 10
-  attackRange: 2
-  moveSpeed: 3.5
-  damage: 10
-  patrolDisableRange: 25
+  chaseRange: 30
+  attackRange: 3.5
+  moveSpeed: 15
+  damage: 45
+  patrolDisableRange: 50
   attackDelay: 0.5
   stunDuration: 0.5
   patrolRadius: 8

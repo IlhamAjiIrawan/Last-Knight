@@ -781,10 +781,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   player: {fileID: 0}
-  chaseRange: 10
-  attackRange: 2.5
-  moveSpeed: 10
-  damage: 50
+  chaseRange: 20
+  attackRange: 4
+  moveSpeed: 9
+  damage: 60
+  patrolDisableRange: 50
   attackDelay: 0.5
   stunDuration: 0.5
   patrolRadius: 8
@@ -802,9 +803,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 8048112554334607751}
-  maxHealth: 1000
+  maxHealth: 1200
   currentHealth: 0
-  itemToDrop: {fileID: 4419682957062868931, guid: 320dad18c6b689743bab42bae5b4e966, type: 3}
+  itemToDrop: {fileID: 3218043692679455554, guid: a09adf78f9405dd45bde5d0602c17c1a, type: 3}
   amountToDrop: 5
   dropSpread: 0.5
 --- !u!1 &2904019749110104658

@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaveData
   enemiesInWave: []
   spawnInterval: 1.5
-  isBossWave: 0
+  isBossWave: 1
   maxActiveEnemies: 10

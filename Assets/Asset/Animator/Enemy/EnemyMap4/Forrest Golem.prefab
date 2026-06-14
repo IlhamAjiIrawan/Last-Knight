@@ -902,7 +902,7 @@ GameObject:
   - component: {fileID: 4658976147635178158}
   - component: {fileID: 135166054747252938}
   m_Layer: 13
-  m_Name: Golem
+  m_Name: Forrest Golem
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -917,7 +917,7 @@ Transform:
   m_GameObject: {fileID: 7167801099302765157}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.3519015, y: 1, z: 9.633579}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1032,9 +1032,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   player: {fileID: 0}
   chaseRange: 30
-  attackRange: 6
-  moveSpeed: 3.5
+  attackRange: 5
+  moveSpeed: 3
   damage: 100
+  patrolDisableRange: 50
   attackDelay: 0.5
   stunDuration: 0.5
   patrolRadius: 8
@@ -1052,10 +1053,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 6422017514668157371}
-  maxHealth: 1000
+  maxHealth: 10000
   currentHealth: 0
-  itemToDrop: {fileID: 3218043692679455554, guid: a09adf78f9405dd45bde5d0602c17c1a, type: 3}
-  amountToDrop: 5
+  itemToDrop: {fileID: 4419682957062868931, guid: 320dad18c6b689743bab42bae5b4e966, type: 3}
+  amountToDrop: 6
   dropSpread: 0.5
 --- !u!1 &7677221546235198955
 GameObject:

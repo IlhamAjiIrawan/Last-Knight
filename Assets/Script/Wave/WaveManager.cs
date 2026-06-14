@@ -33,8 +33,8 @@ public class WaveManager : MonoBehaviour {
     public int maxActiveEnemies = 10; 
 
     private int currentWaveIndex = 0;
-    private int enemiesRemaining = 0;        // Untuk membatasi maxActiveEnemies di layar
-    private int totalWaveEnemiesRemaining = 0; // 🔥 BARU: Penentu mutlak Wave Clear
+    private int enemiesRemaining = 0;       
+    private int totalWaveEnemiesRemaining = 0;
 
     void Start() {
         StartCoroutine(StartWave());
@@ -97,8 +97,13 @@ public class WaveManager : MonoBehaviour {
             return;
         }
 
+        // Tracking Pasangan 1 (Barbarian & Stone Dragon)
         KingBarbarian barbarianScript = null;
         Health dragonHealth = null;
+
+        // TRACKING PASANGAN 2: ASSASSIN & FOREST DRAGON
+        AssassinBossAI assassinScript = null;
+        Health forestDragonHealth = null;
 
         for (int i = 0; i < bossToSpawnList.Count; i++) {
             if (bossToSpawnList[i] == null || bossToSpawnList[i].bossPrefab == null) continue;
@@ -113,12 +118,19 @@ public class WaveManager : MonoBehaviour {
             GameObject boss = Instantiate(bossToSpawnList[i].bossPrefab, spawnPosition, Quaternion.identity);
             Health bossHealth = boss.GetComponent<Health>();
 
+            // Validasi Pasangan Lama
             if (boss.GetComponent<KingBarbarian>() != null) {
                 barbarianScript = boss.GetComponent<KingBarbarian>();
             }
-            
             if (boss.GetComponent<StoneDragon>() != null) {
                 dragonHealth = bossHealth;
+            }
+
+            if (boss.GetComponent<AssassinBossAI>() != null) {
+                assassinScript = boss.GetComponent<AssassinBossAI>();
+            }
+            if (boss.GetComponent<ForestDragon>() != null) {
+                forestDragonHealth = bossHealth;
             }
 
             if (bossHPBarPrefab != null && bossHPContainer != null && bossHealth != null) {
@@ -135,20 +147,25 @@ public class WaveManager : MonoBehaviour {
             }
 
             boss.GetComponent<Health>().onDeath += OnEnemyDefeated;
-            enemiesRemaining++; // Boss juga dihitung sebagai musuh aktif di layar
+            enemiesRemaining++; 
         }
 
+        // Eksekusi Link Pasangan Lama
         if (barbarianScript != null && dragonHealth != null) {
             barbarianScript.otherBossHealth = dragonHealth;
             Debug.Log("<color=green>🔗 [WaveManager]: Berhasil menjodohkan King Barbarian dengan Stone Dragon secara Real-Time!</color>");
         }
+
+        if (assassinScript != null && forestDragonHealth != null) {
+            assassinScript.otherBossHealth = forestDragonHealth;
+            Debug.Log("<color=purple>🔮 [WaveManager]: Berhasil menjodohkan Assassin Boss dengan Forest Dragon secara Real-Time!</color>");
+        }
     }
 
     void OnEnemyDefeated() {
-        enemiesRemaining--;          // Mengurangi slot kuota musuh di layar (bisa spawn lagi)
-        totalWaveEnemiesRemaining--; // Mengurangi target sisa musuh di wave ini
+        enemiesRemaining--;          
+        totalWaveEnemiesRemaining--; 
 
-        // Wave HANYA BERSIH jika semua musuh yang dijadwalkan sudah benar-benar MATI
         if (totalWaveEnemiesRemaining <= 0) {
             StartCoroutine(WaitBeforeOpeningShop());
         }

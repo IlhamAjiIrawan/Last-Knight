@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 849a09ece539dd241bfd1a625d9549a4, type: 3}
   m_Name: Map4_Wave3
   m_EditorClassIdentifier: Assembly-CSharp::WaveData
-  enemiesInWave: []
-  spawnInterval: 1.5
+  enemiesInWave:
+  - enemyPrefab: {fileID: 4468253782879038808, guid: ff2133498d850114f817610dba8ebaa8, type: 3}
+    count: 20
+  - enemyPrefab: {fileID: 7167801099302765157, guid: 1e1e084d878f2a9478633d611a892577, type: 3}
+    count: 10
+  spawnInterval: 2
   isBossWave: 0
   maxActiveEnemies: 10

@@ -30,13 +30,15 @@ public class AssassinBossAI : MonoBehaviour
 
     [Header("Skill 2 Settings (Quick Knife Throw - Ranged)")]
     public float skill2Cooldown = 5f;
-    public float skill2Range = 14f;          // Jarak lemparan pisau (lebih jauh dari dash)
-    public int knivesCount = 3;             // Jumlah pisau yang dilempar berturut-turut
-    public float throwInterval = 0.2f;       // Jeda antar lemparan pisau (makin kecil makin cepat)
+    public float skill2Range = 14f;          
+    public int knivesCount = 3;             
+    public float throwInterval = 0.2f;       
     public float knifeSpeed = 22f;
     public float knifeDamage = 12f;
-    public GameObject knifePrefab;          // Prefab Proyektil Pisau (Beri Rigidbody + Collider)
-    public Transform knifeSpawnPoint;       // Titik lepas pisau (misal: di posisi tangan bos)
+    
+    [Tooltip("Masukkan Master Prefab Proyektil Pisau dari folder Project (Bukan dari hierarki tangan boss)")]
+    public GameObject knifePrefab;          
+    public Transform knifeSpawnPoint;       
 
     [Header("Skill 3 Settings (Counter Attack - Smoke Bomb & Blade Flurry)")]
     public GameObject smokeBombPrefab;       
@@ -55,6 +57,12 @@ public class AssassinBossAI : MonoBehaviour
     private bool isCounterAttacking = false; 
     private bool isCurrentlyVanish = false;   
 
+    [Header("MECHANICS: Linked Boss Invisibility")]
+    [Tooltip("Tarik script Health milik Forest Dragon ke sini")]
+    public Health otherBossHealth;           
+
+    private bool isVanishByDragon = false; 
+
     private NavMeshAgent agent;
     private Animator anim;
     private Health health;
@@ -63,7 +71,7 @@ public class AssassinBossAI : MonoBehaviour
     private bool isUsingSkill = false;    
     private float lastAttackTime;
     private float lastSkill1Time;         
-    private float lastSkill2Time; // 🌟 Tracking cooldown skill 2        
+    private float lastSkill2Time;         
 
     private GameObject currentSkillDangerZone; 
     private GameObject currentSkillVFX;        
@@ -87,9 +95,17 @@ public class AssassinBossAI : MonoBehaviour
             nextHPThreshold = health.maxHealth * 0.7f; 
         }
 
+        if (otherBossHealth != null)
+        {
+            isVanishByDragon = true;
+            otherBossHealth.onDeath += RemoveDragonVanish; 
+            
+            Debug.Log("<color=purple>👁️ ASSASSIN BOSS: Mode Menghilang AKTIF (Ranged Mode). Kalahkan Forest Dragon untuk memunculkannya!</color>");
+        }
+
+        SetBossMeshVisible(!isVanishByDragon);
         UpdateInvulnerabilityState(); 
         
-        // Mengatur cooldown awal agar tidak langsung spam skill di detik pertama game
         lastSkill1Time = Time.time - (skill1Cooldown / 2f); 
         lastSkill2Time = Time.time - (skill2Cooldown / 2f); 
     }
@@ -97,6 +113,15 @@ public class AssassinBossAI : MonoBehaviour
     void Update()
     {
         if (isDead) return;
+
+        if (isVanishByDragon)
+        {
+            SetBossMeshVisible(false); 
+            if (otherBossHealth == null || otherBossHealth.currentHealth <= 0)
+            {
+                RemoveDragonVanish();
+            }
+        }
 
         if (!isCounterAttacking && health != null && health.currentHealth <= nextHPThreshold)
         {
@@ -109,34 +134,76 @@ public class AssassinBossAI : MonoBehaviour
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        // 🌟 JALUR LOGIKA AI: Cek Skill 1 -> Cek Skill 2 -> Cek Melee Attack -> Chase
-        if (distanceToPlayer <= skill1Range && Time.time >= lastSkill1Time + skill1Cooldown)
+        if (isVanishByDragon)
         {
-            StartCoroutine(Skill1Routine());
-        }
-        else if (distanceToPlayer <= skill2Range && Time.time >= lastSkill2Time + skill2Cooldown)
-        {
-            StartCoroutine(Skill2Routine()); // 🌟 Eksekusi Lempar Pisau
-        }
-        else if (distanceToPlayer <= attackRange)
-        {
-            if (Time.time >= lastAttackTime + attackCooldown)
+            if (distanceToPlayer <= skill2Range)
             {
-                StartCoroutine(AttackRoutine());
+                if (Time.time >= lastSkill2Time + skill2Cooldown)
+                {
+                    StartCoroutine(Skill2Routine()); 
+                }
+                else
+                {
+                    StopMoving();
+                    LookAtPlayer();
+                }
+            }
+            else if (distanceToPlayer <= chaseRange)
+            {
+                ChasePlayerAtRanged(distanceToPlayer);
             }
             else
             {
                 StopMoving();
-                LookAtPlayer();
             }
-        }
-        else if (distanceToPlayer <= chaseRange)
-        {
-            ChasePlayer();
         }
         else
         {
+            if (distanceToPlayer <= skill1Range && Time.time >= lastSkill1Time + skill1Cooldown)
+            {
+                StartCoroutine(Skill1Routine());
+            }
+            else if (distanceToPlayer <= skill2Range && Time.time >= lastSkill2Time + skill2Cooldown)
+            {
+                StartCoroutine(Skill2Routine()); 
+            }
+            else if (distanceToPlayer <= attackRange)
+            {
+                if (Time.time >= lastAttackTime + attackCooldown)
+                {
+                    StartCoroutine(AttackRoutine());
+                }
+                else
+                {
+                    StopMoving();
+                    LookAtPlayer();
+                }
+            }
+            else if (distanceToPlayer <= chaseRange)
+            {
+                ChasePlayer();
+            }
+            else
+            {
+                StopMoving();
+            }
+        }
+    }
+
+    void ChasePlayerAtRanged(float currentDistance)
+    {
+        if (!agent.isActiveAndEnabled || !agent.isOnNavMesh) return;
+        
+        if (currentDistance <= (skill2Range - 2f))
+        {
             StopMoving();
+            LookAtPlayer();
+        }
+        else
+        {
+            agent.isStopped = false;
+            agent.SetDestination(player.position);
+            anim.SetBool("isMoving", true);
         }
     }
 
@@ -145,7 +212,7 @@ public class AssassinBossAI : MonoBehaviour
         Debug.LogWarning("INTERRUPT: Assassin Boss memotong semua aksi untuk mengaktifkan Counter Attack!");
 
         StopAllCoroutines();
-        SetBossMeshVisible(true); // Fail-safe agar tubuh muncul kembali jika terinterupsi
+        SetBossMeshVisible(!isVanishByDragon); 
 
         if (agent != null && !agent.enabled)
         {
@@ -290,20 +357,19 @@ public class AssassinBossAI : MonoBehaviour
         LookAtPlayer();
         anim.SetTrigger("skill2");
 
-        // Delay singkat menunggu animasi tangan bos berayun ke depan sebelum pisau pertama keluar
         yield return new WaitForSeconds(0.25f); 
 
         for (int i = 0; i < knivesCount; i++)
         {
             if (isDead || isCounterAttacking) break;
 
-            LookAtPlayer(); // Tetap lock target ke arah posisi terbaru player saat melempar
+            LookAtPlayer(); 
             SpawnKnifeProjectile();
 
-            yield return new WaitForSeconds(throwInterval); // Jeda sebelum pisau berikutnya dilempar
+            yield return new WaitForSeconds(throwInterval); 
         }
 
-        yield return new WaitForSeconds(0.4f); // Waktu recovery setelah selesai melempar semua pisau
+        yield return new WaitForSeconds(0.4f); 
 
         if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = false;
         lastSkill2Time = Time.time;
@@ -312,38 +378,23 @@ public class AssassinBossAI : MonoBehaviour
 
     void SpawnKnifeProjectile()
     {
-        if (knifePrefab == null)
-        {
-            Debug.LogError("🚨 KESALAHAN: 'Knife Prefab' belum dimasukkan di Inspector Boss!");
-            return;
-        }
+        if (knifePrefab == null) return;
 
         Vector3 spawnPos = knifeSpawnPoint != null ? knifeSpawnPoint.position : transform.position + Vector3.up * 1.2f;
         Vector3 targetDirection = ((player.position + Vector3.up * 1.0f) - spawnPos).normalized;
         Quaternion projectileRotation = Quaternion.LookRotation(targetDirection);
 
+        // Lahir di root hierarki, aman dari fungsi pemutus visibilitas di internal tubuh boss
         GameObject knifeGO = Instantiate(knifePrefab, spawnPos, projectileRotation);
-
         Rigidbody rb = knifeGO.GetComponentInChildren<Rigidbody>();
         
         if (rb != null)
         {
             rb.useGravity = false;
-            rb.isKinematic = false; // Memastikan paksa lewat code agar fisika aktif
-
-            // ✨ FAIL-SAFE VERSI UNITY: Jika Unity kamu versi lama dan linearVelocity error, 
-            // kamu bisa menggantinya dengan: rb.velocity = targetDirection * knifeSpeed;
+            rb.isKinematic = false; 
             rb.linearVelocity = targetDirection * knifeSpeed;
-            
-            Debug.Log("🚀 PISAU BERHASIL DIDORONG! Kecepatan: " + knifeSpeed);
-        }
-        else
-        {
-            // Jika pesan ini muncul di Console, berarti letak Rigidbody kamu salah!
-            Debug.LogError("❌ ERROR: Rigidbody TIDAK DITEMUKAN pada Prefab Pisau! Pisau tidak akan bisa terbang.");
         }
 
-        // Cari script damage-nya
         KnifeProjectile projectileScript = knifeGO.GetComponentInChildren<KnifeProjectile>();
         if (projectileScript != null)
         {
@@ -362,14 +413,13 @@ public class AssassinBossAI : MonoBehaviour
         UpdateInvulnerabilityState();
         nextHPThreshold -= health.maxHealth * 0.3f; 
 
-        Debug.Log("<color=purple>🌫️ ASSASSIN BOSS: Menggunakan Smoke Bomb & Menghilang (Kebal)!</color>");
         anim.SetTrigger("vanish"); 
         
         GameObject activeSmoke = null;
         if (smokeBombPrefab != null)
         {
             Transform spawnPoint = smokeSpawnPoint != null ? smokeSpawnPoint : transform;
-            activeSmoke = Instantiate(smokeBombPrefab, spawnPoint.position, spawnPoint.rotation);
+            activeSmoke = Instantiate(smokeBombPrefab, spawnPoint.position, smokeSpawnPoint.rotation);
             activeSmoke.transform.SetParent(spawnPoint);
             activeSmoke.transform.localPosition = Vector3.zero;
         }
@@ -388,15 +438,13 @@ public class AssassinBossAI : MonoBehaviour
         isCurrentlyVanish = false;
         UpdateInvulnerabilityState(); 
 
-        Debug.Log("<color=red>🌀 ASSASSIN BOSS: Memulai Blade Flurry (Mengejar Cepat & MENGHILANG)!</color>");
         anim.SetTrigger("flurryAttack"); 
-
-        SetBossMeshVisible(false); // Tubuh bos menghilang!
+        SetBossMeshVisible(false); 
 
         if (flurryVFXPrefab != null)
         {
             Transform spawnPoint = smokeSpawnPoint != null ? smokeSpawnPoint : transform;
-            currentSkillVFX = Instantiate(flurryVFXPrefab, spawnPoint.position, spawnPoint.rotation);
+            currentSkillVFX = Instantiate(flurryVFXPrefab, spawnPoint.position, smokeSpawnPoint.rotation);
             currentSkillVFX.transform.SetParent(spawnPoint);
         }
 
@@ -421,10 +469,7 @@ public class AssassinBossAI : MonoBehaviour
             if (distanceToPlayer <= flurryRange)
             {
                 Health playerHealth = player.GetComponent<Health>();
-                if (playerHealth != null)
-                {
-                    playerHealth.TakeDamage(flurryDamagePerTick);
-                }
+                if (playerHealth != null) playerHealth.TakeDamage(flurryDamagePerTick);
             }
 
             yield return new WaitForSeconds(0.5f);
@@ -434,20 +479,13 @@ public class AssassinBossAI : MonoBehaviour
         if (currentSkillVFX != null)
         {
             ParticleSystem ps = currentSkillVFX.GetComponentInChildren<ParticleSystem>();
-            if (ps != null) 
-            { 
-                ps.Stop(); 
-                Destroy(currentSkillVFX, 1.5f); 
-            }
-            else 
-            { 
-                Destroy(currentSkillVFX); 
-            }
+            if (ps != null) { ps.Stop(); Destroy(currentSkillVFX, 1.5f); }
+            else { Destroy(currentSkillVFX); }
         }
 
         if (currentSkillDangerZone != null) Destroy(currentSkillDangerZone);
 
-        SetBossMeshVisible(true); // Tubuh bos muncul kembali!
+        SetBossMeshVisible(true); 
 
         if (agent.isActiveAndEnabled && agent.isOnNavMesh)
         {
@@ -459,21 +497,49 @@ public class AssassinBossAI : MonoBehaviour
         isCounterAttacking = false;
     }
 
+    void RemoveDragonVanish()
+    {
+        isVanishByDragon = false;
+
+        if (otherBossHealth != null)
+        {
+            otherBossHealth.onDeath -= RemoveDragonVanish; 
+        }
+
+        SetBossMeshVisible(true); 
+        UpdateInvulnerabilityState();
+
+        Debug.Log("<color=green>⚡ REVEALED: Forest Dragon gugur! Assassin Boss keluar dari bayangan dan pola serang kembali normal!</color>");
+    }
+
     void UpdateInvulnerabilityState()
     {
         Collider col = GetComponent<Collider>();
         if (col != null)
         {
-            col.enabled = !isCurrentlyVanish;
+            bool shouldBeInvulnerable = isCurrentlyVanish;
+            col.enabled = !shouldBeInvulnerable;
         }
     }
 
+    // 🌟 PERBAIKAN UTAMA: Memisahkan dan Menyembunyikan SkinnedMesh (Badan) DAN MeshRenderer (Senjata di Tangan/Punggung) 🌟
     void SetBossMeshVisible(bool visible)
     {
+        // Kondisi final visibilitas mesh internal boss
+        bool finalState = !isVanishByDragon && visible;
+
+        // 1. Matikan/Hidupkan Mesh Badan Utama Boss (SkinnedMeshRenderer)
         SkinnedMeshRenderer[] renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
         foreach (SkinnedMeshRenderer smr in renderers)
         {
-            smr.enabled = visible;
+            smr.enabled = finalState;
+        }
+
+        // 2. Matikan/Hidupkan Belati tangan kiri, kanan, dan tempat pisau di punggung (MeshRenderer biasa)
+        MeshRenderer[] meshRenderers = GetComponentsInChildren<MeshRenderer>();
+        foreach (MeshRenderer mr in meshRenderers)
+        {
+            mr.enabled = finalState;
         }
     }
 
@@ -482,6 +548,7 @@ public class AssassinBossAI : MonoBehaviour
         isDead = true;
         StopAllCoroutines();
         
+        isVanishByDragon = false; 
         isCurrentlyVanish = false;
         UpdateInvulnerabilityState();
         SetBossMeshVisible(true); 
@@ -500,8 +567,7 @@ public class AssassinBossAI : MonoBehaviour
 
     void HideBossUI()
     {
-        if (health != null && health.healthSlider != null) 
-            health.healthSlider.gameObject.SetActive(false);
+        if (health != null && health.healthSlider != null) health.healthSlider.gameObject.SetActive(false);
     }
 
     void OnDrawGizmosSelected()
@@ -509,7 +575,7 @@ public class AssassinBossAI : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, chaseRange);
 
-        Gizmos.color = Color.blue; // Visualisasi jarak tembak pisau di Editor
+        Gizmos.color = Color.blue; 
         Gizmos.DrawWireSphere(transform.position, skill2Range);
 
         Gizmos.color = Color.red;
