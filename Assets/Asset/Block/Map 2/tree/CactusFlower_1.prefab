@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 161536431349704603}
   - component: {fileID: 2727232827567559505}
   - component: {fileID: 3105507535979213103}
-  - component: {fileID: 1976669040192441710}
   m_Layer: 0
   m_Name: CactusFlower_1
   m_TagString: Untagged
@@ -114,24 +113,3 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 5795229737197278945, guid: c345beaea18269045a196136bcc04edc, type: 3}
---- !u!65 &1976669040192441710
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4528914502109721220}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.28536654, y: 0.058121588, z: 0.27139968}
-  m_Center: {x: -0.000000007450581, y: 0.029102916, z: -0.0021137223}
