@@ -9813,7 +9813,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyProjectile
   speed: 18
-  damage: 40
+  damage: 18
   lifeTime: 4
   destroyOnPlayerHit: 1
   destroyOnEnvironmentHit: 1

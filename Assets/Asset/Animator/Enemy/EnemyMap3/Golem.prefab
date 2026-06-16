@@ -917,7 +917,7 @@ Transform:
   m_GameObject: {fileID: 7167801099302765157}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.3519015, y: 1, z: 9.633579}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1034,7 +1034,7 @@ MonoBehaviour:
   chaseRange: 30
   attackRange: 6
   moveSpeed: 3.5
-  damage: 50
+  damage: 55
   patrolDisableRange: 25
   attackDelay: 0.5
   stunDuration: 0.5
@@ -1053,10 +1053,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 6422017514668157371}
-  maxHealth: 1000
+  maxHealth: 500
   currentHealth: 0
-  itemToDrop: {fileID: 3218043692679455554, guid: a09adf78f9405dd45bde5d0602c17c1a, type: 3}
-  amountToDrop: 5
+  itemToDrop: {fileID: 1917600463406995853, guid: 3ec5c3f0459fabc419eaea907bd1e4a0, type: 3}
+  amountToDrop: 8
   dropSpread: 0.5
 --- !u!1 &7677221546235198955
 GameObject:

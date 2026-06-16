@@ -831,10 +831,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 0}
-  maxHealth: 10000
+  maxHealth: 4000
   currentHealth: 0
   itemToDrop: {fileID: 3658929112754105701, guid: d8c4e9edb76d31c40a3d2696a662a273, type: 3}
-  amountToDrop: 15
+  amountToDrop: 3
   dropSpread: 0.5
 --- !u!114 &1018786197021852537
 MonoBehaviour:
@@ -852,7 +852,7 @@ MonoBehaviour:
   chaseRange: 100
   attackRange: 2.5
   moveSpeed: 15
-  damage: 55
+  damage: 50
   attackCooldown: 2
   attackDelay: 0.4
   skill1Cooldown: 7
@@ -869,7 +869,7 @@ MonoBehaviour:
   knivesCount: 3
   throwInterval: 0.2
   knifeSpeed: 22
-  knifeDamage: 55
+  knifeDamage: 50
   knifePrefab: {fileID: 1184011971090117863, guid: 58ea8905a0bed404dbd4f78032618b93, type: 3}
   knifeSpawnPoint: {fileID: 8375000528989506585}
   smokeBombPrefab: {fileID: 4809171458859421548, guid: dcd08443f923be94b81ea73ee62b9183, type: 3}

@@ -163615,7 +163615,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveManager
   allWaves:
-  - {fileID: 11400000, guid: 332e0f7f74fa88f4fb37c4c021fc8179, type: 2}
+  - {fileID: 11400000, guid: 8a7b60fed82bc1849bb69bef0cf0448e, type: 2}
   - {fileID: 11400000, guid: ff7ed73c5baf5664e88a42d11f117123, type: 2}
   - {fileID: 11400000, guid: a2615a1c43f345044ac959681efe50f7, type: 2}
   - {fileID: 11400000, guid: 72192a2de2644a64e8fe463d9a8eec87, type: 2}
@@ -164018,15 +164018,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
   playerBody: {fileID: 0}
   currentHealth: 0
-  maxHealth: 1000
+  maxHealth: 10
   maxMP: 10
   currentMP: 0
   mpRegenRate: 1
-  maxEnergy: 25
+  maxEnergy: 5
   currentEnergy: 0
   energyRegenRate: 1
-  damage: 100
-  speed: 10
+  damage: 1
+  speed: 5
   gold: 0
   smallPotionCount: 10
   mediumPotionCount: 10
@@ -164042,11 +164042,16 @@ MonoBehaviour:
   currentRage: 100
   maxRage: 100
   isRageMode: 0
-  healthUpgradeCost: 1
-  mpUpgradeCost: 1
-  energyUpgradeCost: 10
-  damageUpgradeCost: 1
-  speedUpgradeCost: 10
+  healthLevel: 0
+  mpLevel: 0
+  energyLevel: 0
+  damageLevel: 0
+  speedLevel: 0
+  healthBaseCost: 10
+  mpBaseCost: 10
+  energyBaseCost: 20
+  damageBaseCost: 10
+  speedBaseCost: 20
   mpUpgradeCount: 0
   skill1Level: 1
   skill2Level: 1

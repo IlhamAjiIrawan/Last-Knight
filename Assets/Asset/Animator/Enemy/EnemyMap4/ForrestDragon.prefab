@@ -407,7 +407,7 @@ MonoBehaviour:
   chaseRange: 20
   attackRange: 4
   moveSpeed: 10
-  damage: 75
+  damage: 60
   patrolDisableRange: 50
   attackDelay: 0.5
   stunDuration: 0.5
@@ -426,10 +426,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 7599030756866681605}
-  maxHealth: 2500
+  maxHealth: 1200
   currentHealth: 0
-  itemToDrop: {fileID: 4419682957062868931, guid: 320dad18c6b689743bab42bae5b4e966, type: 3}
-  amountToDrop: 5
+  itemToDrop: {fileID: 3218043692679455554, guid: a09adf78f9405dd45bde5d0602c17c1a, type: 3}
+  amountToDrop: 3
   dropSpread: 0.5
 --- !u!1 &1698471971554252169
 GameObject:

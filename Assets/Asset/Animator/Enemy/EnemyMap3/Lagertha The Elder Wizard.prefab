@@ -349,7 +349,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 66156411fa2812d4c98d7c07ba83b854, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -37.2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 66156411fa2812d4c98d7c07ba83b854, type: 3}
       propertyPath: m_LocalPosition.y
@@ -357,7 +357,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 66156411fa2812d4c98d7c07ba83b854, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.0704
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 66156411fa2812d4c98d7c07ba83b854, type: 3}
       propertyPath: m_LocalRotation.w
@@ -689,9 +689,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 0}
-  maxHealth: 2000
+  maxHealth: 400
   currentHealth: 0
-  itemToDrop: {fileID: 3658929112754105701, guid: d8c4e9edb76d31c40a3d2696a662a273, type: 3}
+  itemToDrop: {fileID: 3218043692679455554, guid: a09adf78f9405dd45bde5d0602c17c1a, type: 3}
   amountToDrop: 5
   dropSpread: 0.5
 --- !u!114 &206850180171794589
@@ -729,7 +729,7 @@ MonoBehaviour:
   skill2Cooldown: 14
   skill2Range: 18
   skill2Angle: 90
-  skill2InstantDamage: 50
+  skill2InstantDamage: 75
   skill2TelegraphDuration: 1.2
   iceFloorPrefab: {fileID: 3156866507962234106, guid: b9fba7c77d5d074419c83a2ed010ad10, type: 3}
   iceSpawnPoint: {fileID: 5963934324819321957}

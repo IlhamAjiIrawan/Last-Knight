@@ -403,7 +403,7 @@ Transform:
   m_GameObject: {fileID: 2389870245832782155}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.64846, y: 1, z: 4.82087}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -518,10 +518,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 5439098661781873899}
-  maxHealth: 100
+  maxHealth: 60
   currentHealth: 0
-  itemToDrop: {fileID: 1548119801499671017, guid: 1a0a29d0ab58448429640b15e6e87cca, type: 3}
-  amountToDrop: 5
+  itemToDrop: {fileID: 3131687921238785194, guid: 39af2f43a2cd7fe448f7661bf5f3b6bd, type: 3}
+  amountToDrop: 3
   dropSpread: 0.5
 --- !u!114 &8454377206686367692
 MonoBehaviour:
@@ -538,7 +538,7 @@ MonoBehaviour:
   player: {fileID: 0}
   chaseRange: 30
   attackRange: 20
-  moveSpeed: 11
+  moveSpeed: 10
   projectilePrefab: {fileID: 683182934616091483, guid: d5aaf8e4df9c39e4babfe184ff210610, type: 3}
   firePoint: {fileID: 1496239695835280018}
   attackDelay: 0.5

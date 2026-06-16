@@ -642,7 +642,7 @@ MonoBehaviour:
   maxHealth: 5
   currentHealth: 0
   itemToDrop: {fileID: 8681302943311832967, guid: 27aeb6c3e0d2aa348b8740efec403d7b, type: 3}
-  amountToDrop: 5
+  amountToDrop: 2
   dropSpread: 0.5
 --- !u!4 &3822613910133430749 stripped
 Transform:

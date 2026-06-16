@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bd6f8ceecdd96947b90d28b4b40e65d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KnifeProjectile
-  damage: 15
+  damage: 50
   speed: 20
   lifetime: 3
 --- !u!1001 &7226893595597732485

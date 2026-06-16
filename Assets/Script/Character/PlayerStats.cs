@@ -41,12 +41,25 @@ public class PlayerStats : MonoBehaviour
     public float maxRage = 100f;
     public bool isRageMode = false;
 
-    [Header("Upgrade Costs")]
-    public int healthUpgradeCost = 1;
-    public int mpUpgradeCost = 1;
-    public int energyUpgradeCost = 10;
-    public int damageUpgradeCost = 1;
-    public int speedUpgradeCost = 10;
+    [Header("Upgrade Levels (Mulai dari 0)")]
+    public int healthLevel = 0;
+    public int mpLevel = 0;
+    public int energyLevel = 0;
+    public int damageLevel = 0;
+    public int speedLevel = 0;
+
+    [Header("Base Upgrade Costs (Harga Awal Saat Level 0 adalah 10)")]
+    public int healthBaseCost = 10;
+    public int mpBaseCost = 10;
+    public int energyBaseCost = 20;
+    public int damageBaseCost = 10;
+    public int speedBaseCost = 20;
+
+    public int healthUpgradeCost => Mathf.RoundToInt(healthBaseCost * Mathf.Pow(1.3f, healthLevel));
+    public int mpUpgradeCost => Mathf.RoundToInt(mpBaseCost * Mathf.Pow(1.3f, mpLevel));
+    public int energyUpgradeCost => Mathf.RoundToInt(energyBaseCost * Mathf.Pow(1.3f, energyLevel));
+    public int damageUpgradeCost => Mathf.RoundToInt(damageBaseCost * Mathf.Pow(1.3f, damageLevel));
+    public int speedUpgradeCost => Mathf.RoundToInt(speedBaseCost * Mathf.Pow(1.3f, speedLevel));
 
     [HideInInspector] public int mpUpgradeCount = 0;
 
@@ -105,6 +118,13 @@ public class PlayerStats : MonoBehaviour
         damage = 1f;
         speed = 5.0f;
 
+        // === TAMBAHKAN INI: Reset level kembali ke 0 ===
+        healthLevel = 0;
+        mpLevel = 0;
+        energyLevel = 0;
+        damageLevel = 0;
+        speedLevel = 0;
+
         // 2. Isi penuh statusnya
         currentHealth = maxHealth;
         currentMP = maxMP;
@@ -125,6 +145,7 @@ public class PlayerStats : MonoBehaviour
 
         skill1Level = 0;
         skill2Level = 0;
+        mpUpgradeCount = 0; // Reset juga hitungan bonus mp regen
 
         Debug.Log("PLAYER STATS: Reset Total! Semua upgrade dan item hangus karena player mati");
     }

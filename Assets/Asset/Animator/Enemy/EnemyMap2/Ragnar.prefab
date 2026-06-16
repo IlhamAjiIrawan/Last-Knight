@@ -210,7 +210,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -30
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
       propertyPath: m_LocalPosition.y
@@ -218,7 +218,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 8.54
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 108b1e157c4232848b72312762c440b3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -793,10 +793,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 0}
-  maxHealth: 3500
+  maxHealth: 200
   currentHealth: 0
-  itemToDrop: {fileID: 4419682957062868931, guid: 320dad18c6b689743bab42bae5b4e966, type: 3}
-  amountToDrop: 3
+  itemToDrop: {fileID: 1917600463406995853, guid: 3ec5c3f0459fabc419eaea907bd1e4a0, type: 3}
+  amountToDrop: 4
   dropSpread: 0.5
 --- !u!114 &7278564245989130054
 MonoBehaviour:
@@ -813,7 +813,7 @@ MonoBehaviour:
   player: {fileID: 0}
   chaseRange: 100
   attackRange: 3.5
-  moveSpeed: 5
+  moveSpeed: 7
   damage: 35
   attackCooldown: 3
   attackDelay: 0.8

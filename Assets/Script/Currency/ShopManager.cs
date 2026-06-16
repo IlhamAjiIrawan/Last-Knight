@@ -55,6 +55,7 @@ public class ShopManager : MonoBehaviour
     }
     
     // --- LOGIKA UPGRADE STATS ---
+    // --- LOGIKA UPGRADE STATS DENGAN RUMUS EKSPONENSIAL ---
     public void UpgradeHealth()
     {
         if (PlayerStats.instance.gold >= PlayerStats.instance.healthUpgradeCost)
@@ -62,7 +63,9 @@ public class ShopManager : MonoBehaviour
             PlayerStats.instance.gold -= PlayerStats.instance.healthUpgradeCost;
             PlayerStats.instance.maxHealth += 10;
             PlayerStats.instance.currentHealth += 10; 
-            PlayerStats.instance.healthUpgradeCost *= 2;
+            
+            // PERBAIKAN: Naikkan level upgrade health
+            PlayerStats.instance.healthLevel++;
             UpdateUI();
         }
     }
@@ -85,7 +88,8 @@ public class ShopManager : MonoBehaviour
                 Debug.Log("Upgrade MP Berhasil. But " + (3 - (PlayerStats.instance.mpUpgradeCount % 3)) + " upgrade lagi untuk menambah MP Regen.");
             }
 
-            PlayerStats.instance.mpUpgradeCost *= 2;
+            // PERBAIKAN: Naikkan level upgrade MP
+            PlayerStats.instance.mpLevel++;
             UpdateUI();
         }
     }
@@ -97,7 +101,9 @@ public class ShopManager : MonoBehaviour
             PlayerStats.instance.gold -= PlayerStats.instance.energyUpgradeCost;
             PlayerStats.instance.maxEnergy += 5;
             PlayerStats.instance.energyRegenRate += 1;
-            PlayerStats.instance.energyUpgradeCost *= 2;
+
+            // PERBAIKAN: Naikkan level upgrade Energy
+            PlayerStats.instance.energyLevel++;
             UpdateUI();
         }
     }
@@ -108,7 +114,9 @@ public class ShopManager : MonoBehaviour
         {
             PlayerStats.instance.gold -= PlayerStats.instance.damageUpgradeCost;
             PlayerStats.instance.damage += 1;
-            PlayerStats.instance.damageUpgradeCost *= 2;
+
+            // PERBAIKAN: Naikkan level upgrade Damage
+            PlayerStats.instance.damageLevel++;
             UpdateUI();
         }
     }
@@ -123,13 +131,15 @@ public class ShopManager : MonoBehaviour
             PlayerMovement pm = FindObjectOfType<PlayerMovement>();
             if (pm != null) pm.speed = PlayerStats.instance.speed;
 
-            PlayerStats.instance.speedUpgradeCost *= 2;
+            // PERBAIKAN: Naikkan level upgrade Speed
+            PlayerStats.instance.speedLevel++;
             UpdateUI();
         }
     }
 
     void UpdateUI()
     {
+        // Tetap membaca nama variabel yang sama karena di PlayerStats.cs properti rumusnya sengaja disamakan hurufnya
         if (healthPriceText) healthPriceText.text = "Cost: " + PlayerStats.instance.healthUpgradeCost;
         if (mpPriceText) mpPriceText.text = "Cost: " + PlayerStats.instance.mpUpgradeCost;
         if (energyPriceText) energyPriceText.text = "Cost: " + PlayerStats.instance.energyUpgradeCost;
