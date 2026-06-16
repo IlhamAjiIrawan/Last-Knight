@@ -759,7 +759,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -851,11 +851,12 @@ MonoBehaviour:
   player: {fileID: 0}
   chaseRange: 100
   attackRange: 2.5
-  moveSpeed: 15
+  moveSpeed: 10
   damage: 50
-  attackCooldown: 2
+  attackCooldown: 3
   attackDelay: 0.4
-  skill1Cooldown: 7
+  attackRecoveryTime: 0.4
+  skill1Cooldown: 10
   skill1Range: 12
   dashSpeed: 18
   skill1Width: 3
@@ -864,7 +865,7 @@ MonoBehaviour:
   dashSlashPrefab: {fileID: 1607733840900641037, guid: f2b47e0420945d6438fe93f1828be42d, type: 3}
   slashSpawnPoint: {fileID: 4707478922867323284}
   dangerZoneBoxPrefab: {fileID: 6266338237032078778, guid: c999d136be954f443bf8b5e8b461f53d, type: 3}
-  skill2Cooldown: 5
+  skill2Cooldown: 10
   skill2Range: 18
   knivesCount: 3
   throwInterval: 0.2

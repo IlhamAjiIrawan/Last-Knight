@@ -1949,7 +1949,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -2045,6 +2045,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 683182934616091483, guid: c7e77c0ff6b95614293fde43fcd07dd2, type: 3}
   firePoint: {fileID: 8614397569583141285}
   attackDelay: 0.5
+  attackRecoveryTime: 0.4
   fleeRange: 4
   fleeDistance: 6
   patrolDisableRange: 50

@@ -769,7 +769,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -817,6 +817,7 @@ MonoBehaviour:
   damage: 35
   attackCooldown: 3
   attackDelay: 0.8
+  attackRecoveryTime: 0.4
   skill1Cooldown: 15
   skill1Range: 10
   slashSpeed: 12
@@ -842,7 +843,7 @@ MonoBehaviour:
   spinVFXPrefab: {fileID: 6526302276393259002, guid: b507a29667c55854389fb656236e2b2b, type: 3}
   spinRange: 6
   spinDamagePerTick: 10
-  defendDuration: 2
+  defendDuration: 5
   spinDuration: 5
   spinMoveSpeed: 3.5
   otherBossHealth: {fileID: 5997425351166822472, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}

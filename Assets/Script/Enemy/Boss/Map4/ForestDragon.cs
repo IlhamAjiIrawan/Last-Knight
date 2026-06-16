@@ -14,6 +14,7 @@ public class ForestDragon : MonoBehaviour
 
     [Header("Attack Delay Settings")]
     public float attackDelay = 0.8f; 
+    public float attackRecoveryTime = 0.4f;
 
     [Header("Skill 1 Settings (Poison Gas - DOT)")]
     public float skill1Cooldown = 7f;     
@@ -189,7 +190,13 @@ public class ForestDragon : MonoBehaviour
     IEnumerator AttackRoutine()
     {
         isPreparingAttack = true;
-        agent.isStopped = true;
+
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero; 
+        }
+
         anim.SetBool("isMoving", false);
 
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
@@ -203,6 +210,7 @@ public class ForestDragon : MonoBehaviour
             if (playerHealth != null) playerHealth.TakeDamage(damage);
         }
 
+        yield return new WaitForSeconds(attackRecoveryTime);
         lastAttackTime = Time.time;
         isPreparingAttack = false;
     }
@@ -211,7 +219,12 @@ public class ForestDragon : MonoBehaviour
     {
         isUsingSkill = true;
         anim.SetBool("isMoving", false);
-        if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = true;
+        
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
 
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
 
@@ -280,7 +293,12 @@ public class ForestDragon : MonoBehaviour
     {
         isUsingSkill = true;
         anim.SetBool("isMoving", false);
-        if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = true;
+
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
 
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
 
@@ -472,7 +490,6 @@ public class ForestDragon : MonoBehaviour
         Gizmos.color = Color.white;
         Gizmos.DrawWireSphere(transform.position, roarRange);
 
-        // 🌟 GIZMOS SKILL 1: LINGKARAN TARGET GAS DI DEPAN (ORANGE) 🌟
         Vector3 expectedGasPos = skill1DangerZoneSpawnPoint != null ? 
             skill1DangerZoneSpawnPoint.position : (transform.position + transform.forward * gasSpawnDistance);
         Gizmos.color = Color.orange;

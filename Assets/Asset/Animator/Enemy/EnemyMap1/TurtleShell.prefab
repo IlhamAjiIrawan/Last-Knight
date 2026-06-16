@@ -622,7 +622,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 1
@@ -700,6 +700,7 @@ MonoBehaviour:
   damage: 2
   patrolDisableRange: 50
   attackDelay: 0.5
+  attackRecoveryTime: 0.4
   stunDuration: 0.5
   patrolRadius: 8
   patrolWaitTime: 2

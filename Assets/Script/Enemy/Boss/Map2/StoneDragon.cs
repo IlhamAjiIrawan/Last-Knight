@@ -14,6 +14,7 @@ public class StoneDragon : MonoBehaviour
 
     [Header("Attack Delay Settings")]
     public float attackDelay = 0.8f; 
+    public float attackRecoveryTime = 0.4f;
 
     [Header("Skill 1 Settings (Jump Attack Box)")]
     public float skill1Cooldown = 8f;     
@@ -185,7 +186,11 @@ public class StoneDragon : MonoBehaviour
     IEnumerator AttackRoutine()
     {
         isPreparingAttack = true;
-        agent.isStopped = true;
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
         anim.SetBool("isMoving", false);
 
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
@@ -198,6 +203,7 @@ public class StoneDragon : MonoBehaviour
             player.GetComponent<Health>().TakeDamage(damage);
         }
 
+        yield return new WaitForSeconds(attackRecoveryTime);
         lastAttackTime = Time.time;
         isPreparingAttack = false;
     }
@@ -206,7 +212,11 @@ public class StoneDragon : MonoBehaviour
     {
         isUsingSkill = true;
         anim.SetBool("isMoving", false);
-        if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = true;
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
 
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
         Vector3 boxCenter = transform.position + transform.forward * (jumpDistance / 2f);
@@ -246,7 +256,11 @@ public class StoneDragon : MonoBehaviour
     {
         isUsingSkill = true;
         anim.SetBool("isMoving", false);
-        if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = true;
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+            {
+                agent.isStopped = true;
+                agent.velocity = Vector3.zero;
+            }
 
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
 

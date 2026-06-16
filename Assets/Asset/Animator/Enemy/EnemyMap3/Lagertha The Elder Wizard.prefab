@@ -665,7 +665,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -743,7 +743,7 @@ MonoBehaviour:
   counterBlastRange: 20
   counterBlastDamage: 150
   freezeDuration: 5
-  defendDuration: 2
+  defendDuration: 5
 --- !u!4 &5710315000300301828 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 66156411fa2812d4c98d7c07ba83b854, type: 3}

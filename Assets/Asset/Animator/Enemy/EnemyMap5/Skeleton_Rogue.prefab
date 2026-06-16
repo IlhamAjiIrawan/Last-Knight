@@ -1038,7 +1038,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -1110,10 +1110,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 7339341306326983241}
-  maxHealth: 10
+  maxHealth: 120
   currentHealth: 0
-  itemToDrop: {fileID: 0}
-  amountToDrop: 1
+  itemToDrop: {fileID: 1548119801499671017, guid: 1a0a29d0ab58448429640b15e6e87cca, type: 3}
+  amountToDrop: 4
   dropSpread: 0.5
 --- !u!114 &8832636202624093425
 MonoBehaviour:
@@ -1128,8 +1128,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RangedEnemyAI
   player: {fileID: 0}
-  chaseRange: 15
-  attackRange: 10
+  chaseRange: 30
+  attackRange: 12
   moveSpeed: 3.5
   projectilePrefab: {fileID: 6278403586669585298, guid: 574e2f6f9b3c4914fbf900b5d8c67e1f, type: 3}
   firePoint: {fileID: 3924436164181591666}

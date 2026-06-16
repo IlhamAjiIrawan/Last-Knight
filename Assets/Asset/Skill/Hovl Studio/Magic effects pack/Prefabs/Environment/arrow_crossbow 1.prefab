@@ -144,5 +144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyProjectile
   speed: 12
-  damage: 15
+  damage: 30
   lifeTime: 4
+  destroyOnPlayerHit: 1
+  destroyOnEnvironmentHit: 1

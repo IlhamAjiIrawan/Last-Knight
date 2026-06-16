@@ -14,6 +14,7 @@ public class AssassinBossAI : MonoBehaviour
 
     [Header("Attack Delay Settings")]
     public float attackDelay = 0.4f; 
+    public float attackRecoveryTime = 0.4f;
 
     [Header("Skill 1 Settings (Shadow Dash Strike - Box Area)")]
     public float skill1Cooldown = 7f;
@@ -263,7 +264,13 @@ public class AssassinBossAI : MonoBehaviour
     IEnumerator AttackRoutine()
     {
         isPreparingAttack = true;
-        agent.isStopped = true;
+
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+
         anim.SetBool("isMoving", false);
 
         LookAtPlayer();
@@ -279,6 +286,7 @@ public class AssassinBossAI : MonoBehaviour
             }
         }
 
+        yield return new WaitForSeconds(attackRecoveryTime);
         lastAttackTime = Time.time;
         isPreparingAttack = false;
     }
@@ -287,7 +295,12 @@ public class AssassinBossAI : MonoBehaviour
     {
         isUsingSkill = true;
         anim.SetBool("isMoving", false);
-        if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = true;
+
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
 
         LookAtPlayer();
         
@@ -352,7 +365,12 @@ public class AssassinBossAI : MonoBehaviour
     {
         isUsingSkill = true;
         anim.SetBool("isMoving", false);
-        if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = true;
+
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
 
         LookAtPlayer();
         anim.SetTrigger("skill2");

@@ -1833,7 +1833,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -1881,6 +1881,7 @@ MonoBehaviour:
   damage: 50
   attackCooldown: 3
   attackDelay: 0.8
+  attackRecoveryTime: 0.4
   skill1Cooldown: 8
   skill1Range: 10
   skill1Damage: 60
@@ -1903,7 +1904,7 @@ MonoBehaviour:
   blizzardPrefab: {fileID: 7505548116199674855, guid: 281bb479500c21242b5866f188df2ba2, type: 3}
   roarRange: 30
   roarDamagePerTick: 20
-  defendDuration: 2
+  defendDuration: 5
   screamDuration: 5
 --- !u!1 &4636585666495320084
 GameObject:

@@ -163630,8 +163630,8 @@ MonoBehaviour:
   normalWaveBGM: {fileID: 8300000, guid: 99bd5bfa6c96d4343bb422cdb025e636, type: 3}
   bossWaveBGM: {fileID: 8300000, guid: 49ddb60d35ba756459b743410cb0a84b, type: 3}
   bossToSpawnList:
-  - bossPrefab: {fileID: 1567183971633897040, guid: 670661036490e63418ecffba203e803e, type: 3}
-    bossDisplayName: Daladriel
+  - bossPrefab: {fileID: 2176137159092654180, guid: 1e0b4402e9244cf46927474e6218dfc5, type: 3}
+    bossDisplayName: Ignis
   bossSpawnPoint: {fileID: 1473800007}
   bossHPBarPrefab: {fileID: 3870397800445155264, guid: 9847bed5bd991844883bcabc5a313547, type: 3}
   bossHPContainer: {fileID: 502915658}
@@ -164018,15 +164018,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
   playerBody: {fileID: 0}
   currentHealth: 0
-  maxHealth: 10
+  maxHealth: 1000
   maxMP: 10
   currentMP: 0
   mpRegenRate: 1
   maxEnergy: 5
   currentEnergy: 0
   energyRegenRate: 1
-  damage: 1
-  speed: 5
+  damage: 100
+  speed: 10
   gold: 0
   smallPotionCount: 10
   mediumPotionCount: 10

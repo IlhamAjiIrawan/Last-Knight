@@ -794,7 +794,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -866,11 +866,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   player: {fileID: 0}
-  chaseRange: 10
+  chaseRange: 30
   attackRange: 2
-  moveSpeed: 3.5
-  damage: 10
+  moveSpeed: 8
+  damage: 40
+  patrolDisableRange: 50
   attackDelay: 0.5
+  attackRecoveryTime: 0.4
   stunDuration: 0.5
   patrolRadius: 8
   patrolWaitTime: 1
@@ -887,10 +889,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 4970024836664645862}
-  maxHealth: 10
+  maxHealth: 600
   currentHealth: 0
-  itemToDrop: {fileID: 0}
-  amountToDrop: 1
+  itemToDrop: {fileID: 1548119801499671017, guid: 1a0a29d0ab58448429640b15e6e87cca, type: 3}
+  amountToDrop: 4
   dropSpread: 0.5
 --- !u!4 &8570394355368021133 stripped
 Transform:

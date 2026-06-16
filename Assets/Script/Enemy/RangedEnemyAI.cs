@@ -13,7 +13,8 @@ public class RangedEnemyAI : MonoBehaviour
     [Header("Ranged Attack Settings")]
     public GameObject projectilePrefab;     // Prefab peluru/panah
     public Transform firePoint;             // Titik tempat peluru muncul (misal ujung tongkat/tangan)
-    public float attackDelay = 0.5f;        // Jeda dari animasi mulai sampai peluru keluar
+    public float attackDelay = 0.5f;
+    public float attackRecoveryTime = 0.4f;
     private bool isPreparingAttack = false;
 
     [Header("Flee / Kiting Settings")]
@@ -132,7 +133,13 @@ public class RangedEnemyAI : MonoBehaviour
     IEnumerator AttackRoutine()
     {
         isPreparingAttack = true;
-        agent.isStopped = true;
+
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+
         anim.SetBool("isMoving", false);
 
         LookAtPlayer();
@@ -158,6 +165,7 @@ public class RangedEnemyAI : MonoBehaviour
             }
         }
 
+        yield return new WaitForSeconds(attackRecoveryTime);
         lastAttackTime = Time.time;
         isPreparingAttack = false;
     }

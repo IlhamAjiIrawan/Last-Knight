@@ -14,6 +14,7 @@ public class IceDragon : MonoBehaviour
 
     [Header("Basic Attack Delay Settings")]
     public float attackDelay = 0.8f; 
+    public float attackRecoveryTime = 0.4f;
 
     [Header("Skill 1 Settings (Double Claw - Animation Event)")]
     public float skill1Cooldown = 8f;     
@@ -181,7 +182,13 @@ public class IceDragon : MonoBehaviour
     IEnumerator AttackRoutine()
     {
         isPreparingAttack = true;
-        agent.isStopped = true;
+
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+
         anim.SetBool("isMoving", false);
 
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
@@ -194,6 +201,7 @@ public class IceDragon : MonoBehaviour
             player.GetComponent<Health>().TakeDamage(damage);
         }
 
+        yield return new WaitForSeconds(attackRecoveryTime);
         lastAttackTime = Time.time;
         isPreparingAttack = false;
     }
@@ -202,7 +210,11 @@ public class IceDragon : MonoBehaviour
     {
         isUsingSkill = true;
         anim.SetBool("isMoving", false);
-        if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = true;
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
 
         // Kunci hadapan boss ke arah player di awal skill
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
@@ -257,7 +269,11 @@ public class IceDragon : MonoBehaviour
     {
         isUsingSkill = true;
         anim.SetBool("isMoving", false);
-        if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = true;
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+            {
+                agent.isStopped = true;
+                agent.velocity = Vector3.zero; // 🔥 BARU
+            }
 
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
 

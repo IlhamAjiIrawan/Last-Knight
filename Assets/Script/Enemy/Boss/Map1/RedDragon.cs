@@ -14,6 +14,7 @@ public class RedDragon : MonoBehaviour
 
     [Header("Attack Delay Settings")]
     public float attackDelay = 0.8f; 
+    public float attackRecoveryTime = 0.4f;
 
     [Header("Skill 1 Settings (Jump Attack Box)")]
     public float skill1Cooldown = 8f;     
@@ -203,7 +204,11 @@ public class RedDragon : MonoBehaviour
     void StopMoving()
     {
         if (!agent.isActiveAndEnabled || !agent.isOnNavMesh) return;
-        agent.isStopped = true;
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
         anim.SetBool("isMoving", false);
     }
 
@@ -231,7 +236,11 @@ public class RedDragon : MonoBehaviour
     {
         isUsingSkill = true;
         anim.SetBool("isMoving", false);
-        if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = true;
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
 
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
         Vector3 boxCenter = transform.position + transform.forward * (jumpDistance / 2f);
@@ -270,7 +279,11 @@ public class RedDragon : MonoBehaviour
     {
         isUsingSkill = true;
         anim.SetBool("isMoving", false);
-        if (agent.isActiveAndEnabled && agent.isOnNavMesh) agent.isStopped = true;
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
 
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
 
