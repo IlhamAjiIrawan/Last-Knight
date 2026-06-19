@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -22,6 +23,11 @@ public class PlayerMovement : MonoBehaviour
     public float blockSpeedMultiplier = 0.2f;   // Kecepatan gerak saat blok (0% dari speed normal)
     public bool isBlocking { get; private set; }
     public bool isBlockBroken { get; private set; } = false;
+
+    [Header("UI Damage Flash Settings")]
+    public Image damageFlashImage;         // Tarik UI Image merah full-screen ke sini di Inspector
+    public Color flashColor = new Color(1f, 0f, 0f, 0.4f); // Warna merah dengan transparansi 40%
+    public float flashSpeed = 5f;
     
     [Header("Dash Settings")]
     public float dashSpeed = 20f;
@@ -112,6 +118,11 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (damageFlashImage != null && damageFlashImage.color.a > 0)
+        {
+            damageFlashImage.color = Color.Lerp(damageFlashImage.color, Color.clear, flashSpeed * Time.deltaTime);
+        }
+        
         if (PlayerStats.instance != null && PlayerStats.instance.currentHealth <= 0) return; 
         speed = PlayerStats.instance.speed; 
         if (isDashing) return; 
@@ -482,6 +493,11 @@ public class PlayerMovement : MonoBehaviour
         isUsingPotion = false; 
         ResetCombo();          
         Debug.Log("Player terluka: Status Minum & Antrian Kombo berhasil di-reset!");
+
+        if (damageFlashImage != null)
+        {
+            damageFlashImage.color = flashColor;
+        }
     }
 
     void OnDrawGizmosSelected()

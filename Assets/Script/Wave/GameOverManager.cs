@@ -49,32 +49,35 @@ public class GameOverManager : MonoBehaviour
         Cursor.visible = true;
     }
 
-    // --- FUNGSI UNTUK TOMBOL RETRY ---
     public void RetryGame()
     {
         Time.timeScale = 1f; 
 
-        // Panggil fungsi reset dari PlayerStats sebelum memuat ulang level
+        // ------------------------------------------------------------------
+        // PERUBAHAN UTAMA:
+        // Ganti ResetStats() menjadi LoadStats() agar darah yang 0 HP dan 
+        // status mati di-overwrite kembali oleh data terakhir saat berhasil clear wave.
+        // ------------------------------------------------------------------
         if (PlayerStats.instance != null)
         {
-            PlayerStats.instance.ResetStats();
-            // Catatan: Jika ingin meriset Gold dan Potion juga, 
-            // ganti menjadi: PlayerStats.instance.ResetAllProgression();
+            PlayerStats.instance.LoadStats();
+            Debug.Log("<color=yellow>GAME OVER SYSTEM: Mengembalikan statistik player ke Checkpoint terakhir.</color>");
         }
 
         string currentSceneName = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene(currentSceneName);
     }
 
-    // --- FUNGSI UNTUK TOMBOL MAIN MENU ---
     public void BackToMainMenu()
     {
         Time.timeScale = 1f; 
 
-        // Pastikan saat kembali ke main menu, statistik player sudah bersih saat bermain lagi nanti
+        // Saat kembali ke main menu, kita juga panggil LoadStats() agar data runtime 
+        // tidak dalam kondisi 'mati/0 HP'. Jadi jika player menekan Play lagi di Main Menu, 
+        // mereka otomatis melanjutkan dari save data wave terakhir mereka.
         if (PlayerStats.instance != null)
         {
-            PlayerStats.instance.ResetStats();
+            PlayerStats.instance.LoadStats();
         }
 
         SceneManager.LoadScene(mainMenuSceneName);

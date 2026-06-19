@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class BossDataSetup
@@ -14,6 +15,7 @@ public class WaveManager : MonoBehaviour {
     public List<WaveData> allWaves;
     public Transform[] spawnPoints;
     public GameObject shopPanel;  
+    public string nextSceneName;
 
     [Header("Audio Settings")]
     public AudioSource bgmSource;       
@@ -105,6 +107,10 @@ public class WaveManager : MonoBehaviour {
         AssassinBossAI assassinScript = null;
         Health forestDragonHealth = null;
 
+        // TRACKING PASANGAN 3: ALEXANDER & RED DRAGON
+        Alexander alexanderScript = null;
+        Health redDragonHealth = null;
+
         for (int i = 0; i < bossToSpawnList.Count; i++) {
             if (bossToSpawnList[i] == null || bossToSpawnList[i].bossPrefab == null) continue;
 
@@ -133,6 +139,14 @@ public class WaveManager : MonoBehaviour {
                 forestDragonHealth = bossHealth;
             }
 
+            // 🔥 Validasi Pasangan Baru (Alexander & Red Dragon)
+            if (boss.GetComponent<Alexander>() != null) {
+                alexanderScript = boss.GetComponent<Alexander>();
+            }
+            if (boss.GetComponent<RedDragon>() != null) {
+                redDragonHealth = bossHealth;
+            }
+
             if (bossHPBarPrefab != null && bossHPContainer != null && bossHealth != null) {
                 GameObject uiBar = Instantiate(bossHPBarPrefab, bossHPContainer);
                 BossHPBar barScript = uiBar.GetComponent<BossHPBar>();
@@ -153,12 +167,14 @@ public class WaveManager : MonoBehaviour {
         // Eksekusi Link Pasangan Lama
         if (barbarianScript != null && dragonHealth != null) {
             barbarianScript.otherBossHealth = dragonHealth;
-            Debug.Log("<color=green>🔗 [WaveManager]: Berhasil menjodohkan King Barbarian dengan Stone Dragon secara Real-Time!</color>");
         }
 
         if (assassinScript != null && forestDragonHealth != null) {
             assassinScript.otherBossHealth = forestDragonHealth;
-            Debug.Log("<color=purple>🔮 [WaveManager]: Berhasil menjodohkan Assassin Boss dengan Forest Dragon secara Real-Time!</color>");
+        }
+
+        if (alexanderScript != null && redDragonHealth != null) {
+            alexanderScript.otherBossHealth = redDragonHealth;
         }
     }
 
@@ -184,17 +200,45 @@ public class WaveManager : MonoBehaviour {
             }
         }
 
-        shopPanel.SetActive(true); 
+        if (shopPanel != null)
+        {
+            shopPanel.SetActive(true); 
+        }
+
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;      
+        Cursor.visible = true;
     }
 
     public void GoToNextWave() {
-        shopPanel.SetActive(false);
+        if (shopPanel != null) shopPanel.SetActive(false);
         Time.timeScale = 1f;       
-        currentWaveIndex++;
-        StartCoroutine(StartWave());
+        
+        currentWaveIndex++; // Naikkan ke nomor wave berikutnya
+
+        // Cek apakah SEMUA wave di map ini sudah selesai
+        if (currentWaveIndex >= allWaves.Count) 
+        {
+            Debug.Log("<color=green>SEMUA WAVE SELESAI! Menjalankan Save dan Berpindah ke Map Selanjutnya...</color>");
+            
+            if (PlayerStats.instance != null) 
+            {
+                PlayerStats.instance.SaveStats(); // Data disimpan di sini sebelum scene berganti
+            }
+
+            if (!string.IsNullOrEmpty(nextSceneName))
+            {
+                SceneManager.LoadScene(nextSceneName);
+            }
+            else
+            {
+                Debug.LogError("WaveManager Error: Kamu belum memasukkan nama scene berikutnya di Inspector!");
+            }
+        }
+        else
+        {
+            StartCoroutine(StartWave());
+        }
     }
 
     private void SwitchBGM(AudioClip newClip) {

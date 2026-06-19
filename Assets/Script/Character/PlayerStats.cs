@@ -83,9 +83,7 @@ public class PlayerStats : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject); 
 
-            currentHealth = maxHealth;
-            currentMP = maxMP; 
-            currentEnergy = maxEnergy;
+            LoadStats();
         }
         else
         {
@@ -108,7 +106,80 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    // Ganti fungsi ResetStats lama dengan ini JIKA ingin reset total saat Game Over
+    public void SaveStats()
+    {
+        PlayerPrefs.SetFloat("CurrentHealth", currentHealth);
+        PlayerPrefs.SetFloat("MaxHealth", maxHealth);
+        PlayerPrefs.SetFloat("CurrentMP", currentMP);
+        PlayerPrefs.SetFloat("MaxMP", maxMP);
+        PlayerPrefs.SetFloat("MpRegenRate", mpRegenRate);
+        PlayerPrefs.SetFloat("MaxEnergy", maxEnergy);
+        PlayerPrefs.SetFloat("CurrentEnergy", currentEnergy);
+        PlayerPrefs.SetFloat("EnergyRegenRate", energyRegenRate);
+        PlayerPrefs.SetFloat("Damage", damage);
+        PlayerPrefs.SetFloat("Speed", speed);
+        PlayerPrefs.SetInt("Gold", gold);
+
+        // Save Inventory Potion
+        PlayerPrefs.SetInt("SmallPotionCount", smallPotionCount);
+        PlayerPrefs.SetInt("MediumPotionCount", mediumPotionCount);
+        PlayerPrefs.SetInt("LargePotionCount", largePotionCount);
+        PlayerPrefs.SetInt("SmallMPCount", smallMPCount);
+        PlayerPrefs.SetInt("EnergyPotionCount", energyPotionCount);
+        PlayerPrefs.SetInt("StrengthPotionCount", strengthPotionCount);
+        PlayerPrefs.SetInt("SpeedPotionCount", speedPotionCount);
+
+        // Save Upgrade Levels & Skill
+        PlayerPrefs.SetInt("HealthLevel", healthLevel);
+        PlayerPrefs.SetInt("MpLevel", mpLevel);
+        PlayerPrefs.SetInt("EnergyLevel", energyLevel);
+        PlayerPrefs.SetInt("DamageLevel", damageLevel);
+        PlayerPrefs.SetInt("SpeedLevel", speedLevel);
+        PlayerPrefs.SetInt("MpUpgradeCount", mpUpgradeCount);
+        PlayerPrefs.SetInt("Skill1Level", skill1Level);
+        PlayerPrefs.SetInt("Skill2Level", skill2Level);
+
+        PlayerPrefs.Save(); // Mengunci dan mengamankan data ke penyimpanan perangkat
+        Debug.Log("<color=cyan>SAVE SYSTEM: Progres statistik player berhasil DISIMPAN!</color>");
+    }
+
+    public void LoadStats()
+    {
+        // Parameter kedua di dalam GetFloat/GetInt adalah nilai default jika data belum pernah disimpan sebelumnya
+        maxHealth = PlayerPrefs.GetFloat("MaxHealth", 10f);
+        currentHealth = PlayerPrefs.GetFloat("CurrentHealth", maxHealth);
+        maxMP = PlayerPrefs.GetFloat("MaxMP", 10f);
+        currentMP = PlayerPrefs.GetFloat("CurrentMP", maxMP);
+        mpRegenRate = PlayerPrefs.GetFloat("MpRegenRate", 1f);
+        maxEnergy = PlayerPrefs.GetFloat("MaxEnergy", 5f);
+        currentEnergy = PlayerPrefs.GetFloat("CurrentEnergy", maxEnergy);
+        energyRegenRate = PlayerPrefs.GetFloat("EnergyRegenRate", 1f);
+        damage = PlayerPrefs.GetFloat("Damage", 1f);
+        speed = PlayerPrefs.GetFloat("Speed", 5.0f);
+        gold = PlayerPrefs.GetInt("Gold", 0);
+
+        // Load Inventory Potion
+        smallPotionCount = PlayerPrefs.GetInt("SmallPotionCount", 0);
+        mediumPotionCount = PlayerPrefs.GetInt("MediumPotionCount", 0);
+        largePotionCount = PlayerPrefs.GetInt("LargePotionCount", 0);
+        smallMPCount = PlayerPrefs.GetInt("SmallMPCount", 0);
+        energyPotionCount = PlayerPrefs.GetInt("EnergyPotionCount", 0);
+        strengthPotionCount = PlayerPrefs.GetInt("StrengthPotionCount", 0);
+        speedPotionCount = PlayerPrefs.GetInt("SpeedPotionCount", 0);
+
+        // Load Upgrade Levels & Skill
+        healthLevel = PlayerPrefs.GetInt("HealthLevel", 0);
+        mpLevel = PlayerPrefs.GetInt("MpLevel", 0);
+        energyLevel = PlayerPrefs.GetInt("EnergyLevel", 0);
+        damageLevel = PlayerPrefs.GetInt("DamageLevel", 0);
+        speedLevel = PlayerPrefs.GetInt("SpeedLevel", 0);
+        mpUpgradeCount = PlayerPrefs.GetInt("MpUpgradeCount", 0);
+        skill1Level = PlayerPrefs.GetInt("Skill1Level", 0);
+        skill2Level = PlayerPrefs.GetInt("Skill2Level", 0);
+
+        Debug.Log("<color=cyan>SAVE SYSTEM: Progres statistik player berhasil DIMUAT!</color>");
+    }
+
     public void ResetStats()
     {
         // 1. Kembalikan batas maksimum status ke nilai awal game
