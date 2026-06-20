@@ -497,7 +497,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3, y: 4, z: 5}
+  m_Size: {x: 4, y: 4, z: 5}
   m_Center: {x: 0, y: 2, z: 0}
 --- !u!195 &5749778064430640425
 NavMeshAgent:
@@ -569,7 +569,7 @@ MonoBehaviour:
   skill2Cooldown: 10
   skill2Range: 6
   skill2Angle: 180
-  skill2Damage: 40
+  skill2Damage: 30
   skill2TelegraphDuration: 0.6
   skill2PostHitDuration: 0.8
   dangerZoneBoxPrefab: {fileID: 6266338237032078778, guid: c999d136be954f443bf8b5e8b461f53d, type: 3}

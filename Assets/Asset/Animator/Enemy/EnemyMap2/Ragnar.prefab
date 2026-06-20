@@ -814,7 +814,7 @@ MonoBehaviour:
   chaseRange: 100
   attackRange: 3.5
   moveSpeed: 7
-  damage: 35
+  damage: 30
   attackCooldown: 3
   attackDelay: 0.8
   attackRecoveryTime: 0.4
@@ -831,7 +831,7 @@ MonoBehaviour:
   skill2Cooldown: 8
   skill2Range: 6
   skill2Angle: 180
-  skill2Damage: 35
+  skill2Damage: 30
   skill2TelegraphDuration: 1
   skill2PostHitDuration: 0.8
   dangerZoneConePrefab: {fileID: 6265441997546582639, guid: bb547d9dffb859c478ed21f06debf6a1, type: 3}

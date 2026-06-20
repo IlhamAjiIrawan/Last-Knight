@@ -719,7 +719,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 2, y: 3, z: 5}
-  m_Center: {x: 0, y: 1.5, z: 0}
+  m_Center: {x: 0, y: 1.5, z: 1}
 --- !u!114 &3381020416746747284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -736,7 +736,7 @@ MonoBehaviour:
   chaseRange: 20
   attackRange: 3.7
   moveSpeed: 9
-  damage: 20
+  damage: 15
   patrolDisableRange: 50
   attackDelay: 0.5
   attackRecoveryTime: 0.4

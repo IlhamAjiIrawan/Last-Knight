@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.IO; // PENTING: Ditambahkan untuk mengaktifkan fitur baca & tulis file fisik
 
 public class PlayerStats : MonoBehaviour
 {
@@ -76,8 +77,15 @@ public class PlayerStats : MonoBehaviour
     public int skill1UpgradeCost = 10;
     public int skill2UpgradeCost = 150;
 
+    // Variabel baru untuk menentukan nama file dan lokasi folder penyimpanan
+    private string saveFileName = "save_player_data.json";
+    private string savePath;
+
     void Awake()
     {
+        // Tentukan path folder simpanan otomatis berdasarkan OS perangkat (Windows/Android/iOS)
+        savePath = Path.Combine(Application.persistentDataPath, saveFileName);
+
         if (instance == null)
         {
             instance = this;
@@ -106,97 +114,143 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
+    [System.Serializable]
+    public class PlayerData
+    {
+        public float currentHealth;
+        public float maxHealth;
+        public float currentMP;
+        public float maxMP;
+        public float mpRegenRate;
+        public float maxEnergy;
+        public float currentEnergy;
+        public float energyRegenRate;
+        public float damage;
+        public float speed;
+        public int gold;
+
+        public int smallPotionCount;
+        public int mediumPotionCount;
+        public int largePotionCount;
+        public int smallMPCount;
+        public int energyPotionCount;
+        public int strengthPotionCount;
+        public int speedPotionCount;
+
+        public int healthLevel;
+        public int mpLevel;
+        public int energyLevel;
+        public int damageLevel;
+        public int speedLevel;
+        public int mpUpgradeCount;
+        public int skill1Level;
+        public int skill2Level;
+    }
+
     public void SaveStats()
     {
-        PlayerPrefs.SetFloat("CurrentHealth", currentHealth);
-        PlayerPrefs.SetFloat("MaxHealth", maxHealth);
-        PlayerPrefs.SetFloat("CurrentMP", currentMP);
-        PlayerPrefs.SetFloat("MaxMP", maxMP);
-        PlayerPrefs.SetFloat("MpRegenRate", mpRegenRate);
-        PlayerPrefs.SetFloat("MaxEnergy", maxEnergy);
-        PlayerPrefs.SetFloat("CurrentEnergy", currentEnergy);
-        PlayerPrefs.SetFloat("EnergyRegenRate", energyRegenRate);
-        PlayerPrefs.SetFloat("Damage", damage);
-        PlayerPrefs.SetFloat("Speed", speed);
-        PlayerPrefs.SetInt("Gold", gold);
+        PlayerData data = new PlayerData();
+        
+        data.currentHealth = currentHealth;
+        data.maxHealth = maxHealth;
+        data.currentMP = currentMP;
+        data.maxMP = maxMP;
+        data.mpRegenRate = mpRegenRate;
+        data.maxEnergy = maxEnergy;
+        data.currentEnergy = currentEnergy;
+        data.energyRegenRate = energyRegenRate;
+        data.damage = damage;
+        data.speed = speed;
+        data.gold = gold;
 
-        // Save Inventory Potion
-        PlayerPrefs.SetInt("SmallPotionCount", smallPotionCount);
-        PlayerPrefs.SetInt("MediumPotionCount", mediumPotionCount);
-        PlayerPrefs.SetInt("LargePotionCount", largePotionCount);
-        PlayerPrefs.SetInt("SmallMPCount", smallMPCount);
-        PlayerPrefs.SetInt("EnergyPotionCount", energyPotionCount);
-        PlayerPrefs.SetInt("StrengthPotionCount", strengthPotionCount);
-        PlayerPrefs.SetInt("SpeedPotionCount", speedPotionCount);
+        data.smallPotionCount = smallPotionCount;
+        data.mediumPotionCount = mediumPotionCount;
+        data.largePotionCount = largePotionCount;
+        data.smallMPCount = smallMPCount;
+        data.energyPotionCount = energyPotionCount;
+        data.strengthPotionCount = strengthPotionCount;
+        data.speedPotionCount = speedPotionCount;
 
-        // Save Upgrade Levels & Skill
-        PlayerPrefs.SetInt("HealthLevel", healthLevel);
-        PlayerPrefs.SetInt("MpLevel", mpLevel);
-        PlayerPrefs.SetInt("EnergyLevel", energyLevel);
-        PlayerPrefs.SetInt("DamageLevel", damageLevel);
-        PlayerPrefs.SetInt("SpeedLevel", speedLevel);
-        PlayerPrefs.SetInt("MpUpgradeCount", mpUpgradeCount);
-        PlayerPrefs.SetInt("Skill1Level", skill1Level);
-        PlayerPrefs.SetInt("Skill2Level", skill2Level);
+        data.healthLevel = healthLevel;
+        data.mpLevel = mpLevel;
+        data.energyLevel = energyLevel;
+        data.damageLevel = damageLevel;
+        data.speedLevel = speedLevel;
+        data.mpUpgradeCount = mpUpgradeCount;
+        data.skill1Level = skill1Level;
+        data.skill2Level = skill2Level;
 
-        PlayerPrefs.Save(); // Mengunci dan mengamankan data ke penyimpanan perangkat
-        Debug.Log("<color=cyan>SAVE SYSTEM: Progres statistik player berhasil DISIMPAN!</color>");
+        // Convert data objek menjadi teks string berformat JSON
+        string jsonText = JsonUtility.ToJson(data, true);
+
+        // Tulis teks tersebut menjadi file fisik di penyimpanan local
+        File.WriteAllText(savePath, jsonText);
+
+        Debug.Log("<color=lime>[Save System]: Data berhasil ditulis ke file: </color>" + savePath);
     }
 
     public void LoadStats()
     {
-        // Parameter kedua di dalam GetFloat/GetInt adalah nilai default jika data belum pernah disimpan sebelumnya
-        maxHealth = PlayerPrefs.GetFloat("MaxHealth", 10f);
-        currentHealth = PlayerPrefs.GetFloat("CurrentHealth", maxHealth);
-        maxMP = PlayerPrefs.GetFloat("MaxMP", 10f);
-        currentMP = PlayerPrefs.GetFloat("CurrentMP", maxMP);
-        mpRegenRate = PlayerPrefs.GetFloat("MpRegenRate", 1f);
-        maxEnergy = PlayerPrefs.GetFloat("MaxEnergy", 5f);
-        currentEnergy = PlayerPrefs.GetFloat("CurrentEnergy", maxEnergy);
-        energyRegenRate = PlayerPrefs.GetFloat("EnergyRegenRate", 1f);
-        damage = PlayerPrefs.GetFloat("Damage", 1f);
-        speed = PlayerPrefs.GetFloat("Speed", 5.0f);
-        gold = PlayerPrefs.GetInt("Gold", 0);
+        // Cek apakah file simpanan berformat .json tersebut ada di direktori
+        if (File.Exists(savePath))
+        {
+            string jsonText = File.ReadAllText(savePath);
+            PlayerData data = JsonUtility.FromJson<PlayerData>(jsonText);
 
-        // Load Inventory Potion
-        smallPotionCount = PlayerPrefs.GetInt("SmallPotionCount", 0);
-        mediumPotionCount = PlayerPrefs.GetInt("MediumPotionCount", 0);
-        largePotionCount = PlayerPrefs.GetInt("LargePotionCount", 0);
-        smallMPCount = PlayerPrefs.GetInt("SmallMPCount", 0);
-        energyPotionCount = PlayerPrefs.GetInt("EnergyPotionCount", 0);
-        strengthPotionCount = PlayerPrefs.GetInt("StrengthPotionCount", 0);
-        speedPotionCount = PlayerPrefs.GetInt("SpeedPotionCount", 0);
+            maxHealth = data.maxHealth;
+            currentHealth = data.currentHealth;
+            maxMP = data.maxMP;
+            currentMP = data.currentMP;
+            mpRegenRate = data.mpRegenRate;
+            maxEnergy = data.maxEnergy;
+            currentEnergy = data.currentEnergy;
+            energyRegenRate = data.energyRegenRate;
+            damage = data.damage;
+            speed = data.speed;
+            gold = data.gold;
 
-        // Load Upgrade Levels & Skill
-        healthLevel = PlayerPrefs.GetInt("HealthLevel", 0);
-        mpLevel = PlayerPrefs.GetInt("MpLevel", 0);
-        energyLevel = PlayerPrefs.GetInt("EnergyLevel", 0);
-        damageLevel = PlayerPrefs.GetInt("DamageLevel", 0);
-        speedLevel = PlayerPrefs.GetInt("SpeedLevel", 0);
-        mpUpgradeCount = PlayerPrefs.GetInt("MpUpgradeCount", 0);
-        skill1Level = PlayerPrefs.GetInt("Skill1Level", 0);
-        skill2Level = PlayerPrefs.GetInt("Skill2Level", 0);
+            smallPotionCount = data.smallPotionCount;
+            mediumPotionCount = data.mediumPotionCount;
+            largePotionCount = data.largePotionCount;
+            smallMPCount = data.smallMPCount;
+            energyPotionCount = data.energyPotionCount;
+            strengthPotionCount = data.strengthPotionCount;
+            speedPotionCount = data.speedPotionCount;
 
-        Debug.Log("<color=cyan>SAVE SYSTEM: Progres statistik player berhasil DIMUAT!</color>");
+            healthLevel = data.healthLevel;
+            mpLevel = data.mpLevel;
+            energyLevel = data.energyLevel;
+            damageLevel = data.damageLevel;
+            speedLevel = data.speedLevel;
+            mpUpgradeCount = data.mpUpgradeCount;
+            skill1Level = data.skill1Level;
+            skill2Level = data.skill2Level;
+
+            Debug.Log("<color=lime>[Save System]: Berhasil memuat status player dari file JSON.</color>");
+        }
+        else
+        {
+            // Jika file tidak ditemukan (Game baru pertama kali dimainkan), jalankan status default bawaan
+            Debug.LogWarning("[Save System]: File simpanan JSON belum ada. Menggunakan status default.");
+            SetDefaultStats();
+        }
     }
 
-    public void ResetStats()
+    // Fungsi pembantu untuk mengatur data default saat game baru dimulai pertama kali
+    private void SetDefaultStats()
     {
-        // 1. Kembalikan batas maksimum status ke nilai awal game
         maxHealth = 10f;
         maxMP = 10f;
         maxEnergy = 5f;
         damage = 1f;
         speed = 5.0f;
 
-        // === TAMBAHKAN INI: Reset level kembali ke 0 ===
         healthLevel = 0;
         mpLevel = 0;
         energyLevel = 0;
         damageLevel = 0;
         speedLevel = 0;
 
-        // 2. Isi penuh statusnya
         currentHealth = maxHealth;
         currentMP = maxMP;
         currentEnergy = maxEnergy;
@@ -204,7 +258,6 @@ public class PlayerStats : MonoBehaviour
         currentRage = 0f;
         isRageMode = false;
 
-        // 3. Hanguskan semua barang bawaan dan progresi
         gold = 0;
         smallPotionCount = 0;
         mediumPotionCount = 0;
@@ -216,8 +269,18 @@ public class PlayerStats : MonoBehaviour
 
         skill1Level = 0;
         skill2Level = 0;
-        mpUpgradeCount = 0; // Reset juga hitungan bonus mp regen
+        mpUpgradeCount = 0;
+    }
 
-        Debug.Log("PLAYER STATS: Reset Total! Semua upgrade dan item hangus karena player mati");
+    public void ResetStats()
+    {
+        SetDefaultStats();
+
+        // Tambahan: Hapus file .json fisik jika player memilih opsi reset total data
+        if (File.Exists(savePath))
+        {
+            File.Delete(savePath);
+            Debug.Log("<color=red>[Save System]: File save lama di harddisk telah sukses DIHAPUS.</color>");
+        }
     }
 }
