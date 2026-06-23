@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.IO; // PENTING: Ditambahkan untuk mengaktifkan fitur baca & tulis file fisik
+using UnityEngine.SceneManagement; // BARU: Untuk membaca nama scene secara otomatis
 
 public class PlayerStats : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class PlayerStats : MonoBehaviour
     public float damage = 1f;
     public float speed = 5.0f;
     public int gold = 0;
+
+    [HideInInspector] public string lastSavedScene = "Map1Village"; // BARU: Menampung nama scene aktif secara runtime
 
     [Header("Inventory Potion")]
     public int smallPotionCount = 0;
@@ -77,13 +80,11 @@ public class PlayerStats : MonoBehaviour
     public int skill1UpgradeCost = 10;
     public int skill2UpgradeCost = 150;
 
-    // Variabel baru untuk menentukan nama file dan lokasi folder penyimpanan
     private string saveFileName = "save_player_data.json";
     private string savePath;
 
     void Awake()
     {
-        // Tentukan path folder simpanan otomatis berdasarkan OS perangkat (Windows/Android/iOS)
         savePath = Path.Combine(Application.persistentDataPath, saveFileName);
 
         if (instance == null)
@@ -117,6 +118,7 @@ public class PlayerStats : MonoBehaviour
     [System.Serializable]
     public class PlayerData
     {
+        public string lastSavedScene; // BARU: Agar tercatat di dalam struktur JSON
         public float currentHealth;
         public float maxHealth;
         public float currentMP;
@@ -147,10 +149,22 @@ public class PlayerStats : MonoBehaviour
         public int skill2Level;
     }
 
-    public void SaveStats()
+    // DIUBAH: Menggunakan parameter opsional customSceneName
+    public void SaveStats(string customSceneName = "")
     {
         PlayerData data = new PlayerData();
         
+        // BARU: Jika ada input scene kustom (seperti dari Story atau WaveManager), simpan itu.
+        // Jika dikosongkan, otomatis ambil nama scene tempat player berada saat ini.
+        if (!string.IsNullOrEmpty(customSceneName))
+        {
+            data.lastSavedScene = customSceneName;
+        }
+        else
+        {
+            data.lastSavedScene = SceneManager.GetActiveScene().name;
+        }
+
         data.currentHealth = currentHealth;
         data.maxHealth = maxHealth;
         data.currentMP = currentMP;
@@ -180,22 +194,25 @@ public class PlayerStats : MonoBehaviour
         data.skill1Level = skill1Level;
         data.skill2Level = skill2Level;
 
-        // Convert data objek menjadi teks string berformat JSON
         string jsonText = JsonUtility.ToJson(data, true);
-
-        // Tulis teks tersebut menjadi file fisik di penyimpanan local
         File.WriteAllText(savePath, jsonText);
 
-        Debug.Log("<color=lime>[Save System]: Data berhasil ditulis ke file: </color>" + savePath);
+        Debug.Log("<color=lime>[Save System]: Data & Lokasi Scene berhasil ditulis ke file: </color>" + savePath);
     }
 
     public void LoadStats()
     {
-        // Cek apakah file simpanan berformat .json tersebut ada di direktori
         if (File.Exists(savePath))
         {
             string jsonText = File.ReadAllText(savePath);
             PlayerData data = JsonUtility.FromJson<PlayerData>(jsonText);
+
+            // BARU: Muat nama lokasi terakhir
+            lastSavedScene = data.lastSavedScene;
+            if (string.IsNullOrEmpty(lastSavedScene))
+            {
+                lastSavedScene = "Map1Village";
+            }
 
             maxHealth = data.maxHealth;
             currentHealth = data.currentHealth;
@@ -230,15 +247,14 @@ public class PlayerStats : MonoBehaviour
         }
         else
         {
-            // Jika file tidak ditemukan (Game baru pertama kali dimainkan), jalankan status default bawaan
             Debug.LogWarning("[Save System]: File simpanan JSON belum ada. Menggunakan status default.");
             SetDefaultStats();
         }
     }
 
-    // Fungsi pembantu untuk mengatur data default saat game baru dimulai pertama kali
     private void SetDefaultStats()
     {
+        lastSavedScene = "Map1Village"; // BARU: Reset lokasi awal
         maxHealth = 10f;
         maxMP = 10f;
         maxEnergy = 5f;
@@ -276,7 +292,6 @@ public class PlayerStats : MonoBehaviour
     {
         SetDefaultStats();
 
-        // Tambahan: Hapus file .json fisik jika player memilih opsi reset total data
         if (File.Exists(savePath))
         {
             File.Delete(savePath);

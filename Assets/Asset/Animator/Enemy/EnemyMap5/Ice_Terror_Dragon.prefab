@@ -913,7 +913,7 @@ MonoBehaviour:
   maxHealth: 1500
   currentHealth: 0
   itemToDrop: {fileID: 4419682957062868931, guid: 320dad18c6b689743bab42bae5b4e966, type: 3}
-  amountToDrop: 2
+  amountToDrop: 5
   dropSpread: 0.5
 --- !u!114 &13015354413569851
 MonoBehaviour:

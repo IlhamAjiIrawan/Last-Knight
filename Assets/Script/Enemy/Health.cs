@@ -80,6 +80,13 @@ public class Health : MonoBehaviour
                     return; 
                 }
 
+                //Terserap oleh Shield (Jika Shield aktif, serangan diserap sepenuhnya)
+                if (pm.isShieldActive)
+                {
+                    Debug.Log("Damage sebesar " + damage + " diserap sepenuhnya oleh Shield!");
+                    return;
+                }
+
                 // Menahan serangan menggunakan Block Perisai
                 if (pm.AbsorbDamageWithBlock(damage))
                 {

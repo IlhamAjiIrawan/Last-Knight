@@ -1113,7 +1113,7 @@ MonoBehaviour:
   maxHealth: 120
   currentHealth: 0
   itemToDrop: {fileID: 1548119801499671017, guid: 1a0a29d0ab58448429640b15e6e87cca, type: 3}
-  amountToDrop: 4
+  amountToDrop: 5
   dropSpread: 0.5
 --- !u!114 &8832636202624093425
 MonoBehaviour:
@@ -1134,6 +1134,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 6278403586669585298, guid: 574e2f6f9b3c4914fbf900b5d8c67e1f, type: 3}
   firePoint: {fileID: 3924436164181591666}
   attackDelay: 0.5
+  attackRecoveryTime: 0.4
   fleeRange: 4
   fleeDistance: 6
   patrolDisableRange: 50

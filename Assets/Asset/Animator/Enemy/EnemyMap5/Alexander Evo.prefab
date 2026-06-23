@@ -681,7 +681,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   healthSlider: {fileID: 0}
-  maxHealth: 15000
+  maxHealth: 10000
   currentHealth: 0
   itemToDrop: {fileID: 0}
   amountToDrop: 1
@@ -750,6 +750,7 @@ MonoBehaviour:
   fireZoneDamagePerTick: 6
   fireZoneTickInterval: 0.5
   fireZoneRadius: 6
+  meteorImpactDelay: 0.5
   otherBossHealth: {fileID: 0}
   superArmorVisualVFX: {fileID: 0}
 --- !u!4 &7842326949193147161 stripped

@@ -223,7 +223,7 @@ public class WaveManager : MonoBehaviour {
             
             if (PlayerStats.instance != null) 
             {
-                PlayerStats.instance.SaveStats(); // Data disimpan di sini sebelum scene berganti
+                PlayerStats.instance.SaveStats(nextSceneName); // Data disimpan di sini sebelum scene berganti
             }
 
             if (!string.IsNullOrEmpty(nextSceneName))

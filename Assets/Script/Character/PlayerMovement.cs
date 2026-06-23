@@ -40,7 +40,6 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Skill Costs")]
     public float dashMPCost = 10f;
-    public float heavyAttackMPCost = 15f;
 
     [Header("Energy Costs")]
     public float dashEnergyCost = 5f;
@@ -82,14 +81,27 @@ public class PlayerMovement : MonoBehaviour
     private float lastAttackInputTime;
 
     [Header("Skill 1: Mode Panah Settings")]
-    public bool isBowMode = false;       // Status pakah sedang mode panah
-    public GameObject arrowPrefab;       // Prefab anak panah (buat di project)
-    public Transform bowFirePoint;       // Objek kosong di ujung busur panah untuk memunculkan peluru
+    public bool isBowMode = false;    
+    public GameObject arrowPrefab;     
+    public Transform bowFirePoint;     
     public float baseMpCostPerArrow = 1f; // Konsumsi MP dasar
     public LineRenderer aimLine;  
     public float aimDistance = 25f;
     [Range(0f, 1f)] public float aimSpeedMultiplier = 0.2f;
+    public float skill1Cooldown = 3f;
+    private float lastSkill1Time = -999f;
 
+    [Header("Skill 2: Shield Settings")]
+    public GameObject shieldPrefab;       // Tarik 3D Prefab / Efek Shield kamu ke sini di Inspector
+    public float shieldDuration = 10f;     // Durasi shield aktif (10 detik)
+    public float shieldCooldown = 15f;     // Durasi cooldown skill (misal: 15 detik)
+    private float lastShieldTime = -999f;  // Mencatat waktu terakhir skill digunakan
+    
+    [HideInInspector] 
+    public bool isShieldActive = false;    // Menandai apakah player sedang dalam mode shield
+    private GameObject currentShieldInstance; // Menyimpan referensi game object shield yang sedang muncul
+
+    [Header("Prefabs Setting")]
     public GameObject meleeSword;        // Tarik objek Pedang di tangan kanan ke sini
     public GameObject meleeShield;       // Tarik objek Perisai di tangan kiri ke sini
     public GameObject rangeBow;
@@ -158,23 +170,62 @@ public class PlayerMovement : MonoBehaviour
         LookAtMouse();
         UpdateAnimation();
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
-            if (PlayerStats.instance.skill1Level > 0) 
+            if (Time.time >= lastSkill1Time + skill1Cooldown)
             {
-                isBowMode = !isBowMode; 
-                
-                if (anim != null) anim.SetBool("isBowMode", isBowMode);
+                if (PlayerStats.instance.skill1Level > 0)
+                {
+                    isBowMode = !isBowMode;   
+                    if (anim != null) anim.SetBool("isBowMode", isBowMode);
 
-                SwitchWeaponModels();
-                ResetCombo(); 
+                    SwitchWeaponModels();
+                    ResetCombo();
 
-                if (!isBowMode && aimLine != null) aimLine.enabled = false;
-                Debug.Log("Mode Panah Jarak Jauh: " + isBowMode);
+                    if (!isBowMode && aimLine != null) aimLine.enabled = false;
+                    Debug.Log("Mode Panah Jarak Jauh: " + isBowMode);
+                    lastSkill1Time = Time.time;
+                }
+                else
+                {
+                    Debug.Log("Skill 1 Jarak Jauh Belum Terbuka! Beli di Shop seharga 10 Gold.");
+                }
             }
             else
             {
-                Debug.Log("Skill 1 Jarak Jauh Belum Terbuka! Beli di Shop seharga 10 Gold."); 
+                float sisaCooldown = (lastSkill1Time + skill1Cooldown) - Time.time;
+                Debug.Log($"Skill 1 sedang Cooldown! Tunggu {sisaCooldown:F1} detik lagi.");
+            }
+        }
+
+        // --- SKILL 2: SHIELD ACTIVATION (Tombol X) ---
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            // 1. Cek apakah shield sedang aktif
+            if (isShieldActive)
+            {
+                Debug.Log("Shield sudah dalam keadaan aktif!");
+                return;
+            }
+
+            // 2. Cek cooldown & level skill
+            if (Time.time >= lastShieldTime + shieldCooldown)
+            {
+                if (PlayerStats.instance.skill2Level > 0)
+                {
+                    // Jalankan fungsi memunculkan shield
+                    StartCoroutine(ActivateShieldRoutine());
+                    lastShieldTime = Time.time;
+                }
+                else
+                {
+                    Debug.Log("Skill 2 Shield Belum Terbuka! Tingkatkan Level Skill 2 terlebih dahulu.");
+                }
+            }
+            else
+            {
+                float sisaCD = (lastShieldTime + shieldCooldown) - Time.time;
+                Debug.Log($"Skill 2 sedang Cooldown! Tunggu {sisaCD:F1} detik lagi.");
             }
         }
 
@@ -779,6 +830,31 @@ public class PlayerMovement : MonoBehaviour
                 arrowScript.SetupProjectile(damageAmount, isChargedAttack);
             }
         }
+    }
+
+    private IEnumerator ActivateShieldRoutine()
+    {
+        isShieldActive = true;
+        Debug.Log("Shield Aktif! Semua damage masuk akan diserap.");
+
+        // Memunculkan prefab shield dan menjadikannya anak (child) dari Player 
+        // agar posisinya otomatis mengikuti pergerakan Player
+        if (shieldPrefab != null)
+        {
+            currentShieldInstance = Instantiate(shieldPrefab, transform.position, transform.rotation, transform);
+        }
+
+        // Tunggu selama 10 detik sesuai durasi shield
+        yield return new WaitForSeconds(shieldDuration);
+
+        // Menghilangkan prefab shield dari game setelah durasi habis
+        if (currentShieldInstance != null)
+        {
+            Destroy(currentShieldInstance);
+        }
+
+        isShieldActive = false;
+        Debug.Log("Shield Berakhir! Player kembali bisa menerima damage.");
     }
 
     IEnumerator DashRoutine()
