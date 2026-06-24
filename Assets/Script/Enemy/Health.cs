@@ -80,14 +80,28 @@ public class Health : MonoBehaviour
                     return; 
                 }
 
-                //Terserap oleh Shield (Jika Shield aktif, serangan diserap sepenuhnya)
+               // === LOGIKA PENGURANGAN DURABILITY SHIELD SKILL 2 ===
                 if (pm.isShieldActive)
                 {
-                    Debug.Log("Damage sebesar " + damage + " diserap sepenuhnya oleh Shield!");
-                    return;
+                    if (pm.currentShieldHp >= damage)
+                    {
+                        pm.currentShieldHp -= damage;
+                        Debug.Log("Damage sebesar " + damage + " diserap Shield. Sisa Shield: " + pm.currentShieldHp);
+                        return; 
+                    }
+                    else
+                    {
+                        // Jika damage musuh lebih besar dari sisa shield
+                        damage -= pm.currentShieldHp; // Sisa damage dikalkulasikan untuk mengurangi HP asli
+
+                        // BARU: Panggil fungsi BreakShield untuk menghancurkan prefab secara instan
+                        pm.BreakShield(); 
+                        
+                        Debug.Log("Skill Shield hancur karena HP tameng habis! Sisa damage tembus ke HP asli: " + damage);
+                    }
                 }
 
-                // Menahan serangan menggunakan Block Perisai
+                // Menahan serangan menggunakan Block Perisai bawaan (Middle Click)
                 if (pm.AbsorbDamageWithBlock(damage))
                 {
                     Debug.Log("Damage diserap sepenuhnya oleh perisai!");

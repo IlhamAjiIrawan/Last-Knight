@@ -2045,9 +2045,9 @@ MonoBehaviour:
   projectilePrefab: {fileID: 683182934616091483, guid: c7e77c0ff6b95614293fde43fcd07dd2, type: 3}
   firePoint: {fileID: 8614397569583141285}
   attackDelay: 0.5
-  attackRecoveryTime: 0.4
-  fleeRange: 4
-  fleeDistance: 6
+  attackRecoveryTime: 1
+  fleeRange: 8
+  fleeDistance: 10
   patrolDisableRange: 50
   stunDuration: 0.5
   patrolRadius: 8

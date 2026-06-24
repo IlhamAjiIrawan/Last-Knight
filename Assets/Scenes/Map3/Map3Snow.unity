@@ -1446,10 +1446,10 @@ MonoBehaviour:
   normalWaveBGM: {fileID: 8300000, guid: 32547406a65ce3c4eaf477514c456e76, type: 3}
   bossWaveBGM: {fileID: 8300000, guid: 7274a38e4f53e1947ae11408f6a2efe3, type: 3}
   bossToSpawnList:
-  - bossPrefab: {fileID: 6525196032202678712, guid: 4260d891080cb934f9eab08a47fc7ca4, type: 3}
-    bossDisplayName: Ragnar
-  - bossPrefab: {fileID: 1244633962098404419, guid: 0b2dfc26398cdd144b5a49717289f516, type: 3}
-    bossDisplayName: Vritra
+  - bossPrefab: {fileID: 4932793511961146558, guid: c0407effdc823414cb737e3bf927aad2, type: 3}
+    bossDisplayName: Lagertha
+  - bossPrefab: {fileID: 4624205166301231148, guid: c421d546a74a51d469a11cbd0fba876a, type: 3}
+    bossDisplayName: Cryovinea
   bossSpawnPoint: {fileID: 1696229717}
   bossHPBarPrefab: {fileID: 3870397800445155264, guid: 9847bed5bd991844883bcabc5a313547, type: 3}
   bossHPContainer: {fileID: 433785414}
@@ -37123,10 +37123,12 @@ MonoBehaviour:
   aimDistance: 25
   aimSpeedMultiplier: 0.2
   skill1Cooldown: 3
-  shieldPrefab: {fileID: 0}
-  shieldDuration: 10
-  shieldCooldown: 15
   isShieldActive: 0
+  maxShieldHp: 0
+  currentShieldHp: 0
+  shieldCooldown: 15
+  shieldDuration: 10
+  shieldPrefab: {fileID: 0}
   meleeSword: {fileID: 565310403}
   meleeShield: {fileID: 435915940}
   rangeBow: {fileID: 2127538481}

@@ -74,16 +74,21 @@ public class SkillShop : MonoBehaviour
         }
     }
 
-    public void UpgradeSkill2()
+   public void UpgradeSkill2()
     {
         if (PlayerStats.instance.skill2Level < PlayerStats.instance.maxSkillLevel && 
             PlayerStats.instance.gold >= PlayerStats.instance.skill2UpgradeCost)
         {
+            // 1. Kurangi koin player sesuai harga saat ini
             PlayerStats.instance.gold -= PlayerStats.instance.skill2UpgradeCost;
+            
+            // 2. Naikkan level skill
             PlayerStats.instance.skill2Level++;
 
-            PlayerStats.instance.skill2UpgradeCost = Mathf.RoundToInt(PlayerStats.instance.skill2UpgradeCost * 1.5f);
-            Debug.Log("Skill 2 naik ke Level: " + PlayerStats.instance.skill2Level);
+            // 3. Hitung harga untuk UPGRADE BERIKUTNYA otomatis
+            PlayerStats.instance.skill2UpgradeCost = 125 * Mathf.RoundToInt(Mathf.Pow(2, PlayerStats.instance.skill2Level));
+
+            Debug.Log("Skill 2 (Shield) Berhasil Di-upgrade! Level Saat Ini: " + PlayerStats.instance.skill2Level);
         }
     }
 }

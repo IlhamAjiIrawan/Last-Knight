@@ -92,14 +92,16 @@ public class PlayerMovement : MonoBehaviour
     private float lastSkill1Time = -999f;
 
     [Header("Skill 2: Shield Settings")]
-    public GameObject shieldPrefab;       // Tarik 3D Prefab / Efek Shield kamu ke sini di Inspector
-    public float shieldDuration = 10f;     // Durasi shield aktif (10 detik)
-    public float shieldCooldown = 15f;     // Durasi cooldown skill (misal: 15 detik)
-    private float lastShieldTime = -999f;  // Mencatat waktu terakhir skill digunakan
-    
-    [HideInInspector] 
-    public bool isShieldActive = false;    // Menandai apakah player sedang dalam mode shield
-    private GameObject currentShieldInstance; // Menyimpan referensi game object shield yang sedang muncul
+    public bool isShieldActive = false;
+    public float maxShieldHp = 0f;
+    public float currentShieldHp = 0f;
+    public float shieldCooldown = 30f; // BARU: Mengunci cooldown di 30 detik untuk semua level
+    public float shieldDuration = 10f;
+    public GameObject shieldPrefab;
+    private GameObject currentShieldInstance;
+    private float lastShieldTime = -999f;
+
+    private Coroutine shieldCoroutine;
 
     [Header("Prefabs Setting")]
     public GameObject meleeSword;        // Tarik objek Pedang di tangan kanan ke sini
@@ -213,9 +215,23 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (PlayerStats.instance.skill2Level > 0)
                 {
-                    // Jalankan fungsi memunculkan shield
-                    StartCoroutine(ActivateShieldRoutine());
-                    lastShieldTime = Time.time;
+                    // === KODE BARU: Hitung kebutuhan MP dinamis (10 MP per level) ===
+                    float requiredMp = 10f * PlayerStats.instance.skill2Level;
+
+                    // Cek kecukupan MP player
+                    if (PlayerStats.instance.currentMP >= requiredMp)
+                    {
+                        // Kurangi MP player
+                        PlayerStats.instance.currentMP -= requiredMp;
+
+                        // Jalankan fungsi memunculkan shield
+                        shieldCoroutine = StartCoroutine(ActivateShieldRoutine());
+                        lastShieldTime = Time.time;
+                    }
+                    else
+                    {
+                        Debug.Log($"MP Tidak Cukup! Butuh {requiredMp} MP (MP Saat Ini: {PlayerStats.instance.currentMP}).");
+                    }
                 }
                 else
                 {
@@ -749,19 +765,34 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (skillID == 2)
         {
-            if (PlayerStats.instance.skill2Level > 0 && PlayerStats.instance.currentMP >= PlayerStats.instance.skill2MpCost)
+            if (isShieldActive)
             {
-                PlayerStats.instance.currentMP -= PlayerStats.instance.skill2MpCost;
+                Debug.Log("Shield sudah dalam keadaan aktif!");
+                return;
+            }
 
-                float healAmount = 2f * PlayerStats.instance.skill2Level;
-                PlayerStats.instance.currentHealth += healAmount;
-                PlayerStats.instance.currentHealth = Mathf.Clamp(PlayerStats.instance.currentHealth, 0f, PlayerStats.instance.maxHealth);
+            if (PlayerStats.instance.skill2Level > 0)
+            {
+                // === KODE BARU: Hitung kebutuhan MP dinamis (10 MP per level) ===
+                float requiredMp = 10f * PlayerStats.instance.skill2Level;
 
-                Debug.Log("MENGGUNAKAN SKILL 2 (HEAL BUFF)!");
+                if (PlayerStats.instance.currentMP >= requiredMp)
+                {
+                    // Kurangi MP player
+                    PlayerStats.instance.currentMP -= requiredMp;
+
+                    // Jalankan shield
+                    StartCoroutine(ActivateShieldRoutine());
+                    lastShieldTime = Time.time;
+                }
+                else
+                {
+                    Debug.Log($"MP Tidak Cukup untuk Skill 2! Butuh {requiredMp} MP.");
+                }
             }
             else
             {
-                Debug.Log("Skill 2 terkunci atau MP tidak cukup!");
+                Debug.Log("Skill 2 terkunci!");
             }
         }
     }
@@ -843,29 +874,47 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private IEnumerator ActivateShieldRoutine()
+  private IEnumerator ActivateShieldRoutine()
     {
-        isShieldActive = true;
-        Debug.Log("Shield Aktif! Semua damage masuk akan diserap.");
+        float shieldPercent = 0.25f * PlayerStats.instance.skill2Level;
+        maxShieldHp = PlayerStats.instance.maxHealth * shieldPercent; 
+        currentShieldHp = maxShieldHp;
 
-        // Memunculkan prefab shield dan menjadikannya anak (child) dari Player 
-        // agar posisinya otomatis mengikuti pergerakan Player
-        if (shieldPrefab != null)
+        float dynamicDuration = 10f * PlayerStats.instance.skill2Level;
+        isShieldActive = true;
+
+        if (shieldPrefab != null) 
         {
-            currentShieldInstance = Instantiate(shieldPrefab, transform.position, transform.rotation, transform);
+            currentShieldInstance = Instantiate(shieldPrefab, transform.position, transform.rotation, transform); 
         }
 
-        // Tunggu selama 10 detik sesuai durasi shield
-        yield return new WaitForSeconds(shieldDuration);
+        // Tunggu sampai durasi waktu habis
+        yield return new WaitForSeconds(dynamicDuration);
 
-        // Menghilangkan prefab shield dari game setelah durasi habis
-        if (currentShieldInstance != null)
+        // Jika waktu habis dan shield belum hancur oleh musuh, panggil fungsi hancur
+        BreakShield();
+        Debug.Log("Shield Berakhir karena durasi habis!");
+    }
+
+    public void BreakShield()
+    {
+        // Matikan status aktif shield
+        isShieldActive = false;
+        currentShieldHp = 0f; 
+        maxShieldHp = 0f;
+
+        // LANGSUNG HANCURKAN PREFAB SHIELD JIKA MASIH ADA
+        if (currentShieldInstance != null) 
         {
             Destroy(currentShieldInstance);
         }
 
-        isShieldActive = false;
-        Debug.Log("Shield Berakhir! Player kembali bisa menerima damage.");
+        // Hentikan coroutine waktu agar tidak berjalan di latar belakang jika hancur duluan oleh damage
+        if (shieldCoroutine != null)
+        {
+            StopCoroutine(shieldCoroutine);
+            shieldCoroutine = null;
+        }
     }
 
     IEnumerator DashRoutine()

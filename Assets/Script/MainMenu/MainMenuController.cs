@@ -58,7 +58,7 @@ public class MainMenuController : MonoBehaviour
         }
 
         // Mulai game menggunakan Coroutine agar musik mengecil perlahan sebelum pindah scene
-        StartCoroutine(LoadSceneWithFadeOut("OpeningMap1"));
+        StartCoroutine(LoadSceneWithFadeOut("SampleScene"));
     }
 
     public void LoadGame()
@@ -116,15 +116,15 @@ public class MainMenuController : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
-    // public void OpenSetting()
-    // {
-    //     if (settingPanel != null) settingPanel.SetActive(true);
-    // }
+    public void OpenSetting()
+     {
+         if (settingPanel != null) settingPanel.SetActive(true);
+     }
 
-    // public void CloseSetting()
-    // {
-    //     if (settingPanel != null) settingPanel.SetActive(false);
-    // }
+    public void CloseSetting()
+     {
+         if (settingPanel != null) settingPanel.SetActive(false);
+     }
 
     public void OpenExitConfirmation()
     {
