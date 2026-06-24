@@ -58,7 +58,7 @@ public class MainMenuController : MonoBehaviour
         }
 
         // Mulai game menggunakan Coroutine agar musik mengecil perlahan sebelum pindah scene
-        StartCoroutine(LoadSceneWithFadeOut("Map1Village"));
+        StartCoroutine(LoadSceneWithFadeOut("OpeningMap1"));
     }
 
     public void LoadGame()

@@ -142559,7 +142559,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1584333894}
         m_TargetAssemblyTypeName: ItemShop, Assembly-CSharp
-        m_MethodName: BuysmallMPPotion
+        m_MethodName: BuyLargeMPPotion
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -151334,50 +151334,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1618118900}
   m_Mesh: {fileID: -6864927501807787473, guid: 9b9bbdaf8620b1143b47aeb294894361, type: 3}
---- !u!1 &1618765178
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1618765180}
-  - component: {fileID: 1618765179}
-  m_Layer: 8
-  m_Name: MinimapManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1618765179
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1618765178}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f2f56fc600562e4b82f391f8d3526db, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MinimapController
---- !u!4 &1618765180
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1618765178}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.45, y: 3, z: 0.57}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1619647125
 GameObject:
   m_ObjectHideFlags: 0
@@ -165851,7 +165807,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1584333894}
         m_TargetAssemblyTypeName: ItemShop, Assembly-CSharp
-        m_MethodName: BuysmallMPPotion
+        m_MethodName: BuyMediumMPPotion
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -185737,7 +185693,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 1
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
@@ -185768,7 +185724,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -266.68332, w: 0.12402344}
+  m_margin: {x: 0, y: 0, z: -266.68332, w: -130.63177}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -204813,7 +204769,6 @@ SceneRoots:
   - {fileID: 989038173}
   - {fileID: 1832871856}
   - {fileID: 1752008547}
-  - {fileID: 1618765180}
   - {fileID: 370393528}
   - {fileID: 1424318524}
   - {fileID: 1580145105}
