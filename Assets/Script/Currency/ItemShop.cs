@@ -11,19 +11,20 @@ public class ItemShop : MonoBehaviour
     public int smallPotionPrice = 10;
     public int mediumPotionPrice = 90;
     public int largePotionPrice = 900;
-    public int smallMPPotionPrice = 30;
+    public int smallMPPotionPrice = 10;
+    public int mediumMPPotionPrice = 90;  // BARU
+    public int largeMPPotionPrice = 900;  // BARU
     public int energyPotionPrice = 50;
     public int strengthPotionPrice = 75;
     public int speedPotionPrice = 60;
 
-    // Perbaikan Navigasi Mandiri di SkillShop.cs
     public void SwitchToStatsShop()
     {
         if (itemShopPanel != null && statsShopPanel != null && skillShopPanel != null)
         {
             itemShopPanel.SetActive(false);
             statsShopPanel.SetActive(true);
-            skillShopPanel.SetActive(false); // Pastikan skill shop milik sendiri mati
+            skillShopPanel.SetActive(false); 
             Debug.Log("Berpindah ke Stats Shop.");
         }
     }
@@ -34,7 +35,7 @@ public class ItemShop : MonoBehaviour
         {
             itemShopPanel.SetActive(true);
             statsShopPanel.SetActive(false);
-            skillShopPanel.SetActive(false); // Pastikan skill shop milik sendiri mati
+            skillShopPanel.SetActive(false); 
             Debug.Log("Berpindah ke Item Shop.");
         }
     }
@@ -45,7 +46,7 @@ public class ItemShop : MonoBehaviour
         {
             itemShopPanel.SetActive(false);
             statsShopPanel.SetActive(false);
-            skillShopPanel.SetActive(true);  // Aktifkan panel skill shop
+            skillShopPanel.SetActive(true);  
             Debug.Log("Berpindah ke Skill Shop.");
         }
     }
@@ -85,8 +86,30 @@ public class ItemShop : MonoBehaviour
         if (PlayerStats.instance.gold >= smallMPPotionPrice)
         {
             PlayerStats.instance.gold -= smallMPPotionPrice;
-            PlayerStats.instance.smallMPCount++; // Sinkron dengan variabel PlayerStats
-            Debug.Log("Membeli MP Potion.");
+            PlayerStats.instance.smallMPCount++; 
+            Debug.Log("Membeli Small MP Potion.");
+        }
+    }
+
+    // FUNGSI BARU
+    public void BuyMediumMPPotion()
+    {
+        if (PlayerStats.instance.gold >= mediumMPPotionPrice)
+        {
+            PlayerStats.instance.gold -= mediumMPPotionPrice;
+            PlayerStats.instance.mediumMPCount++;
+            Debug.Log("Membeli Medium MP Potion. Sisa Gold: " + PlayerStats.instance.gold);
+        }
+    }
+
+    // FUNGSI BARU
+    public void BuyLargeMPPotion()
+    {
+        if (PlayerStats.instance.gold >= largeMPPotionPrice)
+        {
+            PlayerStats.instance.gold -= largeMPPotionPrice;
+            PlayerStats.instance.largeMPCount++;
+            Debug.Log("Membeli Large MP Potion. Sisa Gold: " + PlayerStats.instance.gold);
         }
     }
 

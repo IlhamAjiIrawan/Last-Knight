@@ -15,5 +15,6 @@ MonoBehaviour:
   enemiesInWave:
   - enemyPrefab: {fileID: 3820206986925612185, guid: 70af1db52f11fdf4291748311f955527, type: 3}
     count: 5
-  spawnInterval: 2
+  spawnInterval: 1
   isBossWave: 0
+  maxActiveEnemies: 10

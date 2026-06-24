@@ -649,9 +649,11 @@ public class PlayerMovement : MonoBehaviour
         if (type == 2 && (PlayerStats.instance.mediumPotionCount <= 0 || PlayerStats.instance.currentHealth >= PlayerStats.instance.maxHealth)) return;
         if (type == 3 && (PlayerStats.instance.largePotionCount <= 0 || PlayerStats.instance.currentHealth >= PlayerStats.instance.maxHealth)) return;
         if (type == 4 && (PlayerStats.instance.smallMPCount <= 0 || PlayerStats.instance.currentMP >= PlayerStats.instance.maxMP)) return;
-        if (type == 5 && PlayerStats.instance.energyPotionCount <= 0) return;
-        if (type == 6 && PlayerStats.instance.strengthPotionCount <= 0) return;
-        if (type == 7 && PlayerStats.instance.speedPotionCount <= 0) return;
+        if (type == 5 && (PlayerStats.instance.mediumMPCount <= 0 || PlayerStats.instance.currentMP >= PlayerStats.instance.maxMP)) return;
+        if (type == 6 && (PlayerStats.instance.largeMPCount <= 0 || PlayerStats.instance.currentMP >= PlayerStats.instance.maxMP)) return;
+        if (type == 7 && PlayerStats.instance.energyPotionCount <= 0) return;
+        if (type == 8 && PlayerStats.instance.strengthPotionCount <= 0) return;
+        if (type == 9 && PlayerStats.instance.speedPotionCount <= 0) return;
 
         isUsingPotion = true;
         ResetCombo(); 
@@ -684,17 +686,26 @@ public class PlayerMovement : MonoBehaviour
                 PlayerStats.instance.smallMPCount--;
                 PlayerStats.instance.currentMP += PlayerStats.instance.smallMPAmount;
                 PlayerStats.instance.currentMP = Mathf.Clamp(PlayerStats.instance.currentMP, 0f, PlayerStats.instance.maxMP);
-                Debug.Log("MP Berhasil Dipulihkan!");
                 break;
-            case 5: 
+             case 5: 
+                PlayerStats.instance.mediumMPCount--;
+                PlayerStats.instance.currentMP += PlayerStats.instance.mediumMPAmount;
+                PlayerStats.instance.currentMP = Mathf.Clamp(PlayerStats.instance.currentMP, 0f, PlayerStats.instance.maxMP);
+                break;
+             case 6: 
+                PlayerStats.instance.largeMPCount--;
+                PlayerStats.instance.currentMP += PlayerStats.instance.largeMPAmount;
+                PlayerStats.instance.currentMP = Mathf.Clamp(PlayerStats.instance.currentMP, 0f, PlayerStats.instance.maxMP);
+                break;
+            case 7: 
                 PlayerStats.instance.energyPotionCount--;
                 StartCoroutine(EnergyBuffRoutine());
                 break;
-            case 6: 
+            case 8: 
                 PlayerStats.instance.strengthPotionCount--;
                 StartCoroutine(StrengthBuffRoutine());
                 break;
-            case 7: 
+            case 9: 
                 PlayerStats.instance.speedPotionCount--;
                 StartCoroutine(SpeedBuffRoutine());
                 break;

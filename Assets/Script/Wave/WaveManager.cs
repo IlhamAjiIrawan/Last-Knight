@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
+using TMPro; // WAJIB: Untuk menggunakan TextMeshProUGUI
 using UnityEngine.SceneManagement;
 
 [System.Serializable]
@@ -30,6 +30,10 @@ public class WaveManager : MonoBehaviour {
     public GameObject bossHPBarPrefab;    
     public Transform bossHPContainer;    
 
+    [Header("UI Musuh Tersisa (BARU)")]
+    [Tooltip("Tarik UI TextMeshPro untuk jumlah musuh ke sini")]
+    public TextMeshProUGUI remainingEnemiesText; 
+
     [Header("Optimization Settings")]
     [Tooltip("Jumlah maksimal musuh yang boleh ada di map secara bersamaan")]
     public int maxActiveEnemies = 10; 
@@ -50,6 +54,7 @@ public class WaveManager : MonoBehaviour {
 
         WaveData wave = allWaves[currentWaveIndex];
 
+        // Hitung total musuh di wave ini
         totalWaveEnemiesRemaining = 0;
         foreach (var group in wave.enemiesInWave) {
             totalWaveEnemiesRemaining += group.count;
@@ -57,6 +62,9 @@ public class WaveManager : MonoBehaviour {
         if (wave.isBossWave) {
             totalWaveEnemiesRemaining += bossToSpawnList.Count;
         }
+
+        // FITUR BARU: Perbarui UI saat wave baru dimulai
+        UpdateRemainingEnemiesUI();
 
         if (wave.isBossWave) {
             SwitchBGM(bossWaveBGM);
@@ -99,15 +107,10 @@ public class WaveManager : MonoBehaviour {
             return;
         }
 
-        // Tracking Pasangan 1 (Barbarian & Stone Dragon)
         KingBarbarian barbarianScript = null;
         Health dragonHealth = null;
-
-        // TRACKING PASANGAN 2: ASSASSIN & FOREST DRAGON
         AssassinBossAI assassinScript = null;
         Health forestDragonHealth = null;
-
-        // TRACKING PASANGAN 3: ALEXANDER & RED DRAGON
         Alexander alexanderScript = null;
         Health redDragonHealth = null;
 
@@ -124,7 +127,6 @@ public class WaveManager : MonoBehaviour {
             GameObject boss = Instantiate(bossToSpawnList[i].bossPrefab, spawnPosition, Quaternion.identity);
             Health bossHealth = boss.GetComponent<Health>();
 
-            // Validasi Pasangan Lama
             if (boss.GetComponent<KingBarbarian>() != null) {
                 barbarianScript = boss.GetComponent<KingBarbarian>();
             }
@@ -139,7 +141,6 @@ public class WaveManager : MonoBehaviour {
                 forestDragonHealth = bossHealth;
             }
 
-            // 🔥 Validasi Pasangan Baru (Alexander & Red Dragon)
             if (boss.GetComponent<Alexander>() != null) {
                 alexanderScript = boss.GetComponent<Alexander>();
             }
@@ -164,7 +165,6 @@ public class WaveManager : MonoBehaviour {
             enemiesRemaining++; 
         }
 
-        // Eksekusi Link Pasangan Lama
         if (barbarianScript != null && dragonHealth != null) {
             barbarianScript.otherBossHealth = dragonHealth;
         }
@@ -182,8 +182,17 @@ public class WaveManager : MonoBehaviour {
         enemiesRemaining--;          
         totalWaveEnemiesRemaining--; 
 
+        // FITUR BARU: Perbarui UI setiap kali ada musuh yang berhasil dikalahkan
+        UpdateRemainingEnemiesUI();
+
         if (totalWaveEnemiesRemaining <= 0) {
             StartCoroutine(WaitBeforeOpeningShop());
+        }
+    }
+
+    void UpdateRemainingEnemiesUI() {
+        if (remainingEnemiesText != null) {
+            remainingEnemiesText.text = "Musuh yang tersisa: " + totalWaveEnemiesRemaining;
         }
     }
 
@@ -214,16 +223,15 @@ public class WaveManager : MonoBehaviour {
         if (shopPanel != null) shopPanel.SetActive(false);
         Time.timeScale = 1f;       
         
-        currentWaveIndex++; // Naikkan ke nomor wave berikutnya
+        currentWaveIndex++; 
 
-        // Cek apakah SEMUA wave di map ini sudah selesai
         if (currentWaveIndex >= allWaves.Count) 
         {
             Debug.Log("<color=green>SEMUA WAVE SELESAI! Menjalankan Save dan Berpindah ke Map Selanjutnya...</color>");
             
             if (PlayerStats.instance != null) 
             {
-                PlayerStats.instance.SaveStats(nextSceneName); // Data disimpan di sini sebelum scene berganti
+                PlayerStats.instance.SaveStats(nextSceneName); 
             }
 
             if (!string.IsNullOrEmpty(nextSceneName))

@@ -28,6 +28,8 @@ public class PlayerStats : MonoBehaviour
     public int mediumPotionCount= 0;
     public int largePotionCount = 0;
     public int smallMPCount = 0;
+    public int mediumMPCount = 0; // BARU: Tambahan Potion MP Medium
+    public int largeMPCount = 0;  // BARU: Tambahan Potion MP Large
     public int energyPotionCount = 0;
     public int strengthPotionCount = 0;
     public int speedPotionCount = 0;
@@ -39,6 +41,8 @@ public class PlayerStats : MonoBehaviour
 
     [Tooltip("Jumlah MP yang dipulihkan Potion Mana")] 
     public float smallMPAmount = 10f;
+    public float mediumMPAmount = 100f; // BARU: Nilai pemulihan MP Medium
+    public float largeMPAmount = 1000f;  // BARU: Nilai pemulihan MP Large
 
     [Header("Rage Settings")]
     public float currentRage = 0f;
@@ -118,7 +122,7 @@ public class PlayerStats : MonoBehaviour
     [System.Serializable]
     public class PlayerData
     {
-        public string lastSavedScene; // BARU: Agar tercatat di dalam struktur JSON
+        public string lastSavedScene; 
         public float currentHealth;
         public float maxHealth;
         public float currentMP;
@@ -135,6 +139,8 @@ public class PlayerStats : MonoBehaviour
         public int mediumPotionCount;
         public int largePotionCount;
         public int smallMPCount;
+        public int mediumMPCount; // BARU: Untuk JSON Save
+        public int largeMPCount;  // BARU: Untuk JSON Save
         public int energyPotionCount;
         public int strengthPotionCount;
         public int speedPotionCount;
@@ -149,13 +155,10 @@ public class PlayerStats : MonoBehaviour
         public int skill2Level;
     }
 
-    // DIUBAH: Menggunakan parameter opsional customSceneName
     public void SaveStats(string customSceneName = "")
     {
         PlayerData data = new PlayerData();
         
-        // BARU: Jika ada input scene kustom (seperti dari Story atau WaveManager), simpan itu.
-        // Jika dikosongkan, otomatis ambil nama scene tempat player berada saat ini.
         if (!string.IsNullOrEmpty(customSceneName))
         {
             data.lastSavedScene = customSceneName;
@@ -181,6 +184,8 @@ public class PlayerStats : MonoBehaviour
         data.mediumPotionCount = mediumPotionCount;
         data.largePotionCount = largePotionCount;
         data.smallMPCount = smallMPCount;
+        data.mediumMPCount = mediumMPCount; // BARU
+        data.largeMPCount = largeMPCount;   // BARU
         data.energyPotionCount = energyPotionCount;
         data.strengthPotionCount = strengthPotionCount;
         data.speedPotionCount = speedPotionCount;
@@ -207,7 +212,6 @@ public class PlayerStats : MonoBehaviour
             string jsonText = File.ReadAllText(savePath);
             PlayerData data = JsonUtility.FromJson<PlayerData>(jsonText);
 
-            // BARU: Muat nama lokasi terakhir
             lastSavedScene = data.lastSavedScene;
             if (string.IsNullOrEmpty(lastSavedScene))
             {
@@ -230,6 +234,8 @@ public class PlayerStats : MonoBehaviour
             mediumPotionCount = data.mediumPotionCount;
             largePotionCount = data.largePotionCount;
             smallMPCount = data.smallMPCount;
+            mediumMPCount = data.mediumMPCount; // BARU
+            largeMPCount = data.largeMPCount;   // BARU
             energyPotionCount = data.energyPotionCount;
             strengthPotionCount = data.strengthPotionCount;
             speedPotionCount = data.speedPotionCount;
@@ -254,7 +260,7 @@ public class PlayerStats : MonoBehaviour
 
     private void SetDefaultStats()
     {
-        lastSavedScene = "Map1Village"; // BARU: Reset lokasi awal
+        lastSavedScene = "Map1Village"; 
         maxHealth = 10f;
         maxMP = 10f;
         maxEnergy = 5f;
@@ -279,6 +285,8 @@ public class PlayerStats : MonoBehaviour
         mediumPotionCount = 0;
         largePotionCount = 0;
         smallMPCount = 0;
+        mediumMPCount = 0; // BARU
+        largeMPCount = 0;  // BARU
         energyPotionCount = 0;
         strengthPotionCount = 0;
         speedPotionCount = 0;
