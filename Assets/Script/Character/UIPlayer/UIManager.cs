@@ -66,7 +66,11 @@ public class UIManager : MonoBehaviour
             {
                 // Tampilkan angka bulat "0 / 100"
                 rageText.text = Mathf.FloorToInt(PlayerStats.instance.currentRage) + " / " + PlayerStats.instance.maxRage;
-                rageText.color = Color.white;
+                // Mengubah warna teks menggunakan kode Hex #E0C565
+                if (ColorUtility.TryParseHtmlString("#E0C565", out Color customColor))
+                {
+                    rageText.color = customColor;
+                }
             }
         }
     }

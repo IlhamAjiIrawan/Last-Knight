@@ -8,7 +8,13 @@ public class GameOverManager : MonoBehaviour
 
     [Header("Scene Settings")]
     [Tooltip("Tuliskan nama scene Main Menu kamu dengan tepat")]
-    public string mainMenuSceneName = "MainMenu"; 
+    public string mainMenuSceneName = "MainMenu";
+
+    [Header("Audio Settings")]
+    [Tooltip("Tarik AudioSource dari AudioManager yang memutar BGM utama ke sini")]
+    public AudioSource bgmAudioSource; 
+    [Tooltip("Masukkan file audio lagu kalah ke sini")]
+    public AudioClip loseBackgroundMusic;
 
     private GameObject player;
 
@@ -42,6 +48,15 @@ public class GameOverManager : MonoBehaviour
         
         if (gameOverPanel != null) 
             gameOverPanel.SetActive(true);
+
+        // --- SISTEM GANTI AUDIO ---
+        if (bgmAudioSource != null && loseBackgroundMusic != null)
+        {
+            bgmAudioSource.Stop(); // Hentikan lagu gameplay utama
+            bgmAudioSource.clip = loseBackgroundMusic; // Ganti ke lagu kalah
+            bgmAudioSource.loop = false; // Set agar lagu kalahnya berulang
+            bgmAudioSource.Play(); // Putar lagu kalah
+        }
 
         // Hentikan waktu game dan munculkan kursor mouse untuk klik UI
         Time.timeScale = 0f;
