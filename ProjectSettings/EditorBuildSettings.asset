@@ -21,8 +21,23 @@ EditorBuildSettings:
     path: Assets/Scenes/Map1/EndingMap1.unity
     guid: 3ddc65df62cf6144fb6a2ca28d4cb992
   - enabled: 1
+    path: Assets/Scenes/Map2/OpeningMap2.unity
+    guid: c057ebb7ab0f74d48ba13b7164e654d7
+  - enabled: 1
     path: Assets/Scenes/Map2/Map2Desert.unity
     guid: c55457af8e84c4e4b98a0fc43f6f8221
+  - enabled: 1
+    path: Assets/Scenes/Map2/EndingMap2.unity
+    guid: 689d1fe111839b14ebc31c136112a9cc
+  - enabled: 1
+    path: Assets/Scenes/Map3/OpeningMap3.unity
+    guid: 50f83cbde6c9b5b4e8b13fccd6d13df1
+  - enabled: 1
+    path: Assets/Scenes/Map3/Map3Snow.unity
+    guid: 0cb07546ded9b36459b900a76c2d2b24
+  - enabled: 1
+    path: Assets/Scenes/Map3/EndingMap3.unity
+    guid: 7e35bdf313f0b634c883fbeea63fce98
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

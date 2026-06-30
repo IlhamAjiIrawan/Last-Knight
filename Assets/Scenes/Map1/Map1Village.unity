@@ -8072,7 +8072,7 @@ MonoBehaviour:
   - {fileID: 426555819}
   - {fileID: 1731981735}
   shopPanel: {fileID: 2119506098}
-  nextSceneName: Map2Desert
+  nextSceneName: EndingMap1
   bgmSource: {fileID: 1741316895}
   normalWaveBGM: {fileID: 8300000, guid: 99bd5bfa6c96d4343bb422cdb025e636, type: 3}
   bossWaveBGM: {fileID: 8300000, guid: 49ddb60d35ba756459b743410cb0a84b, type: 3}
