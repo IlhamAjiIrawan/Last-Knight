@@ -75,6 +75,7 @@ public class PlayerStats : MonoBehaviour
     public int skill1Level = 0;
     public int skill2Level = 0;
     public int skill3Level = 0;
+    public int skill4Level = 0;
     public int maxSkillLevel = 5;
 
     [Header("Skill MP Costs")]
@@ -85,10 +86,15 @@ public class PlayerStats : MonoBehaviour
     public int skill1UpgradeCost = 10;
     public int skill2UpgradeCost = 150;
     public int skill3UpgradeCost = 250;
+    public int skill4UpgradeCost = 500;
 
     public float skill3MpCost => skill3Level * 25f;
     public float skill3DamageMultiplier => skill3Level * 2.5f;
     public float skill3ScaleMultiplier => skill3Level * 1f;
+
+    public float skill4MpCost => skill4Level > 0 ? 100f * Mathf.Pow(2, skill4Level - 1) : 100f;
+    public float skill4DamageMultiplier => skill4Level > 0 ? 10f * Mathf.Pow(2, skill4Level - 1) : 10f; // 10f = 1000%
+    public float skill4ScaleMultiplier => skill4Level > 0 ? skill4Level * 1f : 1f;
 
     private string saveFileName = "save_player_data.json";
     private string savePath;
@@ -161,6 +167,8 @@ public class PlayerStats : MonoBehaviour
         public int skill2Level;
         public int skill3Level; 
         public int skill3UpgradeCost;
+        public int skill4Level;
+        public int skill4UpgradeCost;
     }
 
     public void SaveStats(string customSceneName = "")
@@ -208,6 +216,8 @@ public class PlayerStats : MonoBehaviour
         data.skill2Level = skill2Level;
         data.skill3Level = skill3Level;           
         data.skill3UpgradeCost = skill3UpgradeCost;
+        data.skill4Level = skill4Level;
+        data.skill4UpgradeCost = skill4UpgradeCost;
 
         string jsonText = JsonUtility.ToJson(data, true);
         File.WriteAllText(savePath, jsonText);
@@ -264,6 +274,9 @@ public class PlayerStats : MonoBehaviour
             {
                 skill3UpgradeCost = 250; // Atur sesuai harga awal yang kamu inginkan
             }
+            skill4Level = data.skill4Level;
+            skill4UpgradeCost = data.skill4UpgradeCost;
+            if (skill4UpgradeCost <= 0) skill4UpgradeCost = 500;
 
             Debug.Log("<color=lime>[Save System]: Berhasil memuat status player dari file JSON.</color>");
         }
@@ -311,6 +324,8 @@ public class PlayerStats : MonoBehaviour
         skill2Level = 0;
         skill3Level = 0;              // BARU
         skill3UpgradeCost = 250;
+        skill4Level = 0;
+        skill4UpgradeCost = 500;
         mpUpgradeCount = 0;
     }
 

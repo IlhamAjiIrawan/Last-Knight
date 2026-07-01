@@ -12,6 +12,7 @@ public class SkillShop : MonoBehaviour
     public TextMeshProUGUI skill1PriceText;
     public TextMeshProUGUI skill2PriceText;
     public TextMeshProUGUI skill3PriceText;
+    public TextMeshProUGUI skill4PriceText;
 
     void Update()
     {
@@ -30,6 +31,11 @@ public class SkillShop : MonoBehaviour
         {
             skill3PriceText.text = PlayerStats.instance.skill3Level >= PlayerStats.instance.maxSkillLevel ? 
                 "MAX" : "Cost: " + PlayerStats.instance.skill3UpgradeCost + " G";
+        }
+        if (skill4PriceText != null)
+        {
+            skill4PriceText.text = PlayerStats.instance.skill4Level >= PlayerStats.instance.maxSkillLevel ? 
+                "MAX" : "Cost: " + PlayerStats.instance.skill4UpgradeCost + " G";
         }
     }
 
@@ -118,6 +124,21 @@ public class SkillShop : MonoBehaviour
         else
         {
             Debug.Log("Gagal Upgrade Skill 3: Gold tidak cukup atau Level sudah MAX!");
+        }
+    }
+
+    public void UpgradeSkill4()
+    {
+        if (PlayerStats.instance.skill4Level < PlayerStats.instance.maxSkillLevel && 
+            PlayerStats.instance.gold >= PlayerStats.instance.skill4UpgradeCost)
+        {
+            PlayerStats.instance.gold -= PlayerStats.instance.skill4UpgradeCost;
+            PlayerStats.instance.skill4Level++;
+
+            // Pola kelipatan: Lvl 0->1=500, Lvl 1->2=1000, Lvl 2->3=2000, dst.
+            PlayerStats.instance.skill4UpgradeCost = 500 * Mathf.RoundToInt(Mathf.Pow(2, PlayerStats.instance.gold >= 0 ? PlayerStats.instance.skill4Level : 0));
+            
+            Debug.Log("Skill 4 (Slam Attack) Berhasil Upgrade! Level: " + PlayerStats.instance.skill4Level);
         }
     }
 }

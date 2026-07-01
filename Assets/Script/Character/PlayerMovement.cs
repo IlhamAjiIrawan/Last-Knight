@@ -107,6 +107,12 @@ public class PlayerMovement : MonoBehaviour
     private float lastSkill3Time = -999f;  
     private bool isCastingSkill3 = false;  // Status penguncian pergerakan saat animasi tebas berjalan
 
+    [Header("Skill 4 Slam Attack Settings")]
+    public GameObject slamExplosionPrefab; // Masukkan prefab ledakan hantaman tanah di sini
+    public float baseSlamRadius = 4f;      // Radius lingkaran deteksi musuh default
+    public bool isCastingSkill4 { get; private set; } = false;
+    public bool isInvincible => isCastingSkill4;
+
     private Coroutine shieldCoroutine;
 
     [Header("Prefabs Setting")]
@@ -149,6 +155,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Space)) 
         {
+            if (isCastingSkill4) return;
             float effectiveEnergyCost = isUnlimitedEnergy ? 0f : dashEnergyCost; 
 
             if (PlayerStats.instance.currentEnergy >= effectiveEnergyCost) 
@@ -295,6 +302,11 @@ public class PlayerMovement : MonoBehaviour
                     Debug.Log($"MP Tidak Cukup untuk Skill 3! Butuh {requiredMp} MP (MP Saat Ini: {PlayerStats.instance.currentMP}).");
                 }
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            TriggerSlamAttack();
         }
 
         if (isBowMode) 
@@ -1077,6 +1089,94 @@ public class PlayerMovement : MonoBehaviour
                 Debug.LogError("Prefab Slash Belum Dimasukkan ke Inspector PlayerMovement!");
             }
         }
+    }
+
+    void TriggerSlamAttack()
+    {
+        if (PlayerStats.instance.skill4Level <= 0)
+        {
+            Debug.Log("Skill 4 Belum Terbuka / Dijual di Toko!");
+            return;
+        }
+
+        if (isCastingSkill4 || isCharging || isCastingShield || isCastingSkill3 || isUsingPotion) return;
+
+        float requiredMp = PlayerStats.instance.skill4MpCost;
+        if (PlayerStats.instance.currentMP >= requiredMp)
+        {
+            PlayerStats.instance.currentMP -= requiredMp;
+            isCastingSkill4 = true; 
+
+            if (anim != null)
+            {
+                anim.SetTrigger("SlamAttack"); 
+            }
+
+            StopCoroutine("Skill4TimeoutRoutine");
+            StartCoroutine(Skill4TimeoutRoutine(3f)); 
+
+            Debug.Log($"Skill 4 Dimulai! Player Kebal dari serangan. Mengonsumsi {requiredMp} MP.");
+        }
+        else
+        {
+            Debug.Log("MP tidak cukup untuk meluncurkan Skill 4!");
+        }
+    }
+
+    // Coroutine Pelindung agar status Casting otomatis dicabut jika event Unity bermasalah
+    IEnumerator Skill4TimeoutRoutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        if (isCastingSkill4)
+        {
+            isCastingSkill4 = false;
+            Debug.LogWarning("Safety Timeout: Status Skill 4 dipaksa selesai karena Animation Event terlewat/tidak terdeteksi.");
+        }
+    }
+
+    // FUNGSI ANIMATION EVENT (Gunakan nama yang sesuai dengan event di Unity asset kamu, misal: TriggerJumpSlamImpact)
+    public void TriggerJumpSlamImpact()
+    {
+        if (!isCastingSkill4) return;
+
+        // Matikan safety timeout karena fungsi ini berhasil terpanggil tepat waktu oleh animasi
+        StopCoroutine("Skill4TimeoutRoutine");
+
+        Vector3 slamPosition = transform.position; 
+
+        if (slamExplosionPrefab != null)
+        {
+            GameObject explosionObj = Instantiate(slamExplosionPrefab, slamPosition, Quaternion.identity);
+
+            float scaleMultiplier = PlayerStats.instance.skill4ScaleMultiplier;
+            explosionObj.transform.localScale = new Vector3(scaleMultiplier, scaleMultiplier, scaleMultiplier);
+
+            float finalRadius = baseSlamRadius * scaleMultiplier;
+            float finalDamage = PlayerStats.instance.damage * PlayerStats.instance.skill4DamageMultiplier;
+
+            Collider[] hitColliders = Physics.OverlapSphere(slamPosition, finalRadius);
+            foreach (Collider col in hitColliders)
+            {
+                if (col.CompareTag("Enemy"))
+                {
+                    Health enemyHealth = col.GetComponent<Health>();
+                    if (enemyHealth != null)
+                    {
+                        enemyHealth.TakeDamage(finalDamage);
+                        Debug.Log($"Slam Attack menghantam {col.name}! Damage masuk: {finalDamage}");
+                    }
+                }
+            }
+            Destroy(explosionObj, 1f);
+        }
+        else
+        {
+            Debug.LogError("Slam Explosion Prefab belum dimasukkan ke dalam Inspector Player!");
+        }
+
+        // Kembalikan status player ke kondisi normal secara alami
+        isCastingSkill4 = false;
+        Debug.Log("Skill 4 Selesai Melalui Animation Event. Status Kebal dicabut.");
     }
 
     IEnumerator DashRoutine()
