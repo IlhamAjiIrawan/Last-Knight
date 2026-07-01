@@ -1883,12 +1883,12 @@ MonoBehaviour:
   attackDelay: 0.8
   attackRecoveryTime: 0.4
   skill1Cooldown: 8
-  skill1Range: 10
+  skill1Range: 5
   skill1Damage: 60
   skill1Width: 7
   clawRange: 6
   skill1TotalDuration: 2
-  skill2Cooldown: 12
+  skill2Cooldown: 14
   skill2Range: 7
   skill2Angle: 90
   skill2InstantDamage: 90

@@ -38,9 +38,6 @@ public class PlayerMovement : MonoBehaviour
     public bool isDashing { get; private set; }
     private float lastDashTime;
 
-    [Header("Skill Costs")]
-    public float dashMPCost = 10f;
-
     [Header("Energy Costs")]
     public float dashEnergyCost = 5f;
 
@@ -100,6 +97,15 @@ public class PlayerMovement : MonoBehaviour
     public GameObject shieldPrefab;
     private GameObject currentShieldInstance;
     private float lastShieldTime = -999f;
+    private bool isCastingShield = false;
+    private Coroutine shieldDurationCoroutine;
+
+    [Header("Skill 3: Horizontal Slash Settings")]
+    public GameObject slashPrefab;         // Tarik prefab tebasan dari Langkah 1 ke sini
+    public Transform slashSpawnPoint;      // Titik muncul tebasan (opsional, bisa diisi posisi koordinat tangan/senjata player)
+    public float skill3Cooldown = 5f;     // Jeda waktu penggunaan skill 3
+    private float lastSkill3Time = -999f;  
+    private bool isCastingSkill3 = false;  // Status penguncian pergerakan saat animasi tebas berjalan
 
     private Coroutine shieldCoroutine;
 
@@ -147,21 +153,48 @@ public class PlayerMovement : MonoBehaviour
 
             if (PlayerStats.instance.currentEnergy >= effectiveEnergyCost) 
             {
+                // PERBAIKAN: Potong energi player di sini sebelum memicu Dash
+                PlayerStats.instance.currentEnergy -= effectiveEnergyCost;
+
                 if (isUsingPotion)
                 {
                     CancelPotionAnimation();
                 }
 
-                if (!isUnlimitedEnergy)
+                // CANCEL SKILL 1: Mode Panah (Jika sedang menahan busur/charging)
+                if (isBowMode && isCharging)
                 {
-                    PlayerStats.instance.currentEnergy -= dashEnergyCost;
+                    isCharging = false;
+                    chargeTimer = 0f;
+                    if (anim != null) anim.SetBool("isChargingBow", false);
+                    if (aimLine != null) aimLine.enabled = false;
+
+                    lastSkill1Time = Time.time + 0.5f - skill1Cooldown; 
+                    Debug.Log("Charging Skill 1 dibatalkan! Cooldown diset 3 detik.");
+                }
+
+                // CANCEL SKILL 2: Shield (Jika sedang animasi cast sebelum tameng keluar)
+                if (isCastingShield)
+                {
+                    isCastingShield = false;
+                    anim.Play("Idle"); 
+                    lastShieldTime = Time.time + 3f - shieldCooldown; 
+                    Debug.Log("Casting Skill 2 dibatalkan! Cooldown diset 3 detik.");
+                }
+
+                // CANCEL SKILL 3: Horizontal Slash (Jika sedang animasi ayunan sebelum proyektil keluar)
+                if (isCastingSkill3)
+                {
+                    isCastingSkill3 = false;
+                    anim.Play("Idle"); 
+                    lastSkill3Time = Time.time + 3f - skill3Cooldown; 
+                    Debug.Log("Casting Skill 3 dibatalkan! Cooldown diset 3 detik.");
                 }
 
                 StartCoroutine(DashRoutine());
                 return;
             }
         }
-
         if (isUsingPotion)
         {
             anim.SetFloat("moveX", 0);
@@ -200,48 +233,67 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // --- SKILL 2: SHIELD ACTIVATION (Tombol X) ---
         if (Input.GetKeyDown(KeyCode.X))
         {
-            // 1. Cek apakah shield sedang aktif
-            if (isShieldActive)
+            if (isShieldActive || isCastingShield)
             {
-                Debug.Log("Shield sudah dalam keadaan aktif!");
                 return;
             }
 
-            // 2. Cek cooldown & level skill
             if (Time.time >= lastShieldTime + shieldCooldown)
             {
                 if (PlayerStats.instance.skill2Level > 0)
                 {
-                    // === KODE BARU: Hitung kebutuhan MP dinamis (10 MP per level) ===
                     float requiredMp = 10f * PlayerStats.instance.skill2Level;
 
-                    // Cek kecukupan MP player
                     if (PlayerStats.instance.currentMP >= requiredMp)
                     {
-                        // Kurangi MP player
-                        PlayerStats.instance.currentMP -= requiredMp;
-
-                        // Jalankan fungsi memunculkan shield
-                        shieldCoroutine = StartCoroutine(ActivateShieldRoutine());
-                        lastShieldTime = Time.time;
+                        isCastingShield = true;
+                        anim.SetTrigger("ShieldCast"); 
+                        lastShieldTime = Time.time; 
                     }
                     else
                     {
-                        Debug.Log($"MP Tidak Cukup! Butuh {requiredMp} MP (MP Saat Ini: {PlayerStats.instance.currentMP}).");
+                        Debug.Log($"MP Tidak Cukup! Butuh {requiredMp} MP.");
                     }
                 }
                 else
                 {
-                    Debug.Log("Skill 2 Shield Belum Terbuka! Tingkatkan Level Skill 2 terlebih dahulu.");
+                    Debug.Log("Skill 2 Shield Belum Terbuka!");
                 }
             }
             else
             {
                 float sisaCD = (lastShieldTime + shieldCooldown) - Time.time;
                 Debug.Log($"Skill 2 sedang Cooldown! Tunggu {sisaCD:F1} detik lagi.");
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            // DI SINI SEKARANG AMAN: isShieldActive dihapus agar tetap bisa menyerang saat tameng aktif
+            if (isCastingShield || isCastingSkill3) return;
+
+            if (Time.time >= lastSkill3Time + skill3Cooldown)
+            {
+                if (PlayerStats.instance.skill3Level <= 0) 
+                {
+                    Debug.Log("Skill 3 Belum Terbuka!");
+                    return;
+                }
+
+                float requiredMp = PlayerStats.instance.skill3MpCost;
+
+                if (PlayerStats.instance.currentMP >= requiredMp)
+                {
+                    isCastingSkill3 = true;
+                    anim.SetTrigger("SlashCast"); 
+                    lastSkill3Time = Time.time;
+                }
+                else
+                {
+                    Debug.Log($"MP Tidak Cukup untuk Skill 3! Butuh {requiredMp} MP (MP Saat Ini: {PlayerStats.instance.currentMP}).");
+                }
             }
         }
 
@@ -336,24 +388,24 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(ActivateRageMode()); 
         }
 
-        if (Input.GetMouseButtonDown(0) && !isBlocking) 
+        if (Input.GetMouseButtonDown(0) && !isBlocking)
         {
-            if (clickQueueCount < 3) 
+            if (clickQueueCount < 3)
             {
-                clickQueueCount++; 
-                Debug.Log("Klik masuk antrean! Total saat ini: " + clickQueueCount); 
+                clickQueueCount++;
+                Debug.Log("Klik masuk antrean! Total saat ini: " + clickQueueCount);
             }
 
-            if (!isCurrentlyAttacking && comboStep == 0) 
+            if (!isCurrentlyAttacking && comboStep == 0)
             {
-                comboStep = 1; 
-                PlayComboAnimation(comboStep); 
+                comboStep = 1;
+                PlayComboAnimation(comboStep);
             }
         }
 
-        if (Input.GetMouseButtonDown(1) && !isBlocking && !isCurrentlyAttacking)  
+        if (Input.GetMouseButtonDown(1) && !isBlocking && !isCurrentlyAttacking)
         {
-            HeavyAttack(); 
+            HeavyAttack();
         }
     }
 
@@ -405,6 +457,20 @@ public class PlayerMovement : MonoBehaviour
                 rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
             }
             return;
+        }
+
+        if (isCastingShield)
+        {
+            rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+            anim.SetFloat("speed", 0f); 
+            return;
+        }
+
+        if (isCastingShield || isCastingSkill3)
+        {
+            rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0); // Kunci gerak horizontal, biarkan gravitasi bekerja
+            anim.SetFloat("speed", 0f); 
+            return; 
         }
         
         float moveX = Input.GetAxisRaw("Horizontal");
@@ -765,24 +831,16 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (skillID == 2)
         {
-            if (isShieldActive)
-            {
-                Debug.Log("Shield sudah dalam keadaan aktif!");
-                return;
-            }
+            if (isShieldActive || isCastingShield) return;
 
             if (PlayerStats.instance.skill2Level > 0)
             {
-                // === KODE BARU: Hitung kebutuhan MP dinamis (10 MP per level) ===
                 float requiredMp = 10f * PlayerStats.instance.skill2Level;
 
                 if (PlayerStats.instance.currentMP >= requiredMp)
                 {
-                    // Kurangi MP player
-                    PlayerStats.instance.currentMP -= requiredMp;
-
-                    // Jalankan shield
-                    StartCoroutine(ActivateShieldRoutine());
+                    isCastingShield = true;
+                    anim.SetTrigger("ShieldCast");
                     lastShieldTime = Time.time;
                 }
                 else
@@ -793,6 +851,23 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 Debug.Log("Skill 2 terkunci!");
+            }
+        }
+        else if (skillID == 3)
+        {
+            // PERBAIKAN: Hapus 'isShieldActive' dari baris ini juga
+            if (isCastingShield || isCastingSkill3) return; 
+
+            float requiredMp = 25f;
+            if (PlayerStats.instance.currentMP >= requiredMp)
+            {
+                isCastingSkill3 = true;
+                anim.SetTrigger("SlashCast");
+                lastSkill3Time = Time.time;
+            }
+            else
+            {
+                Debug.Log("MP Tidak Cukup untuk Skill 3!");
             }
         }
     }
@@ -914,6 +989,93 @@ public class PlayerMovement : MonoBehaviour
         {
             StopCoroutine(shieldCoroutine);
             shieldCoroutine = null;
+        }
+    }
+
+    public void AnimationEvent_TriggerShield()
+    {
+        // JIKA player menekan Dash sebelum event ini terpicu, batalkan pembuatan tameng!
+        if (!isCastingShield) return;
+
+        // Buka kembali kunci pergerakan karena animasi pelepasan skill selesai
+        isCastingShield = false; 
+
+        float requiredMp = 10f * PlayerStats.instance.skill2Level;
+        if (PlayerStats.instance.currentMP >= requiredMp)
+        {
+            // MP baru resmi dipotong di sini setelah dipastikan tidak dicancel oleh dash
+            PlayerStats.instance.currentMP -= requiredMp;
+
+            // Kalkulasi ketahanan tameng
+            float shieldPercent = 0.25f * PlayerStats.instance.skill2Level;
+            maxShieldHp = PlayerStats.instance.maxHealth * shieldPercent; 
+            currentShieldHp = maxShieldHp;
+
+            isShieldActive = true;
+            Debug.Log($"Shield aktif melalui Animation Event! HP Tameng: {currentShieldHp}");
+
+            // Munculkan Prefab Tameng
+            if (shieldPrefab != null)
+            {
+                currentShieldInstance = Instantiate(shieldPrefab, transform.position, transform.rotation, transform);
+            }
+
+            // Jalankan hitung mundur durasi aktif tameng
+            float dynamicDuration = 10f * PlayerStats.instance.skill2Level;
+            if (shieldDurationCoroutine != null) StopCoroutine(shieldDurationCoroutine);
+            shieldDurationCoroutine = StartCoroutine(ShieldDurationCountdown(dynamicDuration));
+        }
+    }
+
+    private IEnumerator ShieldDurationCountdown(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        BreakShield();
+        Debug.Log("Shield Berakhir karena durasi waktu habis!");
+    }
+
+    public void AnimationEvent_TriggerHorizontalSlash()
+    {
+        if (!isCastingSkill3) return;
+        isCastingSkill3 = false;
+
+        // PERBAIKAN 1: Ambil MP Cost dinamis berdasarkan level dari PlayerStats (20, 40, 60, dst)
+        float requiredMp = PlayerStats.instance.skill3MpCost; 
+
+        if (PlayerStats.instance.currentMP >= requiredMp)
+        {
+            PlayerStats.instance.currentMP -= requiredMp;
+
+            Vector3 spawnPos = slashSpawnPoint != null ? slashSpawnPoint.position : transform.position + transform.forward;
+            Quaternion spawnRot = transform.rotation; 
+
+            if (slashPrefab != null)
+            {
+                // 1. Munculkan prefab tebasan ke scene game
+                GameObject slashObj = Instantiate(slashPrefab, spawnPos, spawnRot);
+                
+                // PERBAIKAN 2: Ubah ukuran skala proyektil tebasan berdasarkan level (Lvl 1 = 1x, Lvl 2 = 2x, Lvl 3 = 3x, dst)
+                float currentScale = PlayerStats.instance.skill3ScaleMultiplier;
+                slashObj.transform.localScale = new Vector3(currentScale, currentScale, currentScale);
+                
+                // 2. Ambil komponen HorizontalSlash dari prefab yang baru muncul
+                HorizontalSlash slashScript = slashObj.GetComponent<HorizontalSlash>();
+                
+                if (slashScript != null)
+                {
+                    // PERBAIKAN 3: Hitung damage dinamis berdasarkan level dari PlayerStats (Lvl 1 = 200%, Lvl 2 = 400%, dst)
+                    float totalSkillDamage = PlayerStats.instance.damage * PlayerStats.instance.skill3DamageMultiplier; 
+                    
+                    // 3. Kirim nilai damage ke fungsi SetupSlash
+                    slashScript.SetupSlash(totalSkillDamage);
+                }
+
+                Debug.Log($"Skill 3 Level {PlayerStats.instance.skill3Level} Berhasil Diluncurkan! Damage: {PlayerStats.instance.damage * PlayerStats.instance.skill3DamageMultiplier}");
+            }
+            else
+            {
+                Debug.LogError("Prefab Slash Belum Dimasukkan ke Inspector PlayerMovement!");
+            }
         }
     }
 

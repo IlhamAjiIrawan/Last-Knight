@@ -74,6 +74,7 @@ public class PlayerStats : MonoBehaviour
     [Header("Skills Level & Data")]
     public int skill1Level = 0;
     public int skill2Level = 0;
+    public int skill3Level = 0;
     public int maxSkillLevel = 5;
 
     [Header("Skill MP Costs")]
@@ -83,6 +84,11 @@ public class PlayerStats : MonoBehaviour
     [Header("Skill Upgrade Costs")]
     public int skill1UpgradeCost = 10;
     public int skill2UpgradeCost = 150;
+    public int skill3UpgradeCost = 250;
+
+    public float skill3MpCost => skill3Level * 25f;
+    public float skill3DamageMultiplier => skill3Level * 2.5f;
+    public float skill3ScaleMultiplier => skill3Level * 1f;
 
     private string saveFileName = "save_player_data.json";
     private string savePath;
@@ -153,6 +159,8 @@ public class PlayerStats : MonoBehaviour
         public int mpUpgradeCount;
         public int skill1Level;
         public int skill2Level;
+        public int skill3Level; 
+        public int skill3UpgradeCost;
     }
 
     public void SaveStats(string customSceneName = "")
@@ -198,6 +206,8 @@ public class PlayerStats : MonoBehaviour
         data.mpUpgradeCount = mpUpgradeCount;
         data.skill1Level = skill1Level;
         data.skill2Level = skill2Level;
+        data.skill3Level = skill3Level;           
+        data.skill3UpgradeCost = skill3UpgradeCost;
 
         string jsonText = JsonUtility.ToJson(data, true);
         File.WriteAllText(savePath, jsonText);
@@ -248,6 +258,12 @@ public class PlayerStats : MonoBehaviour
             mpUpgradeCount = data.mpUpgradeCount;
             skill1Level = data.skill1Level;
             skill2Level = data.skill2Level;
+            skill3Level = data.skill3Level;
+            skill3UpgradeCost = data.skill3UpgradeCost;
+            if (skill3UpgradeCost <= 0)
+            {
+                skill3UpgradeCost = 250; // Atur sesuai harga awal yang kamu inginkan
+            }
 
             Debug.Log("<color=lime>[Save System]: Berhasil memuat status player dari file JSON.</color>");
         }
@@ -293,6 +309,8 @@ public class PlayerStats : MonoBehaviour
 
         skill1Level = 0;
         skill2Level = 0;
+        skill3Level = 0;              // BARU
+        skill3UpgradeCost = 250;
         mpUpgradeCount = 0;
     }
 

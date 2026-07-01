@@ -11,6 +11,7 @@ public class SkillShop : MonoBehaviour
     [Header("UI Teks Harga Toko")]
     public TextMeshProUGUI skill1PriceText;
     public TextMeshProUGUI skill2PriceText;
+    public TextMeshProUGUI skill3PriceText;
 
     void Update()
     {
@@ -24,6 +25,11 @@ public class SkillShop : MonoBehaviour
         {
             skill2PriceText.text = PlayerStats.instance.skill2Level >= PlayerStats.instance.maxSkillLevel ? 
                 "MAX" : "Cost: " + PlayerStats.instance.skill2UpgradeCost + " G";
+        }
+        if (skill3PriceText != null)
+        {
+            skill3PriceText.text = PlayerStats.instance.skill3Level >= PlayerStats.instance.maxSkillLevel ? 
+                "MAX" : "Cost: " + PlayerStats.instance.skill3UpgradeCost + " G";
         }
     }
 
@@ -89,6 +95,29 @@ public class SkillShop : MonoBehaviour
             PlayerStats.instance.skill2UpgradeCost = 125 * Mathf.RoundToInt(Mathf.Pow(2, PlayerStats.instance.skill2Level));
 
             Debug.Log("Skill 2 (Shield) Berhasil Di-upgrade! Level Saat Ini: " + PlayerStats.instance.skill2Level);
+        }
+    }
+
+    public void UpgradeSkill3()
+    {
+        if (PlayerStats.instance.skill3Level < PlayerStats.instance.maxSkillLevel && 
+            PlayerStats.instance.gold >= PlayerStats.instance.skill3UpgradeCost)
+        {
+            // 1. Kurangi koin player sesuai harga saat ini
+            PlayerStats.instance.gold -= PlayerStats.instance.skill3UpgradeCost;
+            
+            // 2. Naikkan level skill 3
+            PlayerStats.instance.skill3Level++;
+
+            // 3. Hitung harga untuk UPGRADE BERIKUTNYA secara otomatis (Pola kelipatan 2)
+            // Lvl 0->1 = 250 | Lvl 1->2 = 500 | Lvl 2->3 = 1000 | Lvl 3->4 = 2000 | Lvl 4->5 = 4000
+            PlayerStats.instance.skill3UpgradeCost = 250 * Mathf.RoundToInt(Mathf.Pow(2, PlayerStats.instance.skill3Level));
+
+            Debug.Log("Skill 3 (Horizontal Slash) Berhasil Di-upgrade! Level Saat Ini: " + PlayerStats.instance.skill3Level);
+        }
+        else
+        {
+            Debug.Log("Gagal Upgrade Skill 3: Gold tidak cukup atau Level sudah MAX!");
         }
     }
 }
