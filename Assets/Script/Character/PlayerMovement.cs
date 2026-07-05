@@ -121,6 +121,17 @@ public class PlayerMovement : MonoBehaviour
     public GameObject rangeBow;
     public GameObject rangeArrow;
 
+    [Header("Skill Cooldown Settings (Detik)")]
+    public float skill1MaxCD = 3f;
+    public float skill2MaxCD = 30f;
+    public float skill3MaxCD = 10f;
+    public float skill4MaxCD = 30f; // Durasi cooldown Skill 4
+
+    [HideInInspector] public float skill1CDTimer = 0f;
+    [HideInInspector] public float skill2CDTimer = 0f;
+    [HideInInspector] public float skill3CDTimer = 0f;
+    [HideInInspector] public float skill4CDTimer = 0f; // Timer berjalan Skill 4
+
     public float chargeTimer { get; private set; } = 0f;      
     public bool isCharging { get; private set; } = false;     // Status sedang menahan panah
 
@@ -148,6 +159,11 @@ public class PlayerMovement : MonoBehaviour
         {
             damageFlashImage.color = Color.Lerp(damageFlashImage.color, Color.clear, flashSpeed * Time.deltaTime);
         }
+
+        if (skill1CDTimer > 0) skill1CDTimer -= Time.deltaTime;
+        if (skill2CDTimer > 0) skill2CDTimer -= Time.deltaTime;
+        if (skill3CDTimer > 0) skill3CDTimer -= Time.deltaTime;
+        if (skill4CDTimer > 0) skill4CDTimer -= Time.deltaTime;
         
         if (PlayerStats.instance != null && PlayerStats.instance.currentHealth <= 0) return; 
         speed = PlayerStats.instance.speed; 
@@ -168,7 +184,7 @@ public class PlayerMovement : MonoBehaviour
                     CancelPotionAnimation();
                 }
 
-                // CANCEL SKILL 1: Mode Panah (Jika sedang menahan busur/charging)
+                // CANCEL SKILL 1: Mode Panah
                 if (isBowMode && isCharging)
                 {
                     isCharging = false;
@@ -176,25 +192,27 @@ public class PlayerMovement : MonoBehaviour
                     if (anim != null) anim.SetBool("isChargingBow", false);
                     if (aimLine != null) aimLine.enabled = false;
 
-                    lastSkill1Time = Time.time + 0.5f - skill1Cooldown; 
+                    skill1CDTimer = 3f; // UBAH: Langsung set timer mundur ke 3 detik untuk UI!
                     Debug.Log("Charging Skill 1 dibatalkan! Cooldown diset 3 detik.");
                 }
 
-                // CANCEL SKILL 2: Shield (Jika sedang animasi cast sebelum tameng keluar)
+                // CANCEL SKILL 2: Shield
                 if (isCastingShield)
                 {
                     isCastingShield = false;
                     anim.Play("Idle"); 
-                    lastShieldTime = Time.time + 3f - shieldCooldown; 
+                    
+                    skill2CDTimer = 3f; // UBAH: Langsung set timer mundur ke 3 detik untuk UI!
                     Debug.Log("Casting Skill 2 dibatalkan! Cooldown diset 3 detik.");
                 }
 
-                // CANCEL SKILL 3: Horizontal Slash (Jika sedang animasi ayunan sebelum proyektil keluar)
+                // CANCEL SKILL 3: Horizontal Slash
                 if (isCastingSkill3)
                 {
                     isCastingSkill3 = false;
                     anim.Play("Idle"); 
-                    lastSkill3Time = Time.time + 3f - skill3Cooldown; 
+                    
+                    skill3CDTimer = 3f; // UBAH: Langsung set timer mundur ke 3 detik untuk UI!
                     Debug.Log("Casting Skill 3 dibatalkan! Cooldown diset 3 detik.");
                 }
 
@@ -212,33 +230,48 @@ public class PlayerMovement : MonoBehaviour
         LookAtMouse();
         UpdateAnimation();
 
-        if (Input.GetKeyDown(KeyCode.Z))
+       if (Input.GetKeyDown(KeyCode.Z))
         {
-            if (Time.time >= lastSkill1Time + skill1Cooldown)
+            if (isBowMode)
             {
-                if (PlayerStats.instance.skill1Level > 0)
-                {
-                    isBowMode = !isBowMode;   
-                    if (anim != null) anim.SetBool("isBowMode", isBowMode);
+                // JIKA SEDANG BOW MODE: Player harus BISA KELUAR ke mode normal kapan saja tanpa halangan CD
+                isBowMode = false;   
+                if (anim != null) anim.SetBool("isBowMode", false);
 
-                    SwitchWeaponModels();
-                    ResetCombo();
+                SwitchWeaponModels();
+                ResetCombo();
 
-                    if (!isBowMode && aimLine != null) aimLine.enabled = false;
-                    Debug.Log("Mode Panah Jarak Jauh: " + isBowMode);
-                    lastSkill1Time = Time.time;
-                }
-                else
-                {
-                    Debug.Log("Skill 1 Jarak Jauh Belum Terbuka! Beli di Shop seharga 10 Gold.");
-                }
+                if (aimLine != null) aimLine.enabled = false;
+                Debug.Log("Kembali ke Mode Jarak Dekat (Normal).");
             }
             else
             {
-                float sisaCooldown = (lastSkill1Time + skill1Cooldown) - Time.time;
-                Debug.Log($"Skill 1 sedang Cooldown! Tunggu {sisaCooldown:F1} detik lagi.");
+                // JIKA MAU MASUK KE BOW MODE: Baru lakukan pemeriksaan Cooldown & Level Skill
+                if (skill1CDTimer <= 0)
+                {
+                    if (PlayerStats.instance.skill1Level > 0)
+                    {
+                        isBowMode = true;   
+                        if (anim != null) anim.SetBool("isBowMode", true);
+
+                        SwitchWeaponModels();
+                        ResetCombo();
+
+                        // Pemicu Cooldown: UI akan langsung merespon saat masuk mode panah
+                        skill1CDTimer = skill1MaxCD; 
+                        Debug.Log("Masuk ke Mode Panah Jarak Jauh.");
+                    }
+                    else
+                    {
+                        Debug.Log("Skill 1 Jarak Jauh Belum Terbuka!");
+                    }
+                }
+                else
+                {
+                    Debug.Log($"Skill 1 sedang Cooldown! Tunggu {Mathf.CeilToInt(skill1CDTimer)} detik.");
+                }
             }
-        }
+}
 
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -247,7 +280,7 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
 
-            if (Time.time >= lastShieldTime + shieldCooldown)
+            if (skill2CDTimer <= 0)
             {
                 if (PlayerStats.instance.skill2Level > 0)
                 {
@@ -257,7 +290,8 @@ public class PlayerMovement : MonoBehaviour
                     {
                         isCastingShield = true;
                         anim.SetTrigger("ShieldCast"); 
-                        lastShieldTime = Time.time; 
+                        
+                        skill2CDTimer = 3f; 
                     }
                     else
                     {
@@ -271,17 +305,16 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                float sisaCD = (lastShieldTime + shieldCooldown) - Time.time;
-                Debug.Log($"Skill 2 sedang Cooldown! Tunggu {sisaCD:F1} detik lagi.");
+                Debug.Log($"Skill 2 sedang Cooldown! Tunggu {Mathf.CeilToInt(skill2CDTimer)} detik lagi.");
             }
         }
 
         if (Input.GetKeyDown(KeyCode.C))
         {
-            // DI SINI SEKARANG AMAN: isShieldActive dihapus agar tetap bisa menyerang saat tameng aktif
             if (isCastingShield || isCastingSkill3) return;
 
-            if (Time.time >= lastSkill3Time + skill3Cooldown)
+            // UBAH: Gunakan timer baru
+            if (skill3CDTimer <= 0)
             {
                 if (PlayerStats.instance.skill3Level <= 0) 
                 {
@@ -295,18 +328,31 @@ public class PlayerMovement : MonoBehaviour
                 {
                     isCastingSkill3 = true;
                     anim.SetTrigger("SlashCast"); 
-                    lastSkill3Time = Time.time;
+                    
+                    // TAMBAHAN UTAMA: Picu cooldown untuk UI
+                    skill3CDTimer = skill3MaxCD;
                 }
                 else
                 {
-                    Debug.Log($"MP Tidak Cukup untuk Skill 3! Butuh {requiredMp} MP (MP Saat Ini: {PlayerStats.instance.currentMP}).");
+                    Debug.Log($"MP Tidak Cukup untuk Skill 3! Butuh {requiredMp} MP.");
                 }
+            }
+            else
+            {
+                Debug.Log($"Skill 3 sedang Cooldown! Tunggu {Mathf.CeilToInt(skill3CDTimer)} detik lagi.");
             }
         }
 
         if (Input.GetKeyDown(KeyCode.V))
         {
-            TriggerSlamAttack();
+            if (skill4CDTimer <= 0)
+            {
+                TriggerSlamAttack();
+            }
+            else
+            {
+                Debug.Log($"Skill 4 Cooldown: {Mathf.CeilToInt(skill4CDTimer)} detik lagi.");
+            }
         }
 
         if (isBowMode) 
@@ -1022,9 +1068,9 @@ public class PlayerMovement : MonoBehaviour
             float shieldPercent = 0.25f * PlayerStats.instance.skill2Level;
             maxShieldHp = PlayerStats.instance.maxHealth * shieldPercent; 
             currentShieldHp = maxShieldHp;
-
             isShieldActive = true;
-            Debug.Log($"Shield aktif melalui Animation Event! HP Tameng: {currentShieldHp}");
+
+            skill2CDTimer = skill2MaxCD;
 
             // Munculkan Prefab Tameng
             if (shieldPrefab != null)
@@ -1093,11 +1139,8 @@ public class PlayerMovement : MonoBehaviour
 
     void TriggerSlamAttack()
     {
-        if (PlayerStats.instance.skill4Level <= 0)
-        {
-            Debug.Log("Skill 4 Belum Terbuka / Dijual di Toko!");
-            return;
-        }
+        if (PlayerStats.instance.skill4Level <= 0) return;
+        if (skill4CDTimer > 0) return; // Proteksi ganda
 
         if (isCastingSkill4 || isCharging || isCastingShield || isCastingSkill3 || isUsingPotion) return;
 
@@ -1107,19 +1150,12 @@ public class PlayerMovement : MonoBehaviour
             PlayerStats.instance.currentMP -= requiredMp;
             isCastingSkill4 = true; 
 
-            if (anim != null)
-            {
-                anim.SetTrigger("SlamAttack"); 
-            }
+            skill4CDTimer = skill4MaxCD; 
+
+            if (anim != null) anim.SetTrigger("SlamAttack"); 
 
             StopCoroutine("Skill4TimeoutRoutine");
-            StartCoroutine(Skill4TimeoutRoutine(3f)); 
-
-            Debug.Log($"Skill 4 Dimulai! Player Kebal dari serangan. Mengonsumsi {requiredMp} MP.");
-        }
-        else
-        {
-            Debug.Log("MP tidak cukup untuk meluncurkan Skill 4!");
+            StartCoroutine(Skill4TimeoutRoutine(1.5f)); 
         }
     }
 

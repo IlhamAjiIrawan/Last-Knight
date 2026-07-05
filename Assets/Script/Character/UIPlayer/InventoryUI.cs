@@ -19,8 +19,6 @@ public class InventoryUI : MonoBehaviour
     public TextMeshProUGUI speedPotionText;   // Button 9 (Bergeser)
 
     [Header("UI Teks Slot Skill (Baru)")]
-    public TextMeshProUGUI skill1LevelText; 
-    public TextMeshProUGUI skill2LevelText; 
     private bool isSkillMode = false;
 
     void Start()
@@ -77,12 +75,5 @@ public class InventoryUI : MonoBehaviour
         if (energyPotionText != null) energyPotionText.text = "x" + PlayerStats.instance.energyPotionCount;
         if (strengthPotionText != null) strengthPotionText.text = "x" + PlayerStats.instance.strengthPotionCount;
         if (speedPotionText != null) speedPotionText.text = "x" + PlayerStats.instance.speedPotionCount;
-
-        // Skill
-        if (skill1LevelText != null) 
-            skill1LevelText.text = PlayerStats.instance.skill1Level > 0 ? "Lv. " + PlayerStats.instance.skill1Level : "LOCK";
-        
-        if (skill2LevelText != null) 
-            skill2LevelText.text = PlayerStats.instance.skill2Level > 0 ? "Lv. " + PlayerStats.instance.skill2Level : "LOCK";
     }
 }
