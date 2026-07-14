@@ -2143,7 +2143,7 @@ MonoBehaviour:
   player: {fileID: 0}
   chaseRange: 100
   attackRange: 6.5
-  moveSpeed: 5
+  moveSpeed: 7
   damage: 100
   attackCooldown: 3
   attackDelay: 0.6

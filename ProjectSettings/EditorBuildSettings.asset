@@ -42,6 +42,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Map4/OpeningMap4.unity
     guid: 7dab19d22b6d24245a748ed6d79fe947
   - enabled: 1
+    path: Assets/Scenes/Map4/Map4.unity
+    guid: a20ff90ec448e9248b21c05427a98543
+  - enabled: 1
     path: Assets/Scenes/Map4/EndingMap4.unity
     guid: 06e447e9d57b104499466a8e6b60ec50
   - enabled: 1

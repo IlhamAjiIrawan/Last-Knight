@@ -1374,7 +1374,7 @@ MonoBehaviour:
   videoPlayer: {fileID: 457950907}
   continuePanel: {fileID: 555037421}
   resumeButton: {fileID: 539666474}
-  nextSceneName: Map4Garden
+  nextSceneName: Map4
 --- !u!4 &2063828644
 Transform:
   m_ObjectHideFlags: 0

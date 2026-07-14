@@ -822,7 +822,7 @@ MonoBehaviour:
   player: {fileID: 0}
   chaseRange: 100
   attackRange: 3.5
-  moveSpeed: 4
+  moveSpeed: 7
   damage: 75
   attackCooldown: 3
   animSpeedMultiplier: 3.5
