@@ -51,8 +51,14 @@ EditorBuildSettings:
     path: Assets/Scenes/Map5/OpeningMap5.unity
     guid: ea6a4f555755ace44b6de8d8e1494d96
   - enabled: 1
+    path: Assets/Scenes/Map5/Map5Castle.unity
+    guid: eafa813308e86ca4aad6393d961b6070
+  - enabled: 1
     path: Assets/Scenes/Map5/EndingMap5.unity
     guid: d042f1888bd4e9d4681f184c7f5b8700
+  - enabled: 1
+    path: Assets/Scenes/Map5/FinalBattle.unity
+    guid: 3d05ad1cc4cb31449854a3b553f118e1
   - enabled: 1
     path: Assets/Scenes/Map5/EndingCredit.unity
     guid: 8524c6b9279253d4a91caa79e52edfa6

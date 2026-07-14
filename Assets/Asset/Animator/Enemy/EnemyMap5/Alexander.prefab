@@ -862,7 +862,7 @@ MonoBehaviour:
   dangerZoneCirclePrefab: {fileID: 4506262285324917138, guid: aa5a632dcdf49314e8dfd12267eefa05, type: 3}
   slamVFXPrefab: {fileID: 5034656251238326012, guid: 9de2fa19f0390d44491264d9cab8cec5, type: 3}
   slamRadius: 10
-  slamDamage: 45
+  slamDamage: 150
   defendDuration: 2
   jumpDuration: 1
   jumpHeight: 5

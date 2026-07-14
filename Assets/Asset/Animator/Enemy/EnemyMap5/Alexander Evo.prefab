@@ -701,8 +701,8 @@ MonoBehaviour:
   player: {fileID: 0}
   chaseRange: 100
   attackRange: 3.5
-  moveSpeed: 4
-  damage: 25
+  moveSpeed: 7
+  damage: 100
   attackCooldown: 2
   animSpeedMultiplier: 3.5
   attackDelay: 0.8
@@ -710,8 +710,8 @@ MonoBehaviour:
   skill1Cooldown: 6
   skill1Range: 10
   slashSpeed: 12
-  skill1Width: 4
-  jumpDistance: 8
+  skill1Width: 10
+  jumpDistance: 30
   telegraphDuration: 1
   postHitDuration: 0.8
   straightSlashPrefab: {fileID: 3020920808754819069, guid: daf7019123189f342bd346e2102ed1bc, type: 3}
@@ -719,8 +719,8 @@ MonoBehaviour:
   skill1DangerZoneCirclePrefab: {fileID: 4506262285324917138, guid: aa5a632dcdf49314e8dfd12267eefa05, type: 3}
   skill2Cooldown: 8
   skill2Range: 5
-  skill2Angle: 140
-  skill2Damage: 35
+  skill2Angle: 180
+  skill2Damage: 125
   skill2TelegraphDuration: 1
   skill2PostHitDuration: 0.8
   dangerZoneConePrefab: {fileID: 6265441997546582639, guid: bb547d9dffb859c478ed21f06debf6a1, type: 3}
@@ -728,7 +728,7 @@ MonoBehaviour:
   sideSlashSpawnPoint: {fileID: 5796394804439535687}
   skill3Cooldown: 12
   skill3Radius: 10
-  skill3DamagePerTick: 8
+  skill3DamagePerTick: 20
   skill3TelegraphDuration: 1.2
   meteorDuration: 5
   tickInterval: 0.5
@@ -741,13 +741,13 @@ MonoBehaviour:
   dangerZoneCirclePrefab: {fileID: 4506262285324917138, guid: aa5a632dcdf49314e8dfd12267eefa05, type: 3}
   slamVFXPrefab: {fileID: 3736087762300065525, guid: 6ec366eeb866d454d835ef8ab07f96f8, type: 3}
   slamRadius: 6
-  slamDamage: 45
+  slamDamage: 200
   defendDuration: 2
   jumpDuration: 1.2
   jumpHeight: 5
   slamFireZonePrefab: {fileID: 8764021768634181422, guid: f7154722e4dce9c4c9f7d4bcdd907715, type: 3}
   fireZoneDuration: 10
-  fireZoneDamagePerTick: 6
+  fireZoneDamagePerTick: 20
   fireZoneTickInterval: 0.5
   fireZoneRadius: 6
   meteorImpactDelay: 0.5
