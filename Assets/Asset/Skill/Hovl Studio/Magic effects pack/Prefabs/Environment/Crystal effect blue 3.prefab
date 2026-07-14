@@ -5081,7 +5081,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.6886792, g: 0.6886792, b: 0.6886792, a: 1}
+      maxColor: {r: 1, g: 0, b: 0, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -9813,7 +9813,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyProjectile
   speed: 12
-  damage: 25
+  damage: 20
   lifeTime: 4
   destroyOnPlayerHit: 1
   destroyOnEnvironmentHit: 1
@@ -10040,7 +10040,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0.2189455, b: 1, a: 1}
+      maxColor: {r: 1, g: 0.0016485286, b: 0, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -14946,7 +14946,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.034585256, g: 0.09324881, b: 0.2735849, a: 0.4117647}
+      maxColor: {r: 0.27450982, g: 0.037385307, b: 0.035294108, a: 0.4117647}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}

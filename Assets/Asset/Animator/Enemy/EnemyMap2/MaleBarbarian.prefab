@@ -2972,9 +2972,9 @@ MonoBehaviour:
   chaseRange: 20
   attackRange: 2
   moveSpeed: 5
-  damage: 12
+  damage: 10
   patrolDisableRange: 50
-  attackDelay: 0.5
+  attackDelay: 0.4
   attackRecoveryTime: 0.4
   stunDuration: 0.5
   patrolRadius: 8

@@ -19939,7 +19939,7 @@ MonoBehaviour:
   rangeArrow: {fileID: 1526090652}
   skill1MaxCD: 3
   skill2MaxCD: 30
-  skill3MaxCD: 10
+  skill3MaxCD: 30
   skill4MaxCD: 60
   skill1CDTimer: 0
   skill2CDTimer: 0
@@ -159207,7 +159207,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1666643393
 Transform:
   m_ObjectHideFlags: 0
@@ -168778,7 +168778,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1752008546
 MonoBehaviour:
   m_ObjectHideFlags: 0

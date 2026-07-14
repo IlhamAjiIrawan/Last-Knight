@@ -124,8 +124,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Skill Cooldown Settings (Detik)")]
     public float skill1MaxCD = 3f;
     public float skill2MaxCD = 30f;
-    public float skill3MaxCD = 10f;
-    public float skill4MaxCD = 30f; // Durasi cooldown Skill 4
+    public float skill3MaxCD = 30f;
+    public float skill4MaxCD = 60f; // Durasi cooldown Skill 4
 
     [HideInInspector] public float skill1CDTimer = 0f;
     [HideInInspector] public float skill2CDTimer = 0f;

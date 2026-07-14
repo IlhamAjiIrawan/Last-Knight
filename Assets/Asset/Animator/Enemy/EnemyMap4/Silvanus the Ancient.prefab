@@ -922,11 +922,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ForestDragon
   player: {fileID: 0}
   chaseRange: 100
-  attackRange: 4
+  attackRange: 5
   moveSpeed: 5
   damage: 90
   attackCooldown: 3
-  attackDelay: 0.7
+  attackDelay: 0.5
   attackRecoveryTime: 0.4
   skill1Cooldown: 15
   skill1Radius: 10

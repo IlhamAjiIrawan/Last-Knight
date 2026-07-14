@@ -98,7 +98,7 @@ public class SkillShop : MonoBehaviour
             PlayerStats.instance.skill2Level++;
 
             // 3. Hitung harga untuk UPGRADE BERIKUTNYA otomatis
-            PlayerStats.instance.skill2UpgradeCost = 125 * Mathf.RoundToInt(Mathf.Pow(2, PlayerStats.instance.skill2Level));
+            PlayerStats.instance.skill2UpgradeCost = 150 * Mathf.RoundToInt(Mathf.Pow(2, PlayerStats.instance.skill2Level));
 
             Debug.Log("Skill 2 (Shield) Berhasil Di-upgrade! Level Saat Ini: " + PlayerStats.instance.skill2Level);
         }
@@ -116,8 +116,8 @@ public class SkillShop : MonoBehaviour
             PlayerStats.instance.skill3Level++;
 
             // 3. Hitung harga untuk UPGRADE BERIKUTNYA secara otomatis (Pola kelipatan 2)
-            // Lvl 0->1 = 250 | Lvl 1->2 = 500 | Lvl 2->3 = 1000 | Lvl 3->4 = 2000 | Lvl 4->5 = 4000
-            PlayerStats.instance.skill3UpgradeCost = 250 * Mathf.RoundToInt(Mathf.Pow(2, PlayerStats.instance.skill3Level));
+            // Lvl 0->1 = 500 | Lvl 1->2 = 1000 | Lvl 2->3 = 2000 | Lvl 3->4 = 4000 | Lvl 4->5 = 8000
+            PlayerStats.instance.skill3UpgradeCost = 500 * Mathf.RoundToInt(Mathf.Pow(2, PlayerStats.instance.skill3Level));
 
             Debug.Log("Skill 3 (Horizontal Slash) Berhasil Di-upgrade! Level Saat Ini: " + PlayerStats.instance.skill3Level);
         }
@@ -135,8 +135,8 @@ public class SkillShop : MonoBehaviour
             PlayerStats.instance.gold -= PlayerStats.instance.skill4UpgradeCost;
             PlayerStats.instance.skill4Level++;
 
-            // Pola kelipatan: Lvl 0->1=500, Lvl 1->2=1000, Lvl 2->3=2000, dst.
-            PlayerStats.instance.skill4UpgradeCost = 500 * Mathf.RoundToInt(Mathf.Pow(2, PlayerStats.instance.gold >= 0 ? PlayerStats.instance.skill4Level : 0));
+            // Pola kelipatan: Lvl 0->1=1000, Lvl 1->2=2000, Lvl 2->3=4000, dst.
+            PlayerStats.instance.skill4UpgradeCost = 1000 * Mathf.RoundToInt(Mathf.Pow(2, PlayerStats.instance.gold >= 0 ? PlayerStats.instance.skill4Level : 0));
             
             Debug.Log("Skill 4 (Slam Attack) Berhasil Upgrade! Level: " + PlayerStats.instance.skill4Level);
         }

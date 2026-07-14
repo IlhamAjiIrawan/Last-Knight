@@ -738,7 +738,7 @@ MonoBehaviour:
   moveSpeed: 9
   damage: 15
   patrolDisableRange: 50
-  attackDelay: 0.5
+  attackDelay: 0.6
   attackRecoveryTime: 0.4
   stunDuration: 0.5
   patrolRadius: 8

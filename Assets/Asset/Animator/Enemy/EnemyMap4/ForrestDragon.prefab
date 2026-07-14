@@ -405,7 +405,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   player: {fileID: 0}
   chaseRange: 20
-  attackRange: 4
+  attackRange: 5
   moveSpeed: 10
   damage: 60
   patrolDisableRange: 50
@@ -430,7 +430,7 @@ MonoBehaviour:
   maxHealth: 700
   currentHealth: 0
   itemToDrop: {fileID: 3218043692679455554, guid: a09adf78f9405dd45bde5d0602c17c1a, type: 3}
-  amountToDrop: 5
+  amountToDrop: 3
   dropSpread: 0.5
 --- !u!1 &1698471971554252169
 GameObject:

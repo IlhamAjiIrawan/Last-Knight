@@ -1036,8 +1036,8 @@ MonoBehaviour:
   moveSpeed: 3
   damage: 70
   patrolDisableRange: 50
-  attackDelay: 0.5
-  attackRecoveryTime: 0.4
+  attackDelay: 1
+  attackRecoveryTime: 2
   stunDuration: 0.5
   patrolRadius: 8
   patrolWaitTime: 1
@@ -1057,7 +1057,7 @@ MonoBehaviour:
   maxHealth: 1500
   currentHealth: 0
   itemToDrop: {fileID: 3218043692679455554, guid: a09adf78f9405dd45bde5d0602c17c1a, type: 3}
-  amountToDrop: 5
+  amountToDrop: 4
   dropSpread: 0.5
 --- !u!1 &7677221546235198955
 GameObject:

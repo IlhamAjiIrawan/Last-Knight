@@ -557,7 +557,7 @@ MonoBehaviour:
   moveSpeed: 6
   damage: 30
   attackCooldown: 3
-  attackDelay: 0.8
+  attackDelay: 0.7
   attackRecoveryTime: 0.4
   skill1Cooldown: 10
   skill1Range: 7

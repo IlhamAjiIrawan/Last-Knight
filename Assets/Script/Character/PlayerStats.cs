@@ -83,10 +83,10 @@ public class PlayerStats : MonoBehaviour
     public float skill2MpCost = 4f;
 
     [Header("Skill Upgrade Costs")]
-    public int skill1UpgradeCost = 10;
+    public int skill1UpgradeCost = 50;
     public int skill2UpgradeCost = 150;
-    public int skill3UpgradeCost = 250;
-    public int skill4UpgradeCost = 500;
+    public int skill3UpgradeCost = 500;
+    public int skill4UpgradeCost = 1000;
 
     public float skill3MpCost => skill3Level * 25f;
     public float skill3DamageMultiplier => skill3Level * 2.5f;
@@ -272,11 +272,11 @@ public class PlayerStats : MonoBehaviour
             skill3UpgradeCost = data.skill3UpgradeCost;
             if (skill3UpgradeCost <= 0)
             {
-                skill3UpgradeCost = 250; // Atur sesuai harga awal yang kamu inginkan
+                skill3UpgradeCost = 500; // Atur sesuai harga awal yang kamu inginkan
             }
             skill4Level = data.skill4Level;
             skill4UpgradeCost = data.skill4UpgradeCost;
-            if (skill4UpgradeCost <= 0) skill4UpgradeCost = 500;
+            if (skill4UpgradeCost <= 0) skill4UpgradeCost = 1000;
 
             Debug.Log("<color=lime>[Save System]: Berhasil memuat status player dari file JSON.</color>");
         }
@@ -323,9 +323,9 @@ public class PlayerStats : MonoBehaviour
         skill1Level = 0;
         skill2Level = 0;
         skill3Level = 0;              // BARU
-        skill3UpgradeCost = 250;
+        skill3UpgradeCost = 500;
         skill4Level = 0;
-        skill4UpgradeCost = 500;
+        skill4UpgradeCost = 1000;
         mpUpgradeCount = 0;
     }
 

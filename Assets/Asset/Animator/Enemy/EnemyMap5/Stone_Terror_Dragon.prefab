@@ -1046,8 +1046,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4, y: 4, z: 4}
-  m_Center: {x: 0, y: 2, z: -0.5}
+  m_Size: {x: 4, y: 4, z: 5}
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!114 &867354851697215329
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1064,7 +1064,7 @@ MonoBehaviour:
   maxHealth: 1800
   currentHealth: 0
   itemToDrop: {fileID: 4419682957062868931, guid: 320dad18c6b689743bab42bae5b4e966, type: 3}
-  amountToDrop: 5
+  amountToDrop: 2
   dropSpread: 0.5
 --- !u!114 &2037432929901814467
 MonoBehaviour:
@@ -1080,11 +1080,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   player: {fileID: 0}
   chaseRange: 30
-  attackRange: 4
+  attackRange: 5
   moveSpeed: 12
   damage: 80
   patrolDisableRange: 50
-  attackDelay: 0.5
+  attackDelay: 0.7
   attackRecoveryTime: 0.4
   stunDuration: 0.5
   patrolRadius: 8
