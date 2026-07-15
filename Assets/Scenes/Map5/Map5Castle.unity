@@ -20054,7 +20054,7 @@ MonoBehaviour:
   - {fileID: 1716143274}
   - {fileID: 777956361}
   shopPanel: {fileID: 868401780}
-  nextSceneName: EndingCredit
+  nextSceneName: EndingMap5
   bgmSource: {fileID: 1972723038}
   normalWaveBGM: {fileID: 8300000, guid: b8c87cf61d7cd1946a14425dd6ab9ecb, type: 3}
   bossWaveBGM: {fileID: 8300000, guid: d261eabd6743a68469063dd2f61f86fa, type: 3}

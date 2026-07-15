@@ -159164,7 +159164,7 @@ MonoBehaviour:
   bgmSource: {fileID: 1832871857}
   tutorialNormalBGM: {fileID: 8300000, guid: 878a7bcc7f92ec74ba23bd33e27287b6, type: 3}
   tutorialCombatBGM: {fileID: 8300000, guid: 99bd5bfa6c96d4343bb422cdb025e636, type: 3}
-  nextSceneName: Map1Village
+  nextSceneName: OpeningMap1
 --- !u!1001 &1667970587
 PrefabInstance:
   m_ObjectHideFlags: 0
