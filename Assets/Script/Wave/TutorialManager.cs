@@ -113,7 +113,7 @@ public class TutorialManager : MonoBehaviour
                 break;
 
             case TutorialState.Selesai:
-                instructionText.text = "Tutorial Selesai! Kamu siap bertualang.\nMemasuki Desa dalam 3 detik...";
+                instructionText.text = "Tutorial Selesai! Kamu siap berpetualang.\nMemasuki Desa dalam 3 detik...";
                 
                 // Efek musik mengecil (Fade Out) saat tutorial selesai
                 StartCoroutine(FadeOutBGM(2.5f));
