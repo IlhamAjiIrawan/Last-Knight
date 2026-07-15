@@ -15,6 +15,14 @@ public class MainMenuController : MonoBehaviour
     [Header("Panel Pop-up UI")]
     public GameObject settingPanel;
     public GameObject exitConfirmationPanel;
+    public GameObject creditPanel;
+
+    [Header("Credit Detail Panels (4 Sub-Panel)")]
+    // Masukkan 4 panel detail kamu di sini
+    public GameObject detailPanel1;
+    public GameObject detailPanel2;
+    public GameObject detailPanel3;
+    public GameObject detailPanel4;
 
     [Header("Audio Settings (Baru)")]
     [Tooltip("Tarik komponen AudioSource dari scene Main Menu ke sini")]
@@ -140,5 +148,40 @@ public class MainMenuController : MonoBehaviour
     {
         Debug.Log("Menutup Aplikasi Game...");
         Application.Quit();
+    }
+
+    public void OpenCredit()
+    {
+        if (creditPanel != null) 
+        {
+            creditPanel.SetActive(true);
+            CloseAllDetails(); // Pastikan saat buka Credit, semua detail dalam keadaan tertutup
+        }
+    }
+
+    public void CloseCredit()
+    {
+        if (creditPanel != null) creditPanel.SetActive(false);
+    }
+
+    // Fungsi untuk membuka detail spesifik (Bisa dipasang di 4 button detail)
+    public void OpenDetail(int index)
+    {
+        // Tutup semua dulu supaya tidak tumpang tindih
+        CloseAllDetails();
+
+        if (index == 1 && detailPanel1 != null) detailPanel1.SetActive(true);
+        else if (index == 2 && detailPanel2 != null) detailPanel2.SetActive(true);
+        else if (index == 3 && detailPanel3 != null) detailPanel3.SetActive(true);
+        else if (index == 4 && detailPanel4 != null) detailPanel4.SetActive(true);
+    }
+
+    // Fungsi pembantu untuk menutup semua sub-panel detail
+    public void CloseAllDetails()
+    {
+        if (detailPanel1 != null) detailPanel1.SetActive(false);
+        if (detailPanel2 != null) detailPanel2.SetActive(false);
+        if (detailPanel3 != null) detailPanel3.SetActive(false);
+        if (detailPanel4 != null) detailPanel4.SetActive(false);
     }
 }
