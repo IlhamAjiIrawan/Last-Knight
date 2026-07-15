@@ -421,7 +421,7 @@ MonoBehaviour:
   videoPlayer: {fileID: 751895371}
   continuePanel: {fileID: 1692803106}
   resumeButton: {fileID: 37198796}
-  nextSceneName: MapFinal
+  nextSceneName: FinalBattle
 --- !u!4 &730100382
 Transform:
   m_ObjectHideFlags: 0
@@ -462,7 +462,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 751895370}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 1b8977efa9dc638488201f2ae2cf19be, type: 3}
+  m_VideoClip: {fileID: 32900000, guid: c656a70be2ab841429a78903a0916650, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 892032437}
