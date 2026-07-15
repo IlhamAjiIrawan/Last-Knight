@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using System.IO;
 using System.Collections; // WAJIB: Ditambahkan untuk mendukung Coroutine Fade Out BGM
 
@@ -24,18 +25,28 @@ public class MainMenuController : MonoBehaviour
     public GameObject detailPanel3;
     public GameObject detailPanel4;
 
-    [Header("Audio Settings (Baru)")]
-    [Tooltip("Tarik komponen AudioSource dari scene Main Menu ke sini")]
+    [Header("Audio Settings")]
     public AudioSource bgmSource;
-    [Tooltip("Tarik file audio/musik untuk Main Menu ke sini")]
     public AudioClip mainMenuBGM;
+    
+    [Header("Audio UI Settings (Baru)")]
+    [Tooltip("Tarik UI Slider Volume dari SettingPanel ke sini")]
+    public Slider volumeSlider;
 
     private string saveFileName = "save_player_data.json";
 
     void Start()
     {
-        // Jalankan musik saat Main Menu pertama kali terbuka
         PlayBGM();
+
+        // Mengatur nilai awal Slider agar sinkron dengan volume awal BGM
+        if (volumeSlider != null && bgmSource != null)
+        {
+            volumeSlider.value = bgmSource.volume;
+            
+            // Mendaftarkan fungsi perubahan volume secara dinamis lewat kode
+            volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+        }
     }
 
     void PlayBGM()
@@ -46,6 +57,15 @@ public class MainMenuController : MonoBehaviour
             bgmSource.loop = true;
             bgmSource.volume = 0.5f; // Mengatur volume default awal (50%)
             bgmSource.Play();
+        }
+    }
+
+    public void OnVolumeChanged(float value)
+    {
+        if (bgmSource != null)
+        {
+            bgmSource.volume = value;
+            Debug.Log("[Audio Settings]: Volume diubah menjadi " + (value * 100f).ToString("F0") + "%");
         }
     }
 
