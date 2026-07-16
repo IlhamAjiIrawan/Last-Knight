@@ -440,7 +440,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1709971447}
         m_TargetAssemblyTypeName: StorySceneController, Assembly-CSharp
         m_MethodName: ClosePopupAndResume
         m_Mode: 1
@@ -778,7 +778,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1709971447}
         m_TargetAssemblyTypeName: StorySceneController, Assembly-CSharp
         m_MethodName: ContinueToNextScene
         m_Mode: 1
@@ -858,8 +858,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StorySceneController
   videoPlayer: {fileID: 1873815258}
-  continuePanel: {fileID: 0}
-  resumeButton: {fileID: 0}
+  continuePanel: {fileID: 1804567738}
+  resumeButton: {fileID: 270561239}
   nextSceneName: OpeningMap2
 --- !u!4 &1709971448
 Transform:

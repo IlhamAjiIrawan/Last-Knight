@@ -201,7 +201,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 215105089}
         m_TargetAssemblyTypeName: StorySceneController, Assembly-CSharp
         m_MethodName: ContinueToNextScene
         m_Mode: 1
@@ -281,8 +281,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StorySceneController
   videoPlayer: {fileID: 1796429530}
-  continuePanel: {fileID: 0}
-  resumeButton: {fileID: 0}
+  continuePanel: {fileID: 1390836048}
+  resumeButton: {fileID: 2034103278}
   nextSceneName: Map2Desert
 --- !u!4 &215105090
 Transform:
@@ -971,7 +971,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 215105089}
         m_TargetAssemblyTypeName: StorySceneController, Assembly-CSharp
         m_MethodName: ClosePopupAndResume
         m_Mode: 1
