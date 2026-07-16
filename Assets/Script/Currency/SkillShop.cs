@@ -20,22 +20,22 @@ public class SkillShop : MonoBehaviour
         if (skill1PriceText != null)
         {
             skill1PriceText.text = PlayerStats.instance.skill1Level >= PlayerStats.instance.maxSkillLevel ? 
-                "MAX" : "Cost: " + PlayerStats.instance.skill1UpgradeCost + " G";
+                "MAX" : " " + PlayerStats.instance.skill1UpgradeCost + " G";
         }
         if (skill2PriceText != null)
         {
             skill2PriceText.text = PlayerStats.instance.skill2Level >= PlayerStats.instance.maxSkillLevel ? 
-                "MAX" : "Cost: " + PlayerStats.instance.skill2UpgradeCost + " G";
+                "MAX" : " " + PlayerStats.instance.skill2UpgradeCost + " G";
         }
         if (skill3PriceText != null)
         {
             skill3PriceText.text = PlayerStats.instance.skill3Level >= PlayerStats.instance.maxSkillLevel ? 
-                "MAX" : "Cost: " + PlayerStats.instance.skill3UpgradeCost + " G";
+                "MAX" : " " + PlayerStats.instance.skill3UpgradeCost + " G";
         }
         if (skill4PriceText != null)
         {
             skill4PriceText.text = PlayerStats.instance.skill4Level >= PlayerStats.instance.maxSkillLevel ? 
-                "MAX" : "Cost: " + PlayerStats.instance.skill4UpgradeCost + " G";
+                "MAX" : " " + PlayerStats.instance.skill4UpgradeCost + " G";
         }
     }
 
