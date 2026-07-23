@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement; // <-- TAMBAHKAN INI untuk fitur pindah Scene (Main Menu)
+using UnityEngine.UI;
 
 public class PauseManager : MonoBehaviour
 {
@@ -17,6 +18,11 @@ public class PauseManager : MonoBehaviour
     public TextMeshProUGUI speedText;
     public TextMeshProUGUI goldText;
 
+    [Header("Audio Settings")]
+    public AudioSource bgmAudioSource; // Tarik AudioSource BGM Map ke sini
+    public Slider volumeSlider;        // Tarik VolumeSlider dari SettingsPanel
+    public TextMeshProUGUI volumePercentText;
+    
     void Start()
     {
         // Pastikan semua panel tertutup saat game dimulai
@@ -24,6 +30,35 @@ public class PauseManager : MonoBehaviour
         if (settingsPanel != null) settingsPanel.SetActive(false);
         
         Time.timeScale = 1f; // Kembalikan waktu normal
+
+        if (volumeSlider != null && bgmAudioSource != null)
+        {
+            volumeSlider.value = bgmAudioSource.volume;
+            UpdateVolumeText(volumeSlider.value);
+            volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+        }
+    }
+
+    // FUNGSI BARU: Mengubah volume BGM secara real-time saat slider digeser
+    public void OnVolumeChanged(float value)
+    {
+        if (bgmAudioSource != null)
+        {
+            bgmAudioSource.volume = value;
+        }
+
+        // Update teks persentase setiap kali slider digeser
+        UpdateVolumeText(value);
+    }
+
+    // Fungsi pembantu untuk mengonversi nilai 0.0 - 1.0 menjadi persentase (0% - 100%)
+    void UpdateVolumeText(float value)
+    {
+        if (volumePercentText != null)
+        {
+            int percent = Mathf.RoundToInt(value * 100f);
+            volumePercentText.text = $"{percent}%";
+        }
     }
 
     void Update()
