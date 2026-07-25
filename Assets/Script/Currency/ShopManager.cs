@@ -140,11 +140,11 @@ public class ShopManager : MonoBehaviour
     void UpdateUI()
     {
         // Tetap membaca nama variabel yang sama karena di PlayerStats.cs properti rumusnya sengaja disamakan hurufnya
-        if (healthPriceText) healthPriceText.text = " " + PlayerStats.instance.healthUpgradeCost;
-        if (mpPriceText) mpPriceText.text = " " + PlayerStats.instance.mpUpgradeCost;
-        if (energyPriceText) energyPriceText.text = " " + PlayerStats.instance.energyUpgradeCost;
-        if (damagePriceText) damagePriceText.text = " " + PlayerStats.instance.damageUpgradeCost;
-        if (speedPriceText) speedPriceText.text = " " + PlayerStats.instance.speedUpgradeCost;
+        if (healthPriceText) healthPriceText.text = PlayerStats.instance.healthUpgradeCost.ToString();
+        if (mpPriceText) mpPriceText.text = PlayerStats.instance.mpUpgradeCost.ToString();
+        if (energyPriceText) energyPriceText.text = PlayerStats.instance.energyUpgradeCost.ToString();
+        if (damagePriceText) damagePriceText.text = PlayerStats.instance.damageUpgradeCost.ToString();
+        if (speedPriceText) speedPriceText.text = PlayerStats.instance.speedUpgradeCost.ToString();
     }
 
     public void CloseShop()
